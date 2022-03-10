@@ -8,6 +8,13 @@
   },
   "dependencies": {
     "@types/paho-mqtt": "^1.0.6",
+    "igniteui-react-charts": "^16.15.0",
+    "igniteui-react-core": "^16.15.0",
+    "igniteui-react-excel": "^16.15.0",
+    "igniteui-react-gauges": "^16.15.0",
+    "igniteui-react-grids": "^16.15.0",
+    "igniteui-react-maps": "^16.15.0",
+    "igniteui-react-spreadsheet": "^16.15.0",
     "paho-mqtt": "^1.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

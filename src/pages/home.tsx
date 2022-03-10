@@ -8,7 +8,7 @@ export const Home = () => {
   const [ client, setClient ] = useState<Paho.Client>();
   const [ msg, setMsg ] = useState("");
   const [ feed, setFeed ] = useState<String[]>([]);
-  const _topic = ["WorldTestFull"];
+  const _topic = ["H2_car"];
   const _options = {};
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const Home = () => {
   const _sendPayload = () => {
     if(client == undefined || msg === "") return
     const message = new Paho.Message(msg);
-    message.destinationName = "WorldTestFull";
+    message.destinationName = "H2_car";
     client.send(message);
     setMsg("")
   }
