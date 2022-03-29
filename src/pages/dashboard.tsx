@@ -18,6 +18,14 @@ export const Dashboard = () => {
     const [throttle, setThrottle] = useState(0);
     const [fuelp, setFuelp] = useState(0);
     const _options = {};
+
+    const [showHelp, setShowHelp] = useState(true);
+    const [showControlPanel, setShowControlPanel] = useState(true);
+
+    const [showSpeed, setShowSpeed] = useState(true);
+    const [showRpm, setShowRpm] = useState(true);
+    const [showThrottle, setShowThrottle] = useState(true);
+    const [showFuelP, setShowFuelP] = useState(true);
     
     useEffect(() => {
         _init();
@@ -51,20 +59,20 @@ export const Dashboard = () => {
         console.log(msg2);
         try{
             var data = JSON.parse(msg2);
+            if(data.speed != null){
+                setSpeed(data.speed);
+            }
+            if(data.rpm != null){
+                setRpm(data.rpm);
+            }
+            if(data.throttle != null){
+                setThrottle(data.throttle);
+            }
+            if(data.fuelp != null){
+                setFuelp(data.fuelp);
+            }
         } catch (exc : any) {
             console.log(exc);
-        }
-        if(data.speed != null){
-            setSpeed(data.speed);
-        }
-        if(data.rpm != null){
-            setRpm(data.rpm);
-        }
-        if(data.throttle != null){
-            setThrottle(data.throttle);
-        }
-        if(data.fuelp != null){
-            setFuelp(data.fuelp);
         }
     }
 
@@ -98,25 +106,26 @@ export const Dashboard = () => {
     
     return(
         <div>
-            {connected === false &&
+            { !connected &&
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Ops! </strong>
                 <span className="block sm:inline">You are not connected!</span>
               </div>
             }
 
-            {connected === true &&
+            { connected &&
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Connected! </strong>
                 <span className="block sm:inline">You are connected to the server!</span>
               </div>
             }
 
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
-                Try sending this message to the broker with the topic "H2_car": <br />
-                &#123;"speed":80, "rpm": 250, "throttle": 70, "fuelp": 20&#125;    
-            </div>
-
+            { showHelp &&
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+                    Try sending this message to the broker with the topic "H2_car": <br />
+                    &#123;"speed":80, "rpm": 250, "throttle": 70, "fuelp": 20&#125;    
+                </div>
+            }
             {/*
             <div className="bg-stone-100  border border-stone-400 text-stone-700 px-4 py-3 rounded relative text-center w-full">
                 <div className="flex items-center border-b border-teal-500 py-2">
@@ -131,21 +140,79 @@ export const Dashboard = () => {
                 </div>
             </div>
             */}
-            <div className="components">
-                <div className="flex flex-wrap d-flex text-center align-center items-center justify-center content-center object-center">
-                    <div className="bg-stone-100 centered basis-1/2">
-                        <Speedometer value={speed} />
-                    </div>
-                    <div className="bg-stone-100 centered basis-1/2">
-                        <Tachometer value={rpm} />
-                    </div>
-                    <div className="basis-full">
-                        <LinearGauge value={fuelp} />
-                    </div>
-                    <div className="basis-full">
-                        <ThrottlePressure value={throttle} />
-                    </div>
+            { !showControlPanel && 
+                <div className="bg-stone-400 border border-stone-400 px-4 py-3 rounded relative">
+                    <label className="flex relative items-center mb-4 cursor-pointer">
+                        <input type="checkbox" className="sr-only" checked={showControlPanel} onChange={() => setShowControlPanel(!showControlPanel)} />
+                        <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                        <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Control Panel</span>
+                    </label>
                 </div>
+            }
+
+            <div className="components flex flex-row">
+
+                { showControlPanel &&
+                    <div className="control-panel bg-stone-400 basis-1/4">
+                 
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showControlPanel} onChange={() => setShowControlPanel(!showControlPanel)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Control Panel</span>
+                        </label>
+                    
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showSpeed} onChange={() => setShowSpeed(!showSpeed)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Speedometer</span>
+                        </label>
+
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showRpm} onChange={() => setShowRpm(!showRpm)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Tachometer</span>
+                        </label>
+
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showFuelP} onChange={() => setShowFuelP(!showFuelP)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Fuel Pressure</span>
+                        </label>
+
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showThrottle} onChange={() => setShowThrottle(!showThrottle)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Throttle Pressure</span>
+                        </label>
+                    </div>
+                }
+
+                <div className="flex flex-wrap d-flex text-center align-center items-center justify-center content-center object-center basis-full">
+                    { showSpeed &&
+                        <div className="bg-stone-100 centered basis-1/2 flex flex-col">
+                            <div>
+                                <Speedometer value={speed} />
+                            </div> 
+                        </div>
+                    }
+                    { showRpm &&
+                        <div className="bg-stone-100 centered basis-1/2">
+                            <Tachometer value={rpm} />
+                        </div>
+                    }
+                    { showFuelP && 
+                        <div className="basis-full">
+                            <LinearGauge value={fuelp} />
+                        </div>
+                    }
+                    { showThrottle && 
+                        <div className="basis-full">
+                            <ThrottlePressure value={throttle} />
+                        </div>
+                    }
+                    
+                </div>
+
                 {/*Components.map((Component, idx) => {
                     const Tag = Component as "div";
                     return(
