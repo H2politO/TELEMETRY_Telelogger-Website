@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@types/paho-mqtt": "^1.0.6",
+    "flowbite": "^1.4.1",
     "igniteui-react-charts": "^16.15.0",
     "igniteui-react-core": "^16.15.0",
     "igniteui-react-excel": "^16.15.0",
