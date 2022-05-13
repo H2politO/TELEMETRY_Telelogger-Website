@@ -1,5 +1,8 @@
 type Props = {
     speed : number;
+    minSpeed: number;
+    maxSpeed: number;
+    height: string;
 }
 
 
@@ -41,9 +44,9 @@ export default class Tachometer extends React.Component <any,any>{
                     needlePivotOutline="#9f9f9f"
                     needlePivotWidthRatio={0.2}
                     needlePivotStrokeThickness={1}
-                    height="300px" width="300px"
-                    minimumValue={0}
-                    maximumValue={1000} interval={100} 
+                    height={this.props.height} width="300px"
+                    minimumValue={this.props.minSpeed}
+                    maximumValue={this.props.maxSpeed} interval={1000} 
                 />
             </div>
 

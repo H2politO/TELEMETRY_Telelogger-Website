@@ -5,6 +5,9 @@ import Speedometer from "../components/Speedometer";
 import Tachometer from '../components/Tachometer';
 import LinearGauge from "../components/LinearGauge";
 import ThrottlePressure from "../components/ThrottlePressure";
+import SimpleLight from "../components/SimpleLight";
+import LiveGraph from "../components/LiveGraph";
+import {DataItem, Data} from '../components/LiveGraph/data';
 
 import Paho from 'paho-mqtt';
 
@@ -17,6 +20,21 @@ export const Dashboard = () => {
     const [rpm, setRpm] = useState(0);
     const [throttle, setThrottle] = useState(0);
     const [fuelp, setFuelp] = useState(0);
+    const [map, setMap] = useState(0);
+    const [ect, setEct] = useState(0);
+    const [lambda, setLambda] = useState(0);
+    const [launchState, setLaunchState] = useState(false);
+    const [crank, setCrank] = useState(false);
+
+    const [speedHistory, setSpeedHistory] = useState<number[]>([]);
+    const [rpmHistory, setRpmHistory] = useState<number[]>([]);
+    const [mapHistory, setMapHistory] = useState<number[]>([]);
+    const [launchStateHistory, setLaunchStateHistory] = useState<number[]>([]);
+    const [crankHistory, setCrankHistory] = useState<number[]>([]);
+
+    const [loadTime, setLoadTime] = useState(Math.round((new Date()).getTime() / 1000));
+    const [graphData, setGraphData] = useState<Data>(new Data(loadTime));
+
     const _options = {};
 
     const [showHelp, setShowHelp] = useState(true);
@@ -26,22 +44,32 @@ export const Dashboard = () => {
     const [showRpm, setShowRpm] = useState(true);
     const [showThrottle, setShowThrottle] = useState(true);
     const [showFuelP, setShowFuelP] = useState(true);
+    const [showLights, setShowLights] = useState(true);
+    const [showGraph, setShowGraph] = useState(false);
+    const [showConnected, setShowConnected] = useState(true);
     
     useEffect(() => {
         _init();
       },[])
     
     const _init = () => {
-       const c = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "myClientId" + new Date().getTime());
-       c.onConnectionLost = _onConnectionLost;
-       c.onMessageArrived = _onMessageArrived;
-       c.connect({onSuccess:onConnect});
-       setClient(c);
+        console.log("Connection Started");
+        const c = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "myClientId" + new Date().getTime());
+        c.onConnectionLost = _onConnectionLost;
+        c.onMessageArrived = _onMessageArrived;
+        c.connect({onSuccess:onConnect,onFailure:onFailureConnect});
+        setClient(c);
     }
 
     const onConnect = () => {
+        console.log("Connected");
         setConnected(true);
         _onSubscribe();
+    }
+
+    const onFailureConnect = () => {
+        console.log("Connection failed");
+        setConnected(false);
     }
     
     // called when client lost connection
@@ -61,9 +89,11 @@ export const Dashboard = () => {
             var data = JSON.parse(msg2);
             if(data.speed != null){
                 setSpeed(data.speed);
+                setSpeedHistory([...speedHistory, speed]);
             }
             if(data.rpm != null){
                 setRpm(data.rpm);
+                setRpmHistory([...rpmHistory, rpm]);
             }
             if(data.throttle != null){
                 setThrottle(data.throttle);
@@ -71,6 +101,30 @@ export const Dashboard = () => {
             if(data.fuelp != null){
                 setFuelp(data.fuelp);
             }
+            if(data.launchState != null){
+                setLaunchState(Boolean(parseInt(data.launchState)));
+                setLaunchStateHistory([...launchStateHistory, data.launchState]);
+            }
+            if(data.crank != null){
+                setCrank(Boolean(parseInt(data.crank)));
+                setCrankHistory([...crankHistory, data.crank]);
+            }
+            if(data.map != null){
+                setMap(data.map);
+                setMapHistory([...mapHistory, data.map]);
+            }
+            //Add to the graph
+            let graphData2 = graphData;
+            let newData = {
+                time: String(Math.round((new Date()). getTime() / 1000) - loadTime),
+                speed: data.speed/10,
+                rpm: (data.rpm)/1000,
+                map: data.map,
+                crank: data.crank,
+                launchstate: data.launchState
+            };
+            graphData2.push(newData);
+            setGraphData(graphData2);
         } catch (exc : any) {
             console.log(exc);
         }
@@ -79,7 +133,10 @@ export const Dashboard = () => {
 
     // called when subscribing topic(s)
     const _onSubscribe = () => {
-        if(client == undefined) return
+        if(client == undefined){
+            setConnected(false);
+            return;
+        } 
         for (var i = 0; i < _topics.length; i++) {
             client.subscribe(_topics[i], _options);
         }
@@ -97,6 +154,7 @@ export const Dashboard = () => {
     const _onDisconnect = () => {
         if(client == undefined) return
         client.disconnect();
+        setConnected(false);
     }
 
 
@@ -110,20 +168,23 @@ export const Dashboard = () => {
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Ops! </strong>
                 <span className="block sm:inline">You are not connected!</span>
+                <button className="float-right" onClick={() => _init()}>Connect</button>
               </div>
             }
 
-            { connected &&
+            { (connected && showConnected) &&
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Connected! </strong>
                 <span className="block sm:inline">You are connected to the server!</span>
+                <span className='float-right'><button onClick={() => setShowConnected(false)}>Close</button></span>
               </div>
             }
-
+            
             { showHelp &&
                 <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
                     Try sending this message to the broker with the topic "H2_car": <br />
-                    &#123;"speed":80, "rpm": 250, "throttle": 70, "fuelp": 20&#125;    
+                    &#123;"speed":56, "rpm": 5500, "throttle": 78, "fuelp": 35, "launchState":1, "crank":0, "map":1&#125;
+                    <span className="float-right"><button onClick={() => setShowHelp(false)}>Close</button></span>"  
                 </div>
             }
             {/*
@@ -184,20 +245,37 @@ export const Dashboard = () => {
                             <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
                             <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Throttle Pressure</span>
                         </label>
+
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showLights} onChange={() => setShowLights(!showLights)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Lights</span>
+                        </label>
+
+                        <label className="flex relative items-center mb-4 cursor-pointer">
+                            <input type="checkbox" className="sr-only" checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
+                            <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Live Graph</span>
+                        </label>
                     </div>
                 }
 
                 <div className="flex flex-wrap d-flex text-center align-center items-center justify-center content-center object-center basis-full">
+                    { showGraph && 
+                        <div className="basis-full">
+                            <LiveGraph data={graphData} height="300px" speedHistory={speedHistory} rpmHistory={rpmHistory} crankHistory={crankHistory} launchStateHistory={launchStateHistory} mapHistory={mapHistory} />
+                        </div>
+                    }
                     { showSpeed &&
                         <div className="bg-stone-100 centered basis-1/2 flex flex-col">
                             <div>
-                                <Speedometer value={speed} />
+                                <Speedometer value={speed} minSpeed="0" maxSpeed="70" height="220px" />
                             </div> 
                         </div>
                     }
                     { showRpm &&
                         <div className="bg-stone-100 centered basis-1/2">
-                            <Tachometer value={rpm} />
+                            <Tachometer value={rpm} minSpeed="0" maxSpeed="8500" height="220px" />
                         </div>
                     }
                     { showFuelP && 
@@ -210,15 +288,20 @@ export const Dashboard = () => {
                             <ThrottlePressure value={throttle} />
                         </div>
                     }
+                    {
+                        showLights && 
+                        <div className="basis-full flex flex-wrap d-flex">
+                            <div className="basis-1/2">
+                                <SimpleLight title="Launch State" status={launchState} />
+                            </div>
+                            <div className="basis-1/2">
+                                <SimpleLight title="Crank" status={crank} />
+                            </div>
+                        </div>
+                    }
                     
                 </div>
-
-                {/*Components.map((Component, idx) => {
-                    const Tag = Component as "div";
-                    return(
-                        <Tag key={idx} className="py-4">A</Tag>
-                    );
-                })*/}
+                
             </div>
         </div>
     )
