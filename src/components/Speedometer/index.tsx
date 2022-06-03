@@ -3,6 +3,7 @@ type Props = {
     minSpeed: number;
     maxSpeed: number;
     height: string;
+    prescaler?: number;
 }
 
 
@@ -29,10 +30,10 @@ export default class Speedometer extends React.Component <any,any>{
 
     public render(): JSX.Element {
         return(
-            <div className="bg-stone-100">              
+            <div>              
                 <IgrRadialGauge
-                    value={this.props.value}
-                    isNeedleDraggingEnabled={true}
+                    value={this.props.value*this.props.prescaler}
+                    isNeedleDraggingEnabled={false}
                     isNeedleDraggingConstrained={true}
                     needleShape="NeedleWithBulb"
                     needleBrush="#ff1230"
@@ -45,8 +46,9 @@ export default class Speedometer extends React.Component <any,any>{
                     needlePivotWidthRatio={0.2}
                     needlePivotStrokeThickness={1}
                     height={this.props.height} width="300px"
-                    minimumValue={this.props.minSpeed}
-                    maximumValue={this.props.maxSpeed} interval={5} 
+                    minimumValue={this.props.minSpeed*this.props.prescaler}
+                    maximumValue={this.props.maxSpeed*this.props.prescaler} 
+                    interval={(this.props.maxSpeed-this.props.minSpeed)/7} 
                 />
             </div>
 

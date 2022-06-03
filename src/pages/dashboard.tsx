@@ -7,14 +7,21 @@ import LinearGauge from "../components/LinearGauge";
 import ThrottlePressure from "../components/ThrottlePressure";
 import SimpleLight from "../components/SimpleLight";
 import LiveGraph from "../components/LiveGraph";
-import {DataItem, Data} from '../components/LiveGraph/data';
+import { DataItem, Data } from '../components/LiveGraph/data';
 
 import Paho from 'paho-mqtt';
+import { ComponentEncapsulator } from '../components/componentEncapsulator';
+import { ComponentsPage } from '../models/componentsPage';
 
-export const Dashboard = () => {
 
-    const [ connected, setConnected ] = useState(false);
-    const [ client, setClient ] = useState<Paho.Client>();
+interface Props {
+    compPageList: ComponentsPage[];
+}
+
+export const Dashboard: React.FC<Props> = ({ compPageList }) => {
+
+    const [connected, setConnected] = useState(false);
+    const [client, setClient] = useState<Paho.Client>();
     const _topics = ["H2_car"];
     const [speed, setSpeed] = useState(0);
     const [rpm, setRpm] = useState(0);
@@ -47,17 +54,19 @@ export const Dashboard = () => {
     const [showLights, setShowLights] = useState(true);
     const [showGraph, setShowGraph] = useState(false);
     const [showConnected, setShowConnected] = useState(true);
-    
+
     useEffect(() => {
         _init();
-      },[])
-    
+    }, [])
+
+
+
     const _init = () => {
         console.log("Connection Started");
         const c = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "myClientId" + new Date().getTime());
         c.onConnectionLost = _onConnectionLost;
         c.onMessageArrived = _onMessageArrived;
-        c.connect({onSuccess:onConnect,onFailure:onFailureConnect});
+        c.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
         setClient(c);
     }
 
@@ -71,9 +80,9 @@ export const Dashboard = () => {
         console.log("Connection failed");
         setConnected(false);
     }
-    
+
     // called when client lost connection
-    const _onConnectionLost = (responseObject : any) => {
+    const _onConnectionLost = (responseObject: any) => {
         if (responseObject.errorCode !== 0) {
             console.log("onConnectionLost: " + responseObject.errorMessage);
         }
@@ -81,51 +90,51 @@ export const Dashboard = () => {
     }
 
     // called when messages arrived
-    const _onMessageArrived = (message : any) => {
+    const _onMessageArrived = (message: any) => {
         var msg2 = message.payloadString;
         msg2 = String(msg2);
         console.log(msg2);
-        try{
+        try {
             var data = JSON.parse(msg2);
-            if(data.speed != null){
+            if (data.speed != null) {
                 setSpeed(data.speed);
                 setSpeedHistory([...speedHistory, speed]);
             }
-            if(data.rpm != null){
+            if (data.rpm != null) {
                 setRpm(data.rpm);
                 setRpmHistory([...rpmHistory, rpm]);
             }
-            if(data.throttle != null){
+            if (data.throttle != null) {
                 setThrottle(data.throttle);
             }
-            if(data.fuelp != null){
+            if (data.fuelp != null) {
                 setFuelp(data.fuelp);
             }
-            if(data.launchState != null){
+            if (data.launchState != null) {
                 setLaunchState(Boolean(parseInt(data.launchState)));
                 setLaunchStateHistory([...launchStateHistory, data.launchState]);
             }
-            if(data.crank != null){
+            if (data.crank != null) {
                 setCrank(Boolean(parseInt(data.crank)));
                 setCrankHistory([...crankHistory, data.crank]);
             }
-            if(data.map != null){
+            if (data.map != null) {
                 setMap(data.map);
                 setMapHistory([...mapHistory, data.map]);
             }
             //Add to the graph
             let graphData2 = graphData;
             let newData = {
-                time: String(Math.round((new Date()). getTime() / 1000) - loadTime),
-                speed: data.speed/10,
-                rpm: (data.rpm)/1000,
+                time: String(Math.round((new Date()).getTime() / 1000) - loadTime),
+                speed: data.speed / 10,
+                rpm: (data.rpm) / 1000,
                 map: data.map,
                 crank: data.crank,
                 launchstate: data.launchState
             };
             graphData2.push(newData);
             setGraphData(graphData2);
-        } catch (exc : any) {
+        } catch (exc: any) {
             console.log(exc);
         }
     }
@@ -133,10 +142,10 @@ export const Dashboard = () => {
 
     // called when subscribing topic(s)
     const _onSubscribe = () => {
-        if(client == undefined){
+        if (client == undefined) {
             setConnected(false);
             return;
-        } 
+        }
         for (var i = 0; i < _topics.length; i++) {
             client.subscribe(_topics[i], _options);
         }
@@ -144,7 +153,7 @@ export const Dashboard = () => {
 
     // called when subscribing topic(s)
     const _onUnsubscribe = () => {
-        if(client == undefined) return
+        if (client == undefined) return
         for (var i = 0; i < _topics.length; i++) {
             client.unsubscribe(_topics[i], _options);
         }
@@ -152,7 +161,7 @@ export const Dashboard = () => {
 
     // called when disconnecting the client
     const _onDisconnect = () => {
-        if(client == undefined) return
+        if (client == undefined) return
         client.disconnect();
         setConnected(false);
     }
@@ -161,30 +170,45 @@ export const Dashboard = () => {
 
 
     var Components = ["div"];
-    
-    return(
+
+
+    return (
+        <div className="dashboard-container">
+            {compPageList.map((comp: ComponentsPage) => (
+                <div className="dashboardElement">
+                    <div>{JSON.stringify(comp.sensorSelected)}</div>
+                    <ComponentEncapsulator passedComp={comp}></ComponentEncapsulator>
+                </div>
+            )
+            )}
+        </div>
+    )
+
+
+    return (
+
         <div>
-            { !connected &&
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <strong className="font-bold">Ops! </strong>
-                <span className="block sm:inline">You are not connected!</span>
-                <button className="float-right" onClick={() => _init()}>Connect</button>
-              </div>
+            {!connected &&
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">Ops! </strong>
+                    <span className="block sm:inline">You are not connected!</span>
+                    <button className="float-right" onClick={() => _init()}>Connect</button>
+                </div>
             }
 
-            { (connected && showConnected) &&
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <strong className="font-bold">Connected! </strong>
-                <span className="block sm:inline">You are connected to the server!</span>
-                <span className='float-right'><button onClick={() => setShowConnected(false)}>Close</button></span>
-              </div>
+            {(connected && showConnected) &&
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">Connected! </strong>
+                    <span className="block sm:inline">You are connected to the server!</span>
+                    <span className='float-right'><button onClick={() => setShowConnected(false)}>Close</button></span>
+                </div>
             }
-            
-            { showHelp &&
+
+            {showHelp &&
                 <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
                     Try sending this message to the broker with the topic "H2_car": <br />
                     &#123;"speed":56, "rpm": 5500, "throttle": 78, "fuelp": 35, "launchState":1, "crank":0, "map":1&#125;
-                    <span className="float-right"><button onClick={() => setShowHelp(false)}>Close</button></span>"  
+                    <span className="float-right"><button onClick={() => setShowHelp(false)}>Close</button></span>"
                 </div>
             }
             {/*
@@ -201,7 +225,7 @@ export const Dashboard = () => {
                 </div>
             </div>
             */}
-            { !showControlPanel && 
+            {!showControlPanel &&
                 <div className="bg-stone-400 border border-stone-400 px-4 py-3 rounded relative">
                     <label className="flex relative items-center mb-4 cursor-pointer">
                         <input type="checkbox" className="sr-only" checked={showControlPanel} onChange={() => setShowControlPanel(!showControlPanel)} />
@@ -213,15 +237,15 @@ export const Dashboard = () => {
 
             <div className="components flex flex-row">
 
-                { showControlPanel &&
+                {showControlPanel &&
                     <div className="control-panel bg-stone-400 basis-1/4">
-                 
+
                         <label className="flex relative items-center mb-4 cursor-pointer">
                             <input type="checkbox" className="sr-only" checked={showControlPanel} onChange={() => setShowControlPanel(!showControlPanel)} />
                             <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
                             <span className="w-full ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Control Panel</span>
                         </label>
-                    
+
                         <label className="flex relative items-center mb-4 cursor-pointer">
                             <input type="checkbox" className="sr-only" checked={showSpeed} onChange={() => setShowSpeed(!showSpeed)} />
                             <div className="w-11 h-6 bg-gray-200 rounded-full border border-gray-200 toggle-bg dark:bg-gray-700 dark:border-gray-600"></div>
@@ -261,35 +285,35 @@ export const Dashboard = () => {
                 }
 
                 <div className="flex flex-wrap d-flex text-center align-center items-center justify-center content-center object-center basis-full">
-                    { showGraph && 
+                    {showGraph &&
                         <div className="basis-full">
                             <LiveGraph data={graphData} height="300px" speedHistory={speedHistory} rpmHistory={rpmHistory} crankHistory={crankHistory} launchStateHistory={launchStateHistory} mapHistory={mapHistory} />
                         </div>
                     }
-                    { showSpeed &&
+                    {showSpeed &&
                         <div className="bg-stone-100 centered basis-1/2 flex flex-col">
                             <div>
                                 <Speedometer value={speed} minSpeed="0" maxSpeed="70" height="220px" />
-                            </div> 
+                            </div>
                         </div>
                     }
-                    { showRpm &&
+                    {showRpm &&
                         <div className="bg-stone-100 centered basis-1/2">
                             <Tachometer value={rpm} minSpeed="0" maxSpeed="8500" height="220px" />
                         </div>
                     }
-                    { showFuelP && 
+                    {showFuelP &&
                         <div className="basis-full">
                             <LinearGauge value={fuelp} />
                         </div>
                     }
-                    { showThrottle && 
+                    {showThrottle &&
                         <div className="basis-full">
                             <ThrottlePressure value={throttle} />
                         </div>
                     }
                     {
-                        showLights && 
+                        showLights &&
                         <div className="basis-full flex flex-wrap d-flex">
                             <div className="basis-1/2">
                                 <SimpleLight title="Launch State" status={launchState} />
@@ -299,10 +323,12 @@ export const Dashboard = () => {
                             </div>
                         </div>
                     }
-                    
+
                 </div>
-                
+
             </div>
         </div>
     )
 }
+
+export default Dashboard
