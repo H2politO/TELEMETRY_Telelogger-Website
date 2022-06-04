@@ -8,6 +8,7 @@ import ThrottlePressure from "../components/ThrottlePressure";
 import SimpleLight from "../components/SimpleLight";
 import LiveGraph from "../components/LiveGraph";
 import { DataItem, Data } from '../components/LiveGraph/data';
+import { Sensor } from '../models/sensor';
 
 import Paho from 'paho-mqtt';
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
@@ -175,10 +176,13 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
     return (
         <div className="dashboard-container">
             {compPageList.map((comp: ComponentsPage) => (
-                <div className="dashboardElement">
-                    <div>{JSON.stringify(comp.sensorSelected)}</div>
+                <div>
+                    <div>{JSON.stringify(comp)}</div>
+                    {<div>{comp.nameComponent}</div>}
                     <ComponentEncapsulator passedComp={comp}></ComponentEncapsulator>
+                    <hr/>
                 </div>
+                
             )
             )}
         </div>
