@@ -4,6 +4,7 @@ import { Sensor } from '../../models/sensor';
 import { ComponentsPage } from '../../models/componentsPage';
 import { SensorList } from './sensorsList';
 import { Formik, Field, Form, FormikHelpers } from 'formik';
+import Select from 'react-select'
 
 
 type Props = {
@@ -53,6 +54,7 @@ export class Sidebar extends React.Component<any, any> {
                             typeComponent: 1,
                             sensorSelected: new Sensor,
                             prescaler: 1,
+                            deleted:false
                         }}
                         onSubmit={(
                             values: ComponentsPage,
