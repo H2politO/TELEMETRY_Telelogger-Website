@@ -174,21 +174,12 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     return (
         <div className="dashboard-container">
-<<<<<<< Updated upstream
-            {compPageList.map((comp: ComponentsPage) => (
-                <div className="dashboardElement">
-                    <div>{JSON.stringify(comp.sensorSelected)}</div>
-                    <ComponentEncapsulator passedComp={comp}></ComponentEncapsulator>
-                </div>
-=======
             {compPageList.filter((cmp:ComponentsPage) => cmp.deleted==false).map((comp: ComponentsPage) => (
                 <div className="dashboardElement basis-1/2">
-                    {comp.deleted=false}
                     <ComponentEncapsulator passedComp={comp} compCode={compCode}></ComponentEncapsulator>
                     <hr />
                 </div>
 
->>>>>>> Stashed changes
             )
             )}
         </div>

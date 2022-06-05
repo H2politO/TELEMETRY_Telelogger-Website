@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { IoMenu } from 'react-icons/io5';
 import { Sensor } from '../../models/sensor';
 import { ComponentsPage } from '../../models/componentsPage';
 import { SensorList } from './sensorsList';
@@ -50,7 +49,7 @@ export class Sidebar extends React.Component<any, any> {
 
                     <Formik
                         initialValues={{
-                            nameComponent: '',
+                            nameComponent: 'Sensore',
                             typeComponent: 1,
                             sensorSelected: new Sensor,
                             prescaler: 1,

@@ -9,6 +9,7 @@ import SimpleLight from "../components/SimpleLight";
 import LiveGraph from "../components/LiveGraph";
 import { DataItem, Data } from '../components/LiveGraph/data';
 import { ComponentsPage } from '../models/componentsPage'
+import { Sensor } from "../models/sensor";
 
 enum ComponentType {
     check = 1,
@@ -18,41 +19,27 @@ enum ComponentType {
 }
 
 interface Props {
-<<<<<<< Updated upstream
-    passedComp: ComponentsPage
-=======
     passedComp: ComponentsPage,
     compCode: number;
->>>>>>> Stashed changes
 }
 
 
 export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, compCode }) => {
+
+
+    let sens: Sensor= JSON.parse(passedComp.sensorSelected.toString())
 
     function deleteItself(){
         passedComp.deleted=true;
         console.log(passedComp.deleted);
     }
 
-
-
     return (
-<<<<<<< Updated upstream
-        <div className="dashboardElement">
-            <p>{passedComp.nameComponent}</p>
-            <p>{passedComp.sensorSelected.ID}</p>
-            {/*<div>{JSON.stringify(passedComp)}</div>*/
-            }
-            {passedComp.typeComponent == ComponentType.check &&
-                <div className="dashboardElement">
-                    <SimpleLight title={passedComp.sensorSelected?.ID} status={1} />
-=======
         <div className="">
             <div>{passedComp.nameComponent}</div>
             {passedComp.typeComponent == ComponentType.check &&
                 <div className="basis-1/3">
-                    <SimpleLight title={compSensor.ID + ' ' + compSensor.sensorName} status={1} />
->>>>>>> Stashed changes
+                    <SimpleLight title={passedComp.sensorSelected.ID + ' ' + passedComp.sensorSelected.sensorName} status={1} />
                 </div>
             }
             {passedComp.typeComponent == ComponentType.radialGauge &&
@@ -61,12 +48,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, compCode })
                 </div>
             }
             {passedComp.typeComponent == ComponentType.linearGauge &&
-<<<<<<< Updated upstream
-                <div className="dashboardElement">
-                    <LinearGauge value={60} />
-                </div>
-            }
-=======
                 <div className="basis-1/3">
                     <LinearGauge value={60} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                 </div>
@@ -77,9 +58,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, compCode })
                 </div>
             }
             <button onClick={deleteItself}>Delete component</button>
-            <div>{passedComp.deleted.toString()}</div> 
-            <p>{compSensor.ID} {compSensor.sensorName}</p>
->>>>>>> Stashed changes
+            <div>{sens.sensorName + ' - ' + sens.ID}</div>
+            {console.log(sens.sensorName )}
         </div>
 
     )
