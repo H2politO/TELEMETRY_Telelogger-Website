@@ -1,7 +1,5 @@
 type Props = {
     value : number;
-    minVal?: number;
-    maxVal?: number;
 }
 
 import React from 'react';
@@ -24,13 +22,11 @@ export default class LinearGaugeScale extends React.Component<any,any>{
             <IgrLinearGauge
                 height="80px"
                 width="100%"
-                value={this.props.value}
-                minimumValue={this.props.minVal}
-                maximumValue={this.props.maxVal} 
-                interval={10}
+                minimumValue={0} value={this.props.value}
+                maximumValue={100} interval={10}
                 isScaleInverted={false}
-                scaleBrush="LightBlue"
-                scaleOutline="Black"
+                scaleBrush="Orange"
+                scaleOutline="Red"
                 scaleStrokeThickness={2}
                 scaleInnerExtent={0.05}
                 scaleOuterExtent={0.65}
