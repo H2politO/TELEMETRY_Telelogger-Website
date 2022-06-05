@@ -9,7 +9,6 @@ import SimpleLight from "../components/SimpleLight";
 import LiveGraph from "../components/LiveGraph";
 import { DataItem, Data } from '../components/LiveGraph/data';
 import { ComponentsPage } from '../models/componentsPage'
-import { Sensor } from "../models/sensor";
 
 enum ComponentType {
     check = 1,
@@ -19,23 +18,22 @@ enum ComponentType {
 }
 
 interface Props {
-    passedComp: ComponentsPage,
+    passedComp: ComponentsPage
 }
 
 
 export const ComponentEncapsulator: React.FC<Props> = ({ passedComp }) => {
 
-    let compSensor: Sensor = JSON.parse(passedComp.sensorSelected.toString());
-    if(passedComp.cmpMaxRange==undefined || passedComp.cmpMinRange==undefined){
-        passedComp.cmpMinRange=0;
-        passedComp.cmpMaxRange=100
-    }
 
     return (
         <div className="dashboardElement">
+            <p>{passedComp.nameComponent}</p>
+            <p>{passedComp.sensorSelected.ID}</p>
+            {/*<div>{JSON.stringify(passedComp)}</div>*/
+            }
             {passedComp.typeComponent == ComponentType.check &&
                 <div className="dashboardElement">
-                    <SimpleLight title={compSensor.ID + ' ' + compSensor.sensorName} status={1} />
+                    <SimpleLight title={passedComp.sensorSelected?.ID} status={1} />
                 </div>
             }
             {passedComp.typeComponent == ComponentType.radialGauge &&
@@ -45,15 +43,9 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp }) => {
             }
             {passedComp.typeComponent == ComponentType.linearGauge &&
                 <div className="dashboardElement">
-                    <LinearGauge value={60} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
+                    <LinearGauge value={60} />
                 </div>
             }
-            {passedComp.typeComponent == ComponentType.plot &&
-                <div className="basis-full">
-                    <LiveGraph data={0} height="300px" speedHistory={0} rpmHistory={0} crankHistory={0} launchStateHistory={0} mapHistory={0} />
-                </div>
-            }
-            <p>{compSensor.ID} {compSensor.sensorName}</p>
         </div>
 
     )
