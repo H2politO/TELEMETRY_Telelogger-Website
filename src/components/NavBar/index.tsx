@@ -9,7 +9,7 @@ export class Navbar extends Component {
     render() {
 
         return (
-            <nav className="navbar navbar-expand-lg bg-light">
+            <nav className="navbar navbar-expand-lg  bg-blue-100 border-b-1 border-black">
                 <div className="container-fluid">
                     <img src={"../logo_team.svg"} alt="Logo" height={100} width={100} />
                     <a className="navbar-brand" href="/">H2politO telemetry</a>

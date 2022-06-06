@@ -20,10 +20,10 @@ export default class LinearGaugeScale extends React.Component<any,any>{
 
     public render(): JSX.Element {
         return (
-            <div className="bg-stone-100">
+            <div>
             <IgrLinearGauge
-                height="80px"
-                width="50%"
+                height="100px"
+                width="600px"
                 value={this.props.value}
                 minimumValue={0}
                 maximumValue={100} 
@@ -31,6 +31,7 @@ export default class LinearGaugeScale extends React.Component<any,any>{
                 isScaleInverted={false}
                 scaleBrush="LightBlue"
                 scaleOutline="Black"
+                backingOuterExtent={"Transparent"} 
                 scaleStrokeThickness={2}
                 scaleInnerExtent={0.05}
                 scaleOuterExtent={0.65}

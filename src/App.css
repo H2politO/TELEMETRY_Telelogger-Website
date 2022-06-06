@@ -70,8 +70,15 @@ button {
 }
 
 .dashboardElement{
-  color: blue;
-  padding: 20px;
-  border: 2px;
-  border-color: green;
+  padding: 10px;
+  height: 400px;
+}
+
+.sidebar-title{
+  font-size: 2em;
+}
+
+.cards-title{
+  font-size: 1.5em;
+  font-weight: bold;
 }

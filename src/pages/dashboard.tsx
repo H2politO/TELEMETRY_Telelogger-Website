@@ -198,7 +198,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
                 </div>
             }
 
-            <div  className="dashboardContainer">
+            <div className="dashboardContainer flex flex-row flex-wrap ">
                 {compPageList.filter((cmp: ComponentsPage) => cmp.deleted == false).map((comp: ComponentsPage) => (
                     <div>
                         <ComponentEncapsulator passedComp={comp} compCode={compCode}></ComponentEncapsulator>

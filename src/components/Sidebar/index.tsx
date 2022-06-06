@@ -62,7 +62,7 @@ export class Sidebar extends React.Component<any, any> {
         return (
 
             <div className="offcanvas offcanvas-end" id="offcanvasRight">
-                <div className="offcanvas-header">
+                <div className="offcanvas-header sidebar-title">
                     <h2>Sensor menu</h2>
                 </div> 
 
@@ -75,7 +75,7 @@ export class Sidebar extends React.Component<any, any> {
                             nameComponent: '',
                             typeComponent: 1,
                             sensorSelected: new Sensor,
-                            cmpMinRange: 1,
+                            cmpMinRange: 0,
                             cmpMaxRange: 100,
                             prescaler: 1,
                             deleted: false,

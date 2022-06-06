@@ -45,10 +45,10 @@ export default class Speedometer extends React.Component <any,any>{
                     needlePivotOutline="#9f9f9f"
                     needlePivotWidthRatio={0.2}
                     needlePivotStrokeThickness={1}
-                    height={this.props.height} width="300px"
+                    height="200px" width="200px"
                     minimumValue={this.props.minSpeed*this.props.prescaler}
                     maximumValue={this.props.maxSpeed*this.props.prescaler} 
-                    interval={(this.props.maxSpeed-this.props.minSpeed)/7} 
+                    interval={(this.props.maxSpeed-this.props.minSpeed)/5} 
                 />
             </div>
 
