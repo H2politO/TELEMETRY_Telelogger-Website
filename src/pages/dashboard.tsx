@@ -173,15 +173,41 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
     let compCode = 0;
 
     return (
-        <div className="dashboard-container">
-            {compPageList.filter((cmp:ComponentsPage) => cmp.deleted==false).map((comp: ComponentsPage) => (
-                <div className="dashboardElement basis-1/2">
-                    <ComponentEncapsulator passedComp={comp} compCode={compCode}></ComponentEncapsulator>
-                    <hr />
+        <div>
+            {!connected &&
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">Ops! </strong>
+                    <span className="block sm:inline">You are not connected!</span>
+                    <button className="float-right" onClick={() => _init()}>Connect</button>
                 </div>
+            }
 
-            )
-            )}
+            {(connected && showConnected) &&
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <strong className="font-bold">Connected! </strong>
+                    <span className="block sm:inline">You are connected to the server!</span>
+                    <span className='float-right'><button onClick={() => setShowConnected(false)}>Close</button></span>
+                </div>
+            }
+
+            {showHelp &&
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+                    Try sending this message to the broker with the topic "H2_car": <br />
+                    &#123;"speed":56, "rpm": 5500, "throttle": 78, "fuelp": 35, "launchState":1, "crank":0, "map":1&#125;
+                    <span className="float-right"><button onClick={() => setShowHelp(false)}>Close</button></span>"
+                </div>
+            }
+
+            <div  className="dashboardContainer">
+                {compPageList.filter((cmp: ComponentsPage) => cmp.deleted == false).map((comp: ComponentsPage) => (
+                    <div>
+                        <ComponentEncapsulator passedComp={comp} compCode={compCode}></ComponentEncapsulator>
+                        <hr />
+                    </div>
+
+                )
+                )}
+            </div>
         </div>
     )
 

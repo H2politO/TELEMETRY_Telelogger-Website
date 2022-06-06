@@ -2,23 +2,46 @@ import React, { Component } from 'react';
 import { Sensor } from '../../models/sensor';
 import { ComponentsPage } from '../../models/componentsPage';
 import { SensorList } from './sensorsList';
-import { Formik, Field, Form, FormikHelpers } from 'formik';
+import { Formik, Field, Form, FormikHelpers, ErrorMessage, FormikState } from 'formik';
 import Select from 'react-select'
+import Cookies from 'universal-cookie';
 
 
 type Props = {
-    sensorList: Sensor[];
+    //sensorList: Sensor[];
     outputList: ComponentsPage[];
+}
+
+type Opt = {
+    option: any,
+    label: string;
 }
 
 
 export class Sidebar extends React.Component<any, any> {
 
-    sensorList: Sensor[];
-    componentsList: ComponentsPage[] = [];
+    listCookie:Cookies;
+    componentsList: ComponentsPage[];
+
+    componentDidMount(){
+
+        this.listCookie= new Cookies();
+        if(this.listCookie.get('compList')!=undefined)
+            this.componentsList=this.listCookie.get('compList');
+        else
+            this.componentsList=[];
+
+        this.onTrigger();
+
+    }
+
+    deleteCookiess = () => {
+        console.log('Removing cookie');
+        this.listCookie.remove('compList');
+        
+    }
 
     state = {
-
         sensorList: [
             { ID: '1', sensorName: 'Velocita', minValue: 1, maxValue: 100 },
             { ID: '2', sensorName: 'Luci', minValue: 1, maxValue: 100 },
@@ -41,7 +64,7 @@ export class Sidebar extends React.Component<any, any> {
             <div className="offcanvas offcanvas-end" id="offcanvasRight">
                 <div className="offcanvas-header">
                     <h2>Sensor menu</h2>
-                </div>
+                </div> 
 
                 <img src='../../sensor.png' width="50%" className="center"></img>
                 <div className="offcanvas-body">
@@ -49,25 +72,32 @@ export class Sidebar extends React.Component<any, any> {
 
                     <Formik
                         initialValues={{
-                            nameComponent: 'Sensore',
+                            nameComponent: '',
                             typeComponent: 1,
                             sensorSelected: new Sensor,
+                            cmpMinRange: 1,
+                            cmpMaxRange: 100,
                             prescaler: 1,
-                            deleted:false
+                            deleted: false,
+                            value:0,
                         }}
                         onSubmit={(
                             values: ComponentsPage,
-                            { setSubmitting }: FormikHelpers<ComponentsPage>
+                            //{ setSubmitting,
+                            // }: FormikHelpers<ComponentsPage>,
+                            action,
                         ) => {
-
                             let prov = {} as ComponentsPage;
-                            prov= values;
+                            prov = values;
                             this.componentsList.push(prov);
                             console.log(this.componentsList);
+                            this.listCookie.set('compList', JSON.stringify(this.componentsList));
+                            console.log('Added cookie');
                             this.onTrigger();
+                            action.resetForm();
                             setTimeout(() => {
                                 //alert(JSON.stringify(values));
-                                setSubmitting(false);
+                                //setSubmitting(false);
                             }, 500);
                         }}
                     >
@@ -80,6 +110,7 @@ export class Sidebar extends React.Component<any, any> {
                                     <option value={2}>Radial Gauge</option>
                                     <option value={3}>Linear Gauge</option>
                                     <option value={4}>Plot</option>
+                                    <option value={5}>Throttle Pressure</option>
                                 </Field>
                             </div>
 
@@ -100,12 +131,11 @@ export class Sidebar extends React.Component<any, any> {
 
                             <hr className="my-4" />
 
-
                             <div className='myFormGroup'>
                                 <label>Insert Min and Max value on the scale</label>
                                 <div className="input-group mb-3">
                                     <Field className="form-control" id="cmpMinRange" name="cmpMinRange" placeholder="Minimum range" />
-                                    <Field className="form-control"  id="cmpMaxRange" name="cmpMaxRange" placeholder="Maximum range" />
+                                    <Field className="form-control" id="cmpMaxRange" name="cmpMaxRange" placeholder="Maximum range" />
                                 </div>
                             </div>
 
@@ -121,11 +151,12 @@ export class Sidebar extends React.Component<any, any> {
                                     <option value={0.001}>x0.001</option>
                                 </Field>
                             </div>
-
+                            
                             <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input>
 
                         </Form>
                     </Formik>
+                    <button onClick={this.deleteCookiess}>Rimuovi cookies</button>
                 </div>
             </div >
         )

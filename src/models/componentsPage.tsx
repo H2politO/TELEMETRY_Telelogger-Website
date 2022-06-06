@@ -5,10 +5,11 @@ export class ComponentsPage{
 
     nameComponent?: string;
     deleted:boolean;
-    sensorSelected!: Sensor;
+    sensorSelected: Sensor;
     typeComponent!: number;
     cmpMinRange?: number;
     cmpMaxRange?: number;
     prescaler?: number;
+    value: number;
 
 }

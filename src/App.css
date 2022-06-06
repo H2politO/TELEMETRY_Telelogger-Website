@@ -61,7 +61,7 @@ button {
   width: 50%;
 }
 
-.dashboard-container{
+.dashboardContainer{
   flex-direction: row;
   flex-wrap:wrap;
   justify-content: space-evenly;
@@ -70,10 +70,8 @@ button {
 }
 
 .dashboardElement{
-  align-self: center;
   color: blue;
-  padding: 10px;
-  border-radius: 1px;
+  padding: 20px;
   border: 2px;
   border-color: green;
 }
