@@ -3,13 +3,14 @@ import { IoAdd, IoHomeOutline } from 'react-icons/io5';
 import { useLocation } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
 import { GoDashboard } from "react-icons/go";
+import '../../App.css' 
 
 export class Navbar extends Component {
 
     render() {
 
         return (
-            <nav className="navbar navbar-expand-lg  bg-blue-100 border-b-1 border-black">
+            <nav className="navbar navbar-expand-lg  bg-stone-100 border-b-2 border-stone-200">
                 <div className="container-fluid">
                     <img src={"../logo_team.svg"} alt="Logo" height={100} width={100} />
                     <a className="navbar-brand" href="/">H2politO telemetry</a>

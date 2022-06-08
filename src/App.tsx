@@ -21,14 +21,31 @@ export class App extends React.Component {
     outputList: new Array<ComponentsPage>(),
   }
 
+  setOutputList = () => {
+    this.setState(this.state.outputList);
+  }
+
   handleCallback = (childData: ComponentsPage[]) => {
     this.setState({ outputList: childData })
   }
 
+  deleteComponent = (cmpToDlt: ComponentsPage) => {
+    console.log('Deleting ');
+    let ind = this.state.outputList.findIndex((cmp) => {
+      return cmp === cmpToDlt;
+    })
+    this.state.outputList.splice(ind, 1);
+    console.log(this.state.outputList);
+
+  }
+
+  useEffect = (
+    console.log(''), [this.state.outputList]
+  )
+
+
+
   render() {
-
-    const { outputList } = this.state;
-
 
     return (
       <div className="bg-slate-600 flex flex-col min-h-screen justify-between">
@@ -40,7 +57,7 @@ export class App extends React.Component {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/team" element={<Team />} />
-            <Route path="/dashboard" element={<Dashboard compPageList={this.state.outputList} />} />
+            <Route path="/dashboard" element={<Dashboard compPageList={this.state.outputList}/>} />
           </Routes>
         </main>
       </div>

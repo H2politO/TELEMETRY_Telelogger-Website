@@ -12,12 +12,6 @@ type Props = {
     outputList: ComponentsPage[];
 }
 
-type Opt = {
-    option: any,
-    label: string;
-}
-
-
 export class Sidebar extends React.Component<any, any> {
 
     listCookie:Cookies;
@@ -72,9 +66,10 @@ export class Sidebar extends React.Component<any, any> {
 
                     <Formik
                         initialValues={{
+                            compID: 1,
                             nameComponent: '',
                             typeComponent: 1,
-                            sensorSelected: new Sensor,
+                            sensorSelected: this.state.sensorList[0],
                             cmpMinRange: 0,
                             cmpMaxRange: 100,
                             prescaler: 1,

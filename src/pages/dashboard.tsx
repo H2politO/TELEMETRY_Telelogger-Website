@@ -12,9 +12,10 @@ import { DataItem, Data } from '../components/LiveGraph/data';
 import Paho from 'paho-mqtt';
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
 import { ComponentsPage } from '../models/componentsPage';
+import { updateStatement } from 'typescript';
 
 
-interface Props {
+type Props = {
     compPageList: ComponentsPage[];
 }
 
@@ -44,7 +45,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     const _options = {};
 
-    const [showHelp, setShowHelp] = useState(true);
+   
     const [showControlPanel, setShowControlPanel] = useState(true);
 
     const [showSpeed, setShowSpeed] = useState(true);
@@ -55,154 +56,26 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
     const [showGraph, setShowGraph] = useState(false);
     const [showConnected, setShowConnected] = useState(true);
 
-    useEffect(() => {
-        _init();
-    }, [])
-
-
-
-    const _init = () => {
-        console.log("Connection Started");
-        const c = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "myClientId" + new Date().getTime());
-        c.onConnectionLost = _onConnectionLost;
-        c.onMessageArrived = _onMessageArrived;
-        c.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
-        setClient(c);
+    
+    const deleteComponent = (cmpToDlt: ComponentsPage) => {
+        console.log('Deleting ');
+        let ind = compPageList.findIndex((cmp)=>{
+            return cmp === cmpToDlt;
+        })
+        compPageList.splice(ind, 1);
+        console.log(compPageList);
     }
-
-    const onConnect = () => {
-        console.log("Connected");
-        setConnected(true);
-        _onSubscribe();
-    }
-
-    const onFailureConnect = () => {
-        console.log("Connection failed");
-        setConnected(false);
-    }
-
-    // called when client lost connection
-    const _onConnectionLost = (responseObject: any) => {
-        if (responseObject.errorCode !== 0) {
-            console.log("onConnectionLost: " + responseObject.errorMessage);
-        }
-        setConnected(false);
-    }
-
-    // called when messages arrived
-    const _onMessageArrived = (message: any) => {
-        var msg2 = message.payloadString;
-        msg2 = String(msg2);
-        console.log(msg2);
-        try {
-            var data = JSON.parse(msg2);
-            if (data.speed != null) {
-                setSpeed(data.speed);
-                setSpeedHistory([...speedHistory, speed]);
-            }
-            if (data.rpm != null) {
-                setRpm(data.rpm);
-                setRpmHistory([...rpmHistory, rpm]);
-            }
-            if (data.throttle != null) {
-                setThrottle(data.throttle);
-            }
-            if (data.fuelp != null) {
-                setFuelp(data.fuelp);
-            }
-            if (data.launchState != null) {
-                setLaunchState(Boolean(parseInt(data.launchState)));
-                setLaunchStateHistory([...launchStateHistory, data.launchState]);
-            }
-            if (data.crank != null) {
-                setCrank(Boolean(parseInt(data.crank)));
-                setCrankHistory([...crankHistory, data.crank]);
-            }
-            if (data.map != null) {
-                setMap(data.map);
-                setMapHistory([...mapHistory, data.map]);
-            }
-            //Add to the graph
-            let graphData2 = graphData;
-            let newData = {
-                time: String(Math.round((new Date()).getTime() / 1000) - loadTime),
-                speed: data.speed / 10,
-                rpm: (data.rpm) / 1000,
-                map: data.map,
-                crank: data.crank,
-                launchstate: data.launchState
-            };
-            graphData2.push(newData);
-            setGraphData(graphData2);
-        } catch (exc: any) {
-            console.log(exc);
-        }
-    }
-
-
-    // called when subscribing topic(s)
-    const _onSubscribe = () => {
-        if (client == undefined) {
-            setConnected(false);
-            return;
-        }
-        for (var i = 0; i < _topics.length; i++) {
-            client.subscribe(_topics[i], _options);
-        }
-    }
-
-    // called when subscribing topic(s)
-    const _onUnsubscribe = () => {
-        if (client == undefined) return
-        for (var i = 0; i < _topics.length; i++) {
-            client.unsubscribe(_topics[i], _options);
-        }
-    }
-
-    // called when disconnecting the client
-    const _onDisconnect = () => {
-        if (client == undefined) return
-        client.disconnect();
-        setConnected(false);
-    }
-
-
-
 
     var Components = ["div"];
     let compCode = 0;
 
     return (
         <div>
-            {!connected &&
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong className="font-bold">Ops! </strong>
-                    <span className="block sm:inline">You are not connected!</span>
-                    <button className="float-right" onClick={() => _init()}>Connect</button>
-                </div>
-            }
-
-            {(connected && showConnected) &&
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    <strong className="font-bold">Connected! </strong>
-                    <span className="block sm:inline">You are connected to the server!</span>
-                    <span className='float-right'><button onClick={() => setShowConnected(false)}>Close</button></span>
-                </div>
-            }
-
-            {showHelp &&
-                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
-                    Try sending this message to the broker with the topic "H2_car": <br />
-                    &#123;"speed":56, "rpm": 5500, "throttle": 78, "fuelp": 35, "launchState":1, "crank":0, "map":1&#125;
-                    <span className="float-right"><button onClick={() => setShowHelp(false)}>Close</button></span>"
-                </div>
-            }
 
             <div className="dashboardContainer flex flex-row flex-wrap ">
                 {compPageList.filter((cmp: ComponentsPage) => cmp.deleted == false).map((comp: ComponentsPage) => (
                     <div>
-                        <ComponentEncapsulator passedComp={comp} compCode={compCode}></ComponentEncapsulator>
-                        <hr />
+                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} val={speed}></ComponentEncapsulator>
                     </div>
 
                 )

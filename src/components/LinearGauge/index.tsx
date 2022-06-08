@@ -22,7 +22,7 @@ export default class LinearGaugeScale extends React.Component<any,any>{
         return (
             <div>
             <IgrLinearGauge
-                height="100px"
+                height="120px"
                 width="600px"
                 value={this.props.value}
                 minimumValue={0}
