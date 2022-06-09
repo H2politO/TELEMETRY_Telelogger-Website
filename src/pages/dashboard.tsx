@@ -75,7 +75,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
             <div className="dashboardContainer flex flex-row flex-wrap ">
                 {compPageList.filter((cmp: ComponentsPage) => cmp.deleted == false).map((comp: ComponentsPage) => (
                     <div>
-                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} val={speed}></ComponentEncapsulator>
+                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
                     </div>
 
                 )

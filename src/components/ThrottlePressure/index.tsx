@@ -20,8 +20,8 @@ export default class ThrottlePressure extends React.Component <any,any>{
         return (
             <div className="bg-stone-100" >
                 <IgrBulletGraph
-                     height="80px"
-                     width="100%"
+                     height="120px"
+                     width="600px"
                      minimumValue={0}
                      maximumValue={100}
 

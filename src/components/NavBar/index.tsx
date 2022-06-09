@@ -27,7 +27,7 @@ export class Navbar extends Component {
                                 <a className="nav-link active" aria-current="page" href="/team">Team</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link disabled">Add sensors</a>
+                                <a className="nav-link disabled " href="/team">Add sensors</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link disabled">Visualize past runs</a>

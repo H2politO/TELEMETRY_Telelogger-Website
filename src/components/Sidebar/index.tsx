@@ -4,26 +4,39 @@ import { ComponentsPage } from '../../models/componentsPage';
 import { SensorList } from './sensorsList';
 import { Formik, Field, Form, FormikHelpers, ErrorMessage, FormikState } from 'formik';
 import Select from 'react-select'
+import { OnChangeValue } from 'react-select';
 import Cookies from 'universal-cookie';
-
 
 type Props = {
     //sensorList: Sensor[];
     outputList: ComponentsPage[];
 }
 
+type Option = {
+    label: string,
+    value: Sensor,
+}
+
+
 export class Sidebar extends React.Component<any, any> {
 
-    listCookie:Cookies;
+    listCookie: Cookies;
     componentsList: ComponentsPage[];
 
-    componentDidMount(){
+    opt: Option[] = [
+        { value: { ID: '1', sensorName: 'Velocita', minValue: 1, maxValue: 100 }, label: 'Velocita' },
+        { value: { ID: '2', sensorName: 'Luci', minValue: 1, maxValue: 100 }, label: 'Luci' },
+        { value: { ID: '3', sensorName: 'Clacson', minValue: 1, maxValue: 100 }, label: 'SClacsonens1' },
+        { value: { ID: '4', sensorName: 'Pressione', minValue: 1, maxValue: 100 }, label: 'Pressione' },
+        { value: { ID: '5', sensorName: 'Tergi', minValue: 1, maxValue: 100 }, label: 'Tergi' }];
 
-        this.listCookie= new Cookies();
-        if(this.listCookie.get('compList')!=undefined)
-            this.componentsList=this.listCookie.get('compList');
+    componentDidMount() {
+
+        this.listCookie = new Cookies();
+        if (this.listCookie.get('compList') != undefined)
+            this.componentsList = this.listCookie.get('compList');
         else
-            this.componentsList=[];
+            this.componentsList = [];
 
         this.onTrigger();
 
@@ -32,7 +45,7 @@ export class Sidebar extends React.Component<any, any> {
     deleteCookiess = () => {
         console.log('Removing cookie');
         this.listCookie.remove('compList');
-        
+
     }
 
     state = {
@@ -41,10 +54,19 @@ export class Sidebar extends React.Component<any, any> {
             { ID: '2', sensorName: 'Luci', minValue: 1, maxValue: 100 },
             { ID: '3', sensorName: 'Clacson', minValue: 1, maxValue: 100 },
             { ID: '4', sensorName: 'Pressione', minValue: 1, maxValue: 100 },
-            { ID: '5', sensorName: 'Tergi', minValue: 1, maxValue: 100 }
-        ]
+            { ID: '5', sensorName: 'Tergi', minValue: 1, maxValue: 100 },
+        ],
     }
 
+    
+    sensors: any;
+    
+    handleChange = (
+        newSensors: OnChangeValue<Option, true>
+      ) => {
+        this.sensors=newSensors;
+      };
+    
     //calls the database and retrieves all the available sensors 
 
 
@@ -58,7 +80,7 @@ export class Sidebar extends React.Component<any, any> {
             <div className="offcanvas offcanvas-end" id="offcanvasRight">
                 <div className="offcanvas-header sidebar-title">
                     <h2>Sensor menu</h2>
-                </div> 
+                </div>
 
                 <img src='../../sensor.png' width="50%" className="center"></img>
                 <div className="offcanvas-body">
@@ -69,12 +91,12 @@ export class Sidebar extends React.Component<any, any> {
                             compID: 1,
                             nameComponent: '',
                             typeComponent: 1,
-                            sensorSelected: this.state.sensorList[0],
                             cmpMinRange: 0,
                             cmpMaxRange: 100,
+                            sensorSelected: new Array<Sensor>(),
                             prescaler: 1,
                             deleted: false,
-                            value:0,
+                            value: 0,
                         }}
                         onSubmit={(
                             values: ComponentsPage,
@@ -83,12 +105,21 @@ export class Sidebar extends React.Component<any, any> {
                             action,
                         ) => {
                             let prov = {} as ComponentsPage;
+
+                            //push into components
                             prov = values;
+                            prov.sensorSelected=new Array<Sensor>();
+                            prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
                             this.componentsList.push(prov);
+
+                            //add cookies
+                            console.group('Added cookies')
                             console.log(this.componentsList);
                             this.listCookie.set('compList', JSON.stringify(this.componentsList));
-                            console.log('Added cookie');
+                            console.groupCollapsed();
                             this.onTrigger();
+
+                            //reset
                             action.resetForm();
                             setTimeout(() => {
                                 //alert(JSON.stringify(values));
@@ -104,17 +135,15 @@ export class Sidebar extends React.Component<any, any> {
                                     <option value={1}>Check Light</option>
                                     <option value={2}>Radial Gauge</option>
                                     <option value={3}>Linear Gauge</option>
-                                    <option value={4}>Plot</option>
                                     <option value={5}>Throttle Pressure</option>
+                                    <option value={4}>Plot</option>
                                 </Field>
                             </div>
+                            
 
                             <div className='myFormGroup'>
-                                <label>Select Sensor</label>
-                                <Field component="select" className="form-select" aria-label="Select sensor" name='sensorSelected' id='sensorSelected'>
-                                    <option></option>
-                                    <SensorList sensors={this.state.sensorList} />
-                                </Field>
+                                <label>Select multi-sensor</label>
+                                <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.opt} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
                             </div>
 
                             <div className='myFormGroup'>
@@ -146,12 +175,11 @@ export class Sidebar extends React.Component<any, any> {
                                     <option value={0.001}>x0.001</option>
                                 </Field>
                             </div>
-                            
-                            <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input>
 
+                            <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input> <button className="btn btn-primary interactiveBtn" onClick={this.deleteCookiess}>Rimuovi cookies</button>
+                            
                         </Form>
                     </Formik>
-                    <button onClick={this.deleteCookiess}>Rimuovi cookies</button>
                 </div>
             </div >
         )

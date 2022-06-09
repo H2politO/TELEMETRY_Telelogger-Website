@@ -1,7 +1,7 @@
 import { NumberLiteralType } from "typescript";
 
 export class Sensor{
-    ID: string;
+    ID?: string;
     sensorName?: string;
     minValue?: number;
     maxValue?: number;

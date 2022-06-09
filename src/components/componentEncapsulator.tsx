@@ -24,8 +24,7 @@ enum ComponentType {
 
 interface Props {
     passedComp: ComponentsPage,
-    onDelete: any,
-    val?: any
+    onDelete: any
 }
 
 
@@ -35,15 +34,15 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const style = { color: "red", fontSize: "1.5em" }
     const [val, setVal] = useState(0);
 
-    let sens: Sensor = JSON.parse(JSON.stringify(passedComp.sensorSelected));
-    let mine = JSON.parse(sens.toString());
+    let sens: Sensor = passedComp.sensorSelected[0];
+    //let mine = JSON.parse(sens.toString());
 
-    let mqttClientId: string = 'h2politoTest' + mine.ID
+    //let mqttClientId: string = 'h2politoTest' + mine.ID
     let client: any;
 
     //new client
     const _init = () => {
-        console.log('Creating a client for' + mine.sensorName);
+        console.log('Creating a client for' + sens.sensorName);
         console.log("Connection Started");
         client = new Paho.Client("broker.hivemq.com", Number(8000), "/mqtt", "myClientId" + new Date().getTime());
         client.onConnectionLost = onConnectionLost;
@@ -60,7 +59,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         if (client == undefined) {
             console.log('Client undefined');
         }
-        client.subscribe("h2polito" + mine.sensorName, {});
+        client.subscribe("h2polito" + sens.sensorName, {});
     }
 
 
@@ -99,7 +98,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
-                        <SimpleLight title={passedComp.sensorSelected?.ID + ' ' + passedComp.sensorSelected?.sensorName} status={val} />
+                        <SimpleLight title={passedComp.sensorSelected[0].ID + ' ' + passedComp.sensorSelected[0].sensorName} status={val} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
@@ -127,7 +126,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             </div>
             <br />
             <div style={{ display: "block" }} className="card-footer">
-                {mine.ID} - {mine.sensorName}
+                {sens.ID} - {sens.sensorName}
             </div>
 
         </div >
