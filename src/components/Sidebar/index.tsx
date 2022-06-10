@@ -23,13 +23,7 @@ export class Sidebar extends React.Component<any, any> {
     listCookie: Cookies;
     componentsList: ComponentsPage[];
 
-    opt: Option[] = [
-        { value: { ID: '1', sensorName: 'Velocita', minValue: 1, maxValue: 100 }, label: 'Velocita' },
-        { value: { ID: '2', sensorName: 'Luci', minValue: 1, maxValue: 100 }, label: 'Luci' },
-        { value: { ID: '3', sensorName: 'Clacson', minValue: 1, maxValue: 100 }, label: 'SClacsonens1' },
-        { value: { ID: '4', sensorName: 'Pressione', minValue: 1, maxValue: 100 }, label: 'Pressione' },
-        { value: { ID: '5', sensorName: 'Tergi', minValue: 1, maxValue: 100 }, label: 'Tergi' }];
-
+   
     componentDidMount() {
 
         this.listCookie = new Cookies();
@@ -49,13 +43,27 @@ export class Sidebar extends React.Component<any, any> {
     }
 
     state = {
-        sensorList: [
-            { ID: '1', sensorName: 'Velocita', minValue: 1, maxValue: 100 },
-            { ID: '2', sensorName: 'Luci', minValue: 1, maxValue: 100 },
-            { ID: '3', sensorName: 'Clacson', minValue: 1, maxValue: 100 },
-            { ID: '4', sensorName: 'Pressione', minValue: 1, maxValue: 100 },
-            { ID: '5', sensorName: 'Tergi', minValue: 1, maxValue: 100 },
+        indicatorList:[
+            {ID: 1, componentName: 'Check Light'},
+            {ID: 2, componentName: 'Radial Gauge'},
+            {ID: 3, componentName: 'Linear Gauge'},
+            {ID: 4, componentName: 'Plot'},
+            {ID: 5, componentName: 'Trottle Pressure'},
         ],
+        opt: [
+            {value:{ ID: '1', topicName: 'Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100},label:'Emergency' },
+            {value:{ ID: '2', topicName: 'Speed', sensorName: 'Speed', minValue: 1, maxValue: 100 },label:'Speed'},
+            {value:{ ID: '3', topicName: 'Temperature', sensorName: 'Temperature', minValue: 1, maxValue: 100 },label:'Temperature'},
+            {value:{ ID: '4', topicName: 'FCVoltage', sensorName: 'Fuel Cell Voltage', minValue: 1, maxValue: 100 },label:'FCVoltage'},
+            {value:{ ID: '5', topicName: 'SCVoltage', sensorName: 'Supercap Voltage', minValue: 1, maxValue: 100 },label:'SCVoltage'},
+            {value:{ ID: '6', topicName: 'Strategy', sensorName: 'Strategy', minValue: 1, maxValue: 100 },label:'Strategy'},
+            {value:{ ID: '7', topicName: 'MotorOn', sensorName: 'Motor On', minValue: 1, maxValue: 100 },label:'MotorOn'},
+            {value:{ ID: '8', topicName: 'ActuationOn', sensorName: 'Actuation On', minValue: 1, maxValue: 100 },label:'ActuationOn'},
+            {value:{ ID: '9', topicName: 'Purge', sensorName: 'Purge On', minValue: 1, maxValue: 100 },label:'Purge'},
+            {value:{ ID: '10', topicName: 'PowerMode', sensorName: 'Power Mode On', minValue: 1, maxValue: 100 },label:'PowerMode'},
+            {value:{ ID: '11', topicName: 'Short', sensorName: 'Short On', minValue: 1, maxValue: 100 },label:'Short'},
+            {value:{ ID: '12', topicName: 'FCCurrent', sensorName: 'Fuel Cell Current', minValue: 1, maxValue: 100 },label:'FCCurrent'},
+        ]
     }
 
     
@@ -132,18 +140,17 @@ export class Sidebar extends React.Component<any, any> {
                             <div className='myFormGroup'>
                                 <label>Select component</label>
                                 <Field component="select" className="form-select" id='typeComponent' name='typeComponent'>
-                                    <option value={1}>Check Light</option>
-                                    <option value={2}>Radial Gauge</option>
-                                    <option value={3}>Linear Gauge</option>
-                                    <option value={5}>Throttle Pressure</option>
-                                    <option value={4}>Plot</option>
+                                {this.state.indicatorList.map((Indicator)=>(
+                                        <option value={Indicator.ID}>{Indicator.componentName}</option>
+                                    ))
+                                    }
                                 </Field>
                             </div>
                             
 
                             <div className='myFormGroup'>
                                 <label>Select multi-sensor</label>
-                                <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.opt} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
+                                <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.state.opt} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
                             </div>
 
                             <div className='myFormGroup'>

@@ -5,4 +5,5 @@ export class Sensor{
     sensorName?: string;
     minValue?: number;
     maxValue?: number;
+    topicName?: string;
 }
