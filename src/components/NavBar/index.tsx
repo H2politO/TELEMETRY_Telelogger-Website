@@ -10,9 +10,9 @@ export class Navbar extends Component {
     render() {
 
         return (
-            <nav className="navbar navbar-expand-lg  bg-stone-100 border-b-2 border-stone-200">
+            <nav className="navbar navbar-expand-sm py-4  bg-slate-100 border-b-2 border-stone-200">
                 <div className="container-fluid">
-                    <img src={"../logo_team.svg"} alt="Logo" height={100} width={100} />
+                    <img src={"../logo_team.svg"} alt="Logo" height={80} width={80} />
                     <a className="navbar-brand" href="/">H2politO telemetry</a>
 
                     <div className="collapse navbar-collapse" id="navbarNav">

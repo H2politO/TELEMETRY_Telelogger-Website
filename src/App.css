@@ -75,12 +75,19 @@ button {
   height: 400px;
 }
 
+.dashboardElementSm{
+  margin: 10px;
+  padding: 10px;
+  height: 150px;
+
+}
+
 .sidebar-title{
   font-size: 2em;
 }
 
 .cards-title{
-  font-size: 1.5em;
+  font-size: 1em;
   font-weight: bold;
 }
 

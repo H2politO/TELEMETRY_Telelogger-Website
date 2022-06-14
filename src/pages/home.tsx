@@ -32,11 +32,19 @@ export const Home = () => {
   const _sendPayload = () => {
     if (client == undefined || msg === "") return
     const message = new Paho.Message(msg);
-    message.destinationName = "h2politoLuci";
+    message.destinationName = "h2politoSpeed";
     console.log("Sending");
-    console.log(message);
+    console.log(message.payloadString);
     client.send(message);
-    setMsg("")
+
+    const message2= new Paho.Message(msg);
+    message2.destinationName = "h2politoTemperature";
+    console.log("Sending");
+    console.log(message2.payloadString);
+    client.send(message2);
+
+    setMsg("");
+
   }
 
   // called when client lost connection

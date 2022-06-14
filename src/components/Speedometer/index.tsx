@@ -34,7 +34,7 @@ export default class Speedometer extends React.Component<any, any>{
         return (
             <div>
                 <IgrRadialGauge
-                    value={this.props.value * this.props.prescaler}
+                    value={this.props.value}
                     isNeedleDraggingEnabled={false}
                     isNeedleDraggingConstrained={true}
                     needleShape="NeedleWithBulb"
@@ -48,8 +48,8 @@ export default class Speedometer extends React.Component<any, any>{
                     needlePivotWidthRatio={0.2}
                     needlePivotStrokeThickness={1}
                     height="200px" width="200px"
-                    minimumValue={this.props.minSpeed * this.props.prescaler}
-                    maximumValue={this.props.maxSpeed * this.props.prescaler}
+                    minimumValue={this.props.minSpeed}
+                    maximumValue={this.props.maxSpeed}
                     interval={(this.props.maxSpeed - this.props.minSpeed) / 5}
                 />
             </div>

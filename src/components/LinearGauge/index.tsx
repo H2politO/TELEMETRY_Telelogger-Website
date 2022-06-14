@@ -1,7 +1,7 @@
 type Props = {
     value : number;
-    minVal?: number;
-    maxVal?: number;
+    minVal: number;
+    maxVal: number;
 }
 
 import React from 'react';
@@ -25,8 +25,8 @@ export default class LinearGaugeScale extends React.Component<any,any>{
                 height="120px"
                 width="600px"
                 value={this.props.value}
-                minimumValue={0}
-                maximumValue={100} 
+                minimumValue={this.props.minVal}
+                maximumValue={this.props.maxVal} 
                 interval={10}
                 isScaleInverted={false}
                 scaleBrush="LightBlue"

@@ -66,7 +66,7 @@ export class Sidebar extends React.Component<any, any> {
         ]
     }
 
-    
+    cmpID=0;
     sensors: any;
     
     handleChange = (
@@ -116,6 +116,8 @@ export class Sidebar extends React.Component<any, any> {
 
                             //push into components
                             prov = values;
+                            this.cmpID++;
+                            prov.compID=this.cmpID;
                             prov.sensorSelected=new Array<Sensor>();
                             prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
                             this.componentsList.push(prov);
@@ -124,8 +126,8 @@ export class Sidebar extends React.Component<any, any> {
                             console.group('Added cookies')
                             console.log(this.componentsList);
                             this.listCookie.set('compList', JSON.stringify(this.componentsList));
-                            console.groupCollapsed();
                             this.onTrigger();
+                            console.groupEnd();
 
                             //reset
                             action.resetForm();
@@ -183,10 +185,11 @@ export class Sidebar extends React.Component<any, any> {
                                 </Field>
                             </div>
 
-                            <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input> <button className="btn btn-primary interactiveBtn" onClick={this.deleteCookiess}>Rimuovi cookies</button>
+                            <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input>
                             
                         </Form>
                     </Formik>
+                    <button className="btn btn-primary interactiveBtn" onClick={this.deleteCookiess}>Rimuovi cookies</button>
                 </div>
             </div >
         )

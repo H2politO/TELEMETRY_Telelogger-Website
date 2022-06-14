@@ -57,9 +57,14 @@ export class App extends React.Component {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/team" element={<Team />} />
-            <Route path="/dashboard" element={<Dashboard compPageList={this.state.outputList}/>} />
+            <Route path="/dashboard" element={<Dashboard compPageList={this.state.outputList} />} />
           </Routes>
+          <div className="text-gray-400 fixed bottom-0 left-0">
+            <p>Made with &hearts; by Electronics (and Informatics) division</p>
+          </div>
         </main>
+
+
       </div>
     );
   }
