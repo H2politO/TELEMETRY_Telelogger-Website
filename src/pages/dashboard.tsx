@@ -8,11 +8,13 @@ import ThrottlePressure from "../components/ThrottlePressure";
 import SimpleLight from "../components/SimpleLight";
 import LiveGraph from "../components/LiveGraph";
 import { DataItem, Data } from '../components/LiveGraph/data';
-
 import Paho from 'paho-mqtt';
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
 import { ComponentsPage } from '../models/componentsPage';
 import { updateStatement } from 'typescript';
+
+import GridLayout from 'react-grid-layout';
+import ReactGridLayout from 'react-grid-layout';
 
 
 type Props = {
@@ -46,6 +48,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     return (
         <div>
+            
             <div className="dashboardContainer flex flex-row flex-wrap ">
                 {components.map((comp: ComponentsPage) => (
                     <div>

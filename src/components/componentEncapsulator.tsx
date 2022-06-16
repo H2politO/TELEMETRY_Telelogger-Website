@@ -47,7 +47,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     //new client
     const _init = () => {
         console.log('Creating a client for ' + sens.sensorName + ' and starting the connection');
-        client = new Paho.Client("broker.hivemq.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
+        client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
         client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
@@ -61,7 +61,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         if (client == undefined) {
             console.log('Client undefined');
         }
-        client.subscribe("h2polito" + sens.sensorName, {});
+        client.subscribe("H2polito/" + sens.topicName, {});
         setConnected(true);
     }
 
@@ -120,7 +120,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full">
-                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange}/>
+                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}/>
                     </div>
                 }
 

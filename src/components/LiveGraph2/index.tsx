@@ -4,6 +4,7 @@ import Chart from "react-apexcharts";
 
 interface Props {
     nThread: number;
+    id: string;
     passedData: number;
     minVal: number,
     maxVal: number
@@ -24,7 +25,7 @@ export class LiveGraph2 extends Component<any> {
     state = {
         options: {
             chart: {
-                id: "realtime",
+                id: this.props.id,
                 animations: {
                     enabled: true,
                     easing: 'linear',
@@ -62,7 +63,7 @@ export class LiveGraph2 extends Component<any> {
         this.idInt=setInterval(() => {
             this.state.newData = this.props.passedData,
                 this.myData.push(this.state.newData),
-                ApexCharts.exec('realtime', 'updateSeries', [{
+                ApexCharts.exec(this.props.id, 'updateSeries', [{
                     data: this.myData
                 }])
         }, 100, (this.props.nThread));
@@ -76,6 +77,7 @@ export class LiveGraph2 extends Component<any> {
     render() {
         return (
             <div className="app">
+                {this.props.id}
                 <div className="row">
                     <div className="mixed-chart">
                         <Chart
