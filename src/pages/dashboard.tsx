@@ -27,7 +27,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
     const [graphData, setGraphData] = useState<Data>(new Data(loadTime));
 
     const [components, setcompPageList] = useState(compPageList);
-
+    const [cookiesComponent, setCookies] = useState(compPageList);
 
 
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
@@ -37,10 +37,13 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
         })
         setcompPageList(compPageList.splice(ind, 1));
         console.log(components);
+        //update cookies
+        setCookies(compPageList);
     }
 
     useEffect(()=>{
         setcompPageList(compPageList);
+        setCookies(compPageList);
     })
 
     var Components = ["div"];

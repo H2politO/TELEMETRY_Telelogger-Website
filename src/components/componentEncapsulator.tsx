@@ -11,7 +11,7 @@ import LiveGraph from "../components/LiveGraph";
 import { DataItem, Data } from '../components/LiveGraph/data';
 import { ComponentsPage } from '../models/componentsPage'
 import { Sensor } from "../models/sensor";
-import { IoReload } from "react-icons/io5";
+import { IoReload, IoClose} from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import { CastConnected } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
@@ -34,8 +34,9 @@ interface Props {
 
 export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete }) => {
 
-    const style = { color: "red", fontSize: "1.5em" }
-    const [val, setVal] = useState(0);
+    const style1 = { color: "red"};
+    const style2 = { color: "black"};
+    const [val, setVal] = useState();
     const [isConnected, setConnected] = useState(false);
 
     let sens: Sensor = passedComp.sensorSelected[0];
@@ -95,12 +96,11 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     return (
         <div className="card flex-auto dashboardElement">
             <div className="card-header bg-transparent">
-                <span className="cards-title">{passedComp.nameComponent}&nbsp;</span>
-                <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}>&times;</button>
-                <button type="button" aria-label="Subscribe" onClick={() => _init()}><IoReload size={20} style={style} /></button>
+                <span className="cards-title">{passedComp.nameComponent}</span>
+                <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1}/></button>
+                <button type="button" className="float-right" onClick={() => _init()}><IoReload size={20} style={style2}/></button>
             </div>
 
-            {val}
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
@@ -120,7 +120,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full">
-                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}/>
+                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}/>
                     </div>
                 }
 
