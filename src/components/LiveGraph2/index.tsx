@@ -2,14 +2,14 @@
 import React, { Component } from "react";
 import Chart from "react-apexcharts";
 import { Sensor } from "../../models/sensor"
+import ApexAxisChartSeries from "react-apexcharts";
 
 interface Props {
-    nThread: number;
     id: string;
     passedData: number;
     minVal: number,
     maxVal: number,
-    sensorList: Sensor[]
+    sensorList: Sensor
 }
 
 export class LiveGraph2 extends Component<any> {
@@ -18,11 +18,10 @@ export class LiveGraph2 extends Component<any> {
     }
 
     componentDidUpdate() {
-        console.log('Update graph');
+        //console.log('Update graph');
     }
 
     myData: number[] = [];
-
 
     state = {
         options: {
@@ -54,11 +53,11 @@ export class LiveGraph2 extends Component<any> {
             type: 'line'
         },
         series: [{
-            name: this.props.sensorList[0].sensorName,
+            name: this.props.sensorList.sensorName,
             data: []
         }],
 
-        newData: this.props.passedData
+        newData: this.props.passedData,
     };
 
     idInt: any;
@@ -71,7 +70,7 @@ export class LiveGraph2 extends Component<any> {
                 ApexCharts.exec(this.props.id, 'updateSeries', [{
                     data: this.myData
                 }])
-        }, 100, (this.props.nThread));
+        }, 100);
     }
 
     componentWillUnmount() {
