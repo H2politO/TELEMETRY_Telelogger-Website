@@ -1,3 +1,5 @@
-# allan-playground
+# Telelogger-Website
 
-After cloning, run "npm install" and "npm run dev"
+teamh2polito.com
+
+After cloning this project, run "npm install" and "npm run dev"
