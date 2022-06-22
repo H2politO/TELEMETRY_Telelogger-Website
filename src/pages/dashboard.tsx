@@ -6,29 +6,28 @@ import Tachometer from '../components/Tachometer';
 import LinearGauge from "../components/LinearGauge";
 import ThrottlePressure from "../components/ThrottlePressure";
 import SimpleLight from "../components/SimpleLight";
-import LiveGraph from "../components/LiveGraph";
-import { DataItem, Data } from '../components/LiveGraph/data';
 import Paho from 'paho-mqtt';
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
 import { ComponentsPage } from '../models/componentsPage';
 import { updateStatement } from 'typescript';
 
-import GridLayout from 'react-grid-layout';
-import ReactGridLayout from 'react-grid-layout';
+import RGL, { WidthProvider } from "react-grid-layout";
 
+const ReactGridLayout = WidthProvider(RGL);
 
 type Props = {
     compPageList: ComponentsPage[];
-}
+    onLayoutChange?: () => (void),
+};
 
-export const Dashboard: React.FC<Props> = ({ compPageList }) => {
+
+export const Dashboard: React.FC<Props> = ({ compPageList, onLayoutChange }) => {
 
     const [loadTime, setLoadTime] = useState(Math.round((new Date()).getTime() / 1000));
-    const [graphData, setGraphData] = useState<Data>(new Data(loadTime));
+    //const [graphData, setGraphData] = useState<Data>(new Data(loadTime));
 
     const [components, setcompPageList] = useState(compPageList);
     const [cookiesComponent, setCookies] = useState(compPageList);
-
 
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
         console.log('Deleting ');
@@ -41,7 +40,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
         setCookies(compPageList);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         setcompPageList(compPageList);
         setCookies(compPageList);
     })
@@ -50,18 +49,25 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
     let compCode = 0;
 
     return (
-        <div>
-            
+        <ReactGridLayout
+            onLayoutChange={onLayoutChange}
+            rowHeight={50}
+            cols={12}
+            className="layout"
+        >
+            {/*
             <div className="dashboardContainer flex flex-row flex-wrap ">
-                {components.map((comp: ComponentsPage) => (
-                    <div>
-                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
-                    </div>
+             */}
+            {components.map((comp: ComponentsPage, index) => (
+                <div key={index} data-grid={{ x: index*2, y: index*2, w: 6, h: 7 }}>
+                    <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
+                </div>
 
-                )
-                )}
-            </div>
-        </div>
+            )
+            )}
+            {//</div>
+            }
+        </ReactGridLayout >
     )
 
 }

@@ -25,15 +25,19 @@ export class LiveGraph2 extends Component<any> {
 
     state = {
         options: {
+            
             chart: {
-                height: 350,
+                height: '100%',
                 id: this.props.id,
                 animations: {
                     enabled: true,
                     easing: 'linear',
+                    speed: 100,
                     dynamicAnimation: {
+                        enabled: true,
                         speed: 100
                     },
+
                 },
                 toolbar: {
                     show: false
@@ -42,15 +46,21 @@ export class LiveGraph2 extends Component<any> {
                     enabled: false
                 },
             },
+
             xaxis: {
                 type: 'numeric',
                 range: 100,
             },
             colors: ['#FF9933'],
+            
             stroke: {
                 curve: 'stepline'
             },
+            
+           /*
             type: 'line'
+            */
+            
         },
         series: [{
             name: this.props.sensorList.sensorName,
@@ -84,11 +94,11 @@ export class LiveGraph2 extends Component<any> {
                 <div className="row">
                     <div className="mixed-chart">
                         <Chart
+                        // @ts-ignore
                             options={this.state.options}
                             series={this.state.series}
                             type="line"
-                            height={200}
-                            width="350"
+                            width="100%"
                         />
                     </div>
                 </div>

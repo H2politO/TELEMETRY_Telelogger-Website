@@ -189,7 +189,7 @@ export class Sidebar extends React.Component<any, any> {
                             
                         </Form>
                     </Formik>
-                    <button className="btn btn-primary interactiveBtn" onClick={this.deleteCookiess}>Rimuovi cookies</button>
+                    <button className="btn btn-primary interactiveBtn mt-1" onClick={this.deleteCookiess}>Remove cookies</button>
                 </div>
             </div >
         )

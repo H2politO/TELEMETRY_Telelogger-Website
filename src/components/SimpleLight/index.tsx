@@ -15,9 +15,11 @@ export default class SimpleLight extends React.Component <any,any>{
 
     public render(): JSX.Element {
         return (
+            <>
             <div className={this.props.status ? "bg-green-500" : "bg-red-500"}>
                 <h1 className="text-center">{this.props.title}&nbsp;</h1>
             </div>
+            </>
         );
     }
 

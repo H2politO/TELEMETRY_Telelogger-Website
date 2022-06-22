@@ -7,15 +7,12 @@ import Tachometer from '../components/Tachometer';
 import LinearGauge from "../components/LinearGauge";
 import ThrottlePressure from "../components/ThrottlePressure";
 import SimpleLight from "../components/SimpleLight";
-import LiveGraph from "../components/LiveGraph";
-import { DataItem, Data } from '../components/LiveGraph/data';
 import { ComponentsPage } from '../models/componentsPage'
 import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import { CastConnected } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
-import LiveGraph3 from "../components/LiveGraph3"
 import { useRef } from "react";
 
 enum ComponentType {
@@ -117,7 +114,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     }, []);
 
     return (
-        <div className="card flex-auto dashboardElement">
+        <div className="card dashboardElement">
             <div className="card-header bg-transparent">
                 <span className="cards-title">{passedComp.nameComponent}</span>
                 <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
@@ -125,13 +122,11 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             </div>
 
             {singleVal}
-            <br />
-            {isConnected.toString()}
 
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
-                        <SimpleLight value={Boolean(JSON.parse(val[0]!))} name={passedComp.nameComponent!} />
+                        <SimpleLight value={singleVal} name={passedComp.nameComponent!} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
