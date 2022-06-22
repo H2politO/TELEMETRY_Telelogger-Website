@@ -10,6 +10,8 @@ import Paho from 'paho-mqtt';
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
 import { ComponentsPage } from '../models/componentsPage';
 import { updateStatement } from 'typescript';
+import { ComponentTypeEncapsulator } from '../models/componentType';
+import { ComponentType } from '../components/componentEncapsulator';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
@@ -20,14 +22,17 @@ type Props = {
     onLayoutChange?: () => (void),
 };
 
+const cmpType: ComponentTypeEncapsulator[] = [
+    {compType: ComponentType.check, w: 3, h:3},
+    {compType: ComponentType.radialGauge, w: 3, h:8},
+    {compType: ComponentType.linearGauge, w: 6, h:6},
+    {compType: ComponentType.plot, w: 5, h:10},
+    {compType: ComponentType.throttlePressure, w: 6, h:6},
+]
 
 export const Dashboard: React.FC<Props> = ({ compPageList, onLayoutChange }) => {
 
-    const [loadTime, setLoadTime] = useState(Math.round((new Date()).getTime() / 1000));
-    //const [graphData, setGraphData] = useState<Data>(new Data(loadTime));
-
     const [components, setcompPageList] = useState(compPageList);
-    const [cookiesComponent, setCookies] = useState(compPageList);
 
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
         console.log('Deleting ');
@@ -36,13 +41,12 @@ export const Dashboard: React.FC<Props> = ({ compPageList, onLayoutChange }) => 
         })
         setcompPageList(compPageList.splice(ind, 1));
         console.log(components);
+
         //update cookies
-        setCookies(compPageList);
     }
 
     useEffect(() => {
         setcompPageList(compPageList);
-        setCookies(compPageList);
     })
 
     var Components = ["div"];
@@ -55,18 +59,13 @@ export const Dashboard: React.FC<Props> = ({ compPageList, onLayoutChange }) => 
             cols={12}
             className="layout"
         >
-            {/*
-            <div className="dashboardContainer flex flex-row flex-wrap ">
-             */}
             {components.map((comp: ComponentsPage, index) => (
-                <div key={index} data-grid={{ x: index*2, y: index*2, w: 6, h: 7 }}>
+                <div key={index} data-grid={{ x: 0, y: 0, w:cmpType[comp.typeComponent-1].w, h: cmpType[comp.typeComponent-1].h }}>
                     <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
                 </div>
 
             )
             )}
-            {//</div>
-            }
         </ReactGridLayout >
     )
 

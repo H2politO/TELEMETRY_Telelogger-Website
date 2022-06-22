@@ -11,11 +11,12 @@ import { ComponentsPage } from '../models/componentsPage'
 import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
-import { CastConnected } from "@material-ui/icons";
+import { CastConnected, Check } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
 import { useRef } from "react";
+import { ComponentTypeEncapsulator } from "../models/componentType";
 
-enum ComponentType {
+export enum ComponentType {
     check = 1,
     radialGauge,
     linearGauge,
@@ -23,12 +24,11 @@ enum ComponentType {
     throttlePressure,
 }
 
+
 interface Props {
     passedComp: ComponentsPage,
     onDelete: any
 }
-
-
 
 export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete }) => {
 
