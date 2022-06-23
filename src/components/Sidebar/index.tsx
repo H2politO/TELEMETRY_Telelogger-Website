@@ -26,13 +26,15 @@ export class Sidebar extends React.Component<any, any> {
    
     componentDidMount() {
 
+        /*
         this.listCookie = new Cookies();
         if (this.listCookie.get('compList') != undefined)
             this.componentsList = this.listCookie.get('compList');
         else
+        */
             this.componentsList = [];
-
-        this.onTrigger();
+        
+        //this.onTrigger();
 
     }
 
@@ -79,6 +81,7 @@ export class Sidebar extends React.Component<any, any> {
 
 
     onTrigger = () => {
+        console.log('Trigger');
         this.props.parentCallback(this.componentsList);
     }
 
@@ -125,7 +128,7 @@ export class Sidebar extends React.Component<any, any> {
                             //add cookies
                             console.group('Added cookies')
                             console.log(this.componentsList);
-                            this.listCookie.set('compList', JSON.stringify(this.componentsList));
+                            //this.listCookie.set('compList', JSON.stringify(this.componentsList));
                             this.onTrigger();
                             console.groupEnd();
 

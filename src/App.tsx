@@ -25,19 +25,18 @@ export class App extends React.Component {
     this.setState(this.state.outputList);
   }
 
+  cookie = new Cookies();
+
   handleCallback = (childData: ComponentsPage[]) => {
-    this.setState({ outputList: childData })
+    
+    console.log('cookieeeee', this.cookie.get('compList'));
+    if (this.cookie.get('compList') != undefined)
+      this.setState({ outputList: this.cookie.get('compList') })
+    else
+      this.setState({ outputList: childData })
   }
 
-  deleteComponent = (cmpToDlt: ComponentsPage) => {
-    console.log('Deleting ');
-    let ind = this.state.outputList.findIndex((cmp) => {
-      return cmp === cmpToDlt;
-    })
-    this.state.outputList.splice(ind, 1);
-    console.log(this.state.outputList);
 
-  }
 
   useEffect = (
     console.log(''), [this.state.outputList]
