@@ -6,6 +6,7 @@ import { Formik, Field, Form, FormikHelpers, ErrorMessage, FormikState } from 'f
 import Select from 'react-select'
 import { OnChangeValue } from 'react-select';
 import Cookies from 'universal-cookie';
+import * as cmpTypeConst from '../../pages/dashboard';
 
 type Props = {
     //sensorList: Sensor[];
@@ -108,6 +109,8 @@ export class Sidebar extends React.Component<any, any> {
                             prescaler: 1,
                             deleted: false,
                             value: 0,
+                            w:2,
+                            h:2,
                         }}
                         onSubmit={(
                             values: ComponentsPage,
@@ -123,6 +126,8 @@ export class Sidebar extends React.Component<any, any> {
                             prov.compID=this.cmpID;
                             prov.sensorSelected=new Array<Sensor>();
                             prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
+                            prov.w=cmpTypeConst.cmpType[prov.typeComponent-1].w;
+                            prov.h=cmpTypeConst.cmpType[prov.typeComponent-1].h;
                             this.componentsList.push(prov);
 
                             //add cookies

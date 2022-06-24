@@ -20,11 +20,10 @@ const ReactGridLayout = WidthProvider(RGL);
 
 type Props = {
     compPageList: ComponentsPage[];
-    onLayoutChange?: () => (void),
     useMountEffect?: () => (void)
 };
 
-const cmpType: ComponentTypeEncapsulator[] = [
+export const cmpType: ComponentTypeEncapsulator[] = [
     { compType: ComponentType.check, w: 3, h: 3 },
     { compType: ComponentType.radialGauge, w: 3, h: 8 },
     { compType: ComponentType.linearGauge, w: 6, h: 6 },
@@ -32,7 +31,7 @@ const cmpType: ComponentTypeEncapsulator[] = [
     { compType: ComponentType.throttlePressure, w: 6, h: 6 },
 ]
 
-export const Dashboard: React.FC<Props> = ({ compPageList, onLayoutChange }) => {
+export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     const [components, setcompPageList] = useState(compPageList);
     let cookie = new Cookies();
@@ -58,18 +57,19 @@ export const Dashboard: React.FC<Props> = ({ compPageList, onLayoutChange }) => 
         //console.log('Cookies A', cookie.get('compPage'));
     })
 
-    var Components = ["div"];
-    let compCode = 0;
 
     return (
         <ReactGridLayout
-            onLayoutChange={onLayoutChange}
+
             rowHeight={50}
             cols={12}
             className="layout"
         >
             {components.map((comp: ComponentsPage, index) => (
-                <div key={index} data-grid={{ x: 0, y: 0, w: cmpType[comp.typeComponent - 1].w, h: cmpType[comp.typeComponent - 1].h }}>
+                
+                <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
+                    {index}
+                    {comp.w}
                     <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
                 </div>
 

@@ -12,5 +12,7 @@ export class ComponentsPage{
     cmpMaxRange?: number;
     prescaler?: number;
     value: number;
+    w?: number;
+    h?: number;
 
 }

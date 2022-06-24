@@ -58,7 +58,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     // called when the client connects
     function onConnect() {
-        console.log("onConnect");
         if (client == undefined) {
             console.log('Client undefined');
         }
@@ -87,12 +86,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     // called when a message arrives
     function onMessageArrived(message: any) {
 
-        console.log('Destination: ' + message.destinationName);
+        console.log('Message arrived on destination: ' + message.destinationName);
 
         passedComp.sensorSelected.forEach((sensor, index) => {
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
                 arrayMessages[index] = JSON.parse(message.payloadString);
-                console.log('Index: ' + index)
+                //console.log('Index: ' + index)
                 console.log(arrayMessages[index]);
             }
 

@@ -2031,6 +2031,11 @@
     "@types/cookie" "^0.3.3"
     "cookie" "^0.4.0"
 
+"use-force-update@^1.0.8":
+  "integrity" "sha512-ua22fB++yaCvnf+Unht3L/2Lq3O7QstCtyh1IV8ydkJcyT6yVwMNgkKKhOsj5HRJCJj2oQbjzd6JJVnx7S+3uA=="
+  "resolved" "https://registry.npmjs.org/use-force-update/-/use-force-update-1.0.8.tgz"
+  "version" "1.0.8"
+
 "util-deprecate@^1.0.2", "util-deprecate@~1.0.1":
   "integrity" "sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8="
   "resolved" "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
