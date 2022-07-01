@@ -13,6 +13,7 @@ import { ComponentsPage } from '../models/componentsPage';
 import { updateStatement } from 'typescript';
 import { ComponentTypeEncapsulator } from '../models/componentType';
 import { ComponentType } from '../components/componentEncapsulator';
+import { LiveGraph } from '../components/LiveGraph/livegraph';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
@@ -41,7 +42,7 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
         let ind = compPageList.findIndex((cmp) => {
             return cmp === cmpToDlt;
         })
-        
+
         setcompPageList(compPageList.splice(ind, 1));
         //cookie.set('compPage', components);
         //console.log('Cookies after delete', cookie.get('compPage'));
@@ -59,21 +60,27 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
 
     return (
-        <ReactGridLayout
+        <div>
+            <LiveGraph></LiveGraph>
 
-            rowHeight={50}
-            cols={12}
-            className="layout"
-        >
-            {components.map((comp: ComponentsPage, index) => (
-                
-                <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
-                    <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
-                </div>
+            <ReactGridLayout
 
-            )
-            )}
-        </ReactGridLayout >
+                rowHeight={50}
+                cols={12}
+                className="layout"
+            >
+
+
+                {components.map((comp: ComponentsPage, index) => (
+
+                    <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
+                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
+                    </div>
+
+                )
+                )}
+            </ReactGridLayout >
+        </div>
     )
 
 }

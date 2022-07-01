@@ -14,6 +14,7 @@ import Paho from 'paho-mqtt';
 import { CastConnected, Check } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
 import { useRef } from "react";
+import { LiveGraph } from "./LiveGraph/livegraph";
 import { ComponentTypeEncapsulator } from "../models/componentType";
 
 export enum ComponentType {
@@ -141,7 +142,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full">
-                        <LiveGraph2 passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange} />
+                        <LiveGraph passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
 
