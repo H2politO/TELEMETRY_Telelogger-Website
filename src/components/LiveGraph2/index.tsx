@@ -12,10 +12,14 @@ interface Props {
     sensorList: Sensor
 }
 
+const availableColors= ['#E74C3C', '#9B59B6', '#3498DB', '#2ECC71', '#F4D03F', '#5D6D7E']
+
 export class LiveGraph2 extends Component<any> {
     constructor(props: any) {
         super(props);
+
     }
+
 
     componentDidUpdate() {
         //console.log('Update graph');
@@ -25,17 +29,17 @@ export class LiveGraph2 extends Component<any> {
 
     state = {
         options: {
-            
+
             chart: {
                 height: '100%',
                 id: this.props.id,
                 animations: {
                     enabled: true,
                     easing: 'linear',
-                    speed: 100,
+                    speed: 1,
                     dynamicAnimation: {
                         enabled: true,
-                        speed: 100
+                        speed: 1
                     },
 
                 },
@@ -49,18 +53,18 @@ export class LiveGraph2 extends Component<any> {
 
             xaxis: {
                 type: 'numeric',
-                range: 100,
+                range: 200,
             },
-            colors: ['#FF9933'],
-            
+            colors: [availableColors[Math.floor(Math.random()*availableColors.length)]],
+
             stroke: {
                 curve: 'stepline'
             },
-            
-           /*
-            type: 'line'
-            */
-            
+
+            /*
+             type: 'line'
+             */
+
         },
         series: [{
             name: this.props.sensorList.sensorName,
@@ -75,12 +79,17 @@ export class LiveGraph2 extends Component<any> {
 
     componentDidMount() {
         this.idInt = setInterval(() => {
-            this.state.newData = this.props.passedData,
-                this.myData.push(this.state.newData),
-                ApexCharts.exec(this.props.id, 'updateSeries', [{
-                    data: this.myData
-                }])
-        }, 100);
+            this.state.newData = this.props.passedData;
+            this.myData.push(this.state.newData);
+            if(this.myData.length>200){
+                this.myData.shift();
+                console.log(this.myData)
+            }
+
+            ApexCharts.exec(this.props.id, 'updateSeries', [{
+                data: this.myData
+            }])
+        }, 200);
     }
 
     componentWillUnmount() {
@@ -94,7 +103,7 @@ export class LiveGraph2 extends Component<any> {
                 <div className="row">
                     <div className="mixed-chart">
                         <Chart
-                        // @ts-ignore
+                            // @ts-ignore
                             options={this.state.options}
                             series={this.state.series}
                             type="line"

@@ -68,8 +68,6 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
             {components.map((comp: ComponentsPage, index) => (
                 
                 <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
-                    {index}
-                    {comp.w}
                     <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
                 </div>
 
