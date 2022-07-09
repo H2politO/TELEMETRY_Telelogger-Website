@@ -70,7 +70,7 @@ button {
 }
 
 .dashboardElement{
-  margin: 10px;
+  margin: 8px;
   padding: 10px;
   height: 95%;
 }
@@ -93,4 +93,8 @@ button {
 
 .navbar {
   height: 10vh;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background-color: lime;
 }

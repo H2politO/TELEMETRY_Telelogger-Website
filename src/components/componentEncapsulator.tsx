@@ -16,6 +16,8 @@ import LiveGraph2 from "../components/LiveGraph2";
 import { useRef } from "react";
 import { LiveGraph } from "./LiveGraph/livegraph";
 import { ComponentTypeEncapsulator } from "../models/componentType";
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 export enum ComponentType {
     check = 1,
@@ -131,7 +133,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
                     <div className="basis-1/3">
-                        <Speedometer value={singleVal} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} prescaler={passedComp.prescaler} />
+                        <Speedometer value={singleVal*passedComp.prescaler} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange}/>
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.linearGauge &&
@@ -142,17 +144,9 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full">
-                        <LiveGraph passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange} />
+                        <LiveGraph2 passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
-
-                {/*passedComp.typeComponent == ComponentType.plot &&
-                <div className="basis-full">
-                    <LiveGraph3 newData={val[0]}/>
-                </div>
-            */}
-
-
 
                 {passedComp.typeComponent == ComponentType.throttlePressure &&
                     <div className="basis-full">

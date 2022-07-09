@@ -62,7 +62,6 @@ export class LiveGraph extends Component<any> {
             this.data.shift();
             this.chart.notifyRemoveItem(this.data, 0, oldItem);
         }
-    }
 
     render() {
         return (
