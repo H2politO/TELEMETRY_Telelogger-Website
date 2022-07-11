@@ -51,7 +51,7 @@ export class Sidebar extends React.Component<any, any> {
             {ID: 2, componentName: 'Radial Gauge'},
             {ID: 3, componentName: 'Linear Gauge'},
             {ID: 4, componentName: 'Plot'},
-            {ID: 5, componentName: 'Trottle Pressure'},
+            {ID: 5, componentName: 'Circuit map'},
         ],
         opt: [
             {value:{ ID: '1', topicName: 'Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100},label:'Emergency' },

@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -41,11 +42,12 @@ button {
   font-size: calc(10px + 2vmin);
 }
 
-.nav-item, .nav-link {
+.nav-item,
+.nav-link {
   font-size: 18px;
   color: #737b8b;
 }
- 
+
 .wrapper {
   display: block;
 }
@@ -61,32 +63,32 @@ button {
   width: 50%;
 }
 
-.dashboardContainer{
+.dashboardContainer {
   flex-direction: row;
-  flex-wrap:wrap;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   align-content: space-around;
   align-items: baseline;
 }
 
-.dashboardElement{
-  margin: 8px;
-  padding: 10px;
+.dashboardElement {
+
+  padding: 7px;
   height: 95%;
 }
 
-.dashboardElementSm{
+.dashboardElementSm {
   margin: 10px;
   padding: 10px;
   height: 150px;
 
 }
 
-.sidebar-title{
+.sidebar-title {
   font-size: 2em;
 }
 
-.cards-title{
+.cards-title {
   font-size: 1em;
   font-weight: bold;
 }
@@ -97,4 +99,10 @@ button {
 
 .react-grid-item.react-grid-placeholder {
   background-color: lime;
+}
+
+#circuitMap {
+  height: 400px;
+  background-color: #282c34;
+  
 }

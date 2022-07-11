@@ -15,6 +15,7 @@ import { CastConnected, Check } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
 import { useRef } from "react";
 import { LiveGraph } from "./LiveGraph/livegraph";
+import { LiveMap } from "./LiveMap";
 import { ComponentTypeEncapsulator } from "../models/componentType";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -24,7 +25,7 @@ export enum ComponentType {
     radialGauge,
     linearGauge,
     plot,
-    throttlePressure,
+    circuitMap,
 }
 
 
@@ -38,7 +39,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const style1 = { color: "red" };
     const style2 = { color: "black" };
     let filler: number[] = [];
-    const [val, setVal] = useState<number[]>([0,0,0,0,0,0,0]);
+    const [val, setVal] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
     const [singleVal, setSingleVal] = useState(0);
     const [isConnected, setConnected] = useState(false);
 
@@ -133,7 +134,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
                     <div className="basis-1/3">
-                        <Speedometer value={singleVal*passedComp.prescaler} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange}/>
+                        <Speedometer value={singleVal * passedComp.prescaler} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.linearGauge &&
@@ -143,18 +144,27 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
 
                 {passedComp.typeComponent == ComponentType.plot &&
-                    <div className="basis-full">
+                    <div className="basis-full" >
                         <LiveGraph2 passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
 
-                {passedComp.typeComponent == ComponentType.throttlePressure &&
+                {/*passedComp.typeComponent == ComponentType.throttlePressure &&
                     <div className="basis-full">
                         {passedComp.cmpMinRange}
                         {passedComp.cmpMaxRange}
                         <ThrottlePressure value={singleVal} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                     </div>
+            */}
+
+                {passedComp.typeComponent == ComponentType.circuitMap &&
+                    <div className="basis-full" >
+                        <LiveMap style={{height: "200px"}}></LiveMap>
+                    </div>
+
                 }
+
+
 
             </div>
             <br />

@@ -14,6 +14,7 @@ import { updateStatement } from 'typescript';
 import { ComponentTypeEncapsulator } from '../models/componentType';
 import { ComponentType } from '../components/componentEncapsulator';
 import { LiveGraph } from '../components/LiveGraph/livegraph';
+import { LiveMap } from '../components/LiveMap';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
@@ -29,7 +30,7 @@ export const cmpType: ComponentTypeEncapsulator[] = [
     { compType: ComponentType.radialGauge, w: 3, h: 8 },
     { compType: ComponentType.linearGauge, w: 6, h: 6 },
     { compType: ComponentType.plot, w: 5, h: 10 },
-    { compType: ComponentType.throttlePressure, w: 6, h: 6 },
+    { compType: ComponentType.circuitMap, w: 6, h: 12 },
 ]
 
 export const Dashboard: React.FC<Props> = ({ compPageList }) => {
@@ -61,10 +62,11 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     return (
         <div>
-            <LiveGraph></LiveGraph>
+            {
+            //<LiveMap></LiveMap>
+        }
 
             <ReactGridLayout
-
                 rowHeight={50}
                 cols={12}
                 className="layout"
