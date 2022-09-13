@@ -2,6 +2,7 @@ import React, { useState, useEffect, Component } from 'react'
 import { Routes, Route } from 'react-router-dom';
 import { Home } from './pages/home';
 import { Team } from './pages/team';
+import { Demo} from './pages/demo';
 import { Dashboard } from './pages/dashboard';
 import { IoMenu } from "react-icons/io5";
 import { Sidebar } from './components/Sidebar'
@@ -25,19 +26,18 @@ export class App extends React.Component {
     this.setState(this.state.outputList);
   }
 
+  cookie = new Cookies();
+
   handleCallback = (childData: ComponentsPage[]) => {
-    this.setState({ outputList: childData })
+    
+    console.log('cookieeeee', this.cookie.get('compList'));
+    if (this.cookie.get('compList') != undefined)
+      this.setState({ outputList: this.cookie.get('compList') })
+    else
+      this.setState({ outputList: childData })
   }
 
-  deleteComponent = (cmpToDlt: ComponentsPage) => {
-    console.log('Deleting ');
-    let ind = this.state.outputList.findIndex((cmp) => {
-      return cmp === cmpToDlt;
-    })
-    this.state.outputList.splice(ind, 1);
-    console.log(this.state.outputList);
 
-  }
 
   useEffect = (
     console.log(''), [this.state.outputList]
@@ -55,9 +55,10 @@ export class App extends React.Component {
 
         <main className="mb-auto mx-auto w-full">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/team" element={<Team />} />
-            <Route path="/dashboard" element={<Dashboard compPageList={this.state.outputList} />} />
+            <Route path="/" element={<Dashboard compPageList={this.state.outputList} />} />
+            <Route path="/demo" element={<Demo />} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
             <p>Made with &hearts; by Electronics (and Informatics) division</p>

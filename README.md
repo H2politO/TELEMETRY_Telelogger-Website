@@ -1,5 +1,7 @@
-# Telelogger-Website
+# Telelogger website
 
-teamh2polito.com
+teamH2polito.com
 
-After cloning this project, run "npm install" and "npm run dev"
+After cloning, run "npm install" and "npm run dev".
+To build the project for production environment, run "npm run build".
+The generated files will be contained into the dist directory.

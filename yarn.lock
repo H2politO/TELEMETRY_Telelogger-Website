@@ -576,6 +576,37 @@
   "resolved" "https://registry.npmjs.org/@types/cookie/-/cookie-0.3.3.tgz"
   "version" "0.3.3"
 
+"@types/geojson@*":
+  "integrity" "sha512-1rkryxURpr6aWP7R786/UQOkJ3PcpQiWkAXBmdWc7ryFWqN6a4xfK7BtjXvFBKO9LjQ+MWQSWxYeZX1OApnArA=="
+  "resolved" "https://registry.npmjs.org/@types/geojson/-/geojson-7946.0.8.tgz"
+  "version" "7946.0.8"
+
+"@types/leaflet-draw@^1.0.5":
+  "integrity" "sha512-m/vmhI1XjiBZphwKwmmcOoxbMd0ybN78uZb1c9//zOG0aWVYJd3XTnIW1pnPhxhIB4EB1tgjmWjq0YQM/IyuXg=="
+  "resolved" "https://registry.npmjs.org/@types/leaflet-draw/-/leaflet-draw-1.0.5.tgz"
+  "version" "1.0.5"
+  dependencies:
+    "@types/leaflet" "*"
+
+"@types/leaflet-gpx@^1.3.3":
+  "integrity" "sha512-YiD9TIzrH4IdcbdjO7Gc+kjK7H6swT4WZi5wABgAeHogUvZcK5zm+tY84utgfHxMavb0jqzJViNEAd3xUzTCtA=="
+  "resolved" "https://registry.npmjs.org/@types/leaflet-gpx/-/leaflet-gpx-1.3.3.tgz"
+  "version" "1.3.3"
+  dependencies:
+    "@types/leaflet" "*"
+
+"@types/leaflet@*", "@types/leaflet@^1.7.11":
+  "integrity" "sha512-VwAYom2pfIAf/pLj1VR5aLltd4tOtHyvfaJlNYCoejzP2nu52PrMi1ehsLRMUS+bgafmIIKBV1cMfKeS+uJ0Vg=="
+  "resolved" "https://registry.npmjs.org/@types/leaflet/-/leaflet-1.7.11.tgz"
+  "version" "1.7.11"
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/node@^18.0.3":
+  "integrity" "sha512-HzNRZtp4eepNitP+BD6k2L6DROIDG4Q0fm4x+dwfsr6LGmROENnok75VGw40628xf+iR24WeMFcHuuBDUAzzsQ=="
+  "resolved" "https://registry.npmjs.org/@types/node/-/node-18.0.3.tgz"
+  "version" "18.0.3"
+
 "@types/paho-mqtt@^1.0.6":
   "integrity" "sha512-d6CXsdv2fEruyZLe5DUtgGsF8ROp0358OrEmVgqtFxO/kiCvP9KhYen9N6ReKBkMdR/d0parLQq6DMn2qe6d9Q=="
   "resolved" "https://registry.npmjs.org/@types/paho-mqtt/-/paho-mqtt-1.0.6.tgz"
@@ -1413,7 +1444,33 @@
   "resolved" "https://registry.npmjs.org/konva/-/konva-8.3.9.tgz"
   "version" "8.3.9"
 
-"lie@~3.3.0":
+"leaflet-ajax@github:calvinmetcalf/leaflet-ajax":
+  "resolved" "git+ssh://git@github.com/calvinmetcalf/leaflet-ajax.git#1f7c87600efe3fecf782ffdff9d44c8142441204"
+  "version" "2.1.0"
+  dependencies:
+    "lie" "^3.0.1"
+
+"leaflet-draw@^1.0.4":
+  "integrity" "sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ=="
+  "resolved" "https://registry.npmjs.org/leaflet-draw/-/leaflet-draw-1.0.4.tgz"
+  "version" "1.0.4"
+
+"leaflet-gpx@^1.7.0":
+  "integrity" "sha512-5NS5WKfp5zaAHMB2KM6OUaIng+SZ3e/UHK2++ABl2wELojYlmLqIL8t1Mj6DaZGkIh3kld+mAUvMGdIzC1yGRA=="
+  "resolved" "https://registry.npmjs.org/leaflet-gpx/-/leaflet-gpx-1.7.0.tgz"
+  "version" "1.7.0"
+
+"leaflet-realtime@^2.2.0":
+  "integrity" "sha512-Z7xbUNdhvwngJUf3plG9Zw3SaGHzcOzi59tVS3jD0GcS6cOWbRNNfP2biwmtHbufM5VYTIWLATrQ4vrlGI23WA=="
+  "resolved" "https://registry.npmjs.org/leaflet-realtime/-/leaflet-realtime-2.2.0.tgz"
+  "version" "2.2.0"
+
+"leaflet@^1.8.0":
+  "integrity" "sha512-gwhMjFCQiYs3x/Sf+d49f10ERXaEFCPr+nVTryhAW8DWbMGqJqt9G4XuIaHmFW08zYvhgdzqXGr8AlW8v8dQkA=="
+  "resolved" "https://registry.npmjs.org/leaflet/-/leaflet-1.8.0.tgz"
+  "version" "1.8.0"
+
+"lie@^3.0.1", "lie@~3.3.0":
   "integrity" "sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ=="
   "resolved" "https://registry.npmjs.org/lie/-/lie-3.3.0.tgz"
   "version" "3.3.0"
@@ -2030,6 +2087,11 @@
   dependencies:
     "@types/cookie" "^0.3.3"
     "cookie" "^0.4.0"
+
+"use-force-update@^1.0.8":
+  "integrity" "sha512-ua22fB++yaCvnf+Unht3L/2Lq3O7QstCtyh1IV8ydkJcyT6yVwMNgkKKhOsj5HRJCJj2oQbjzd6JJVnx7S+3uA=="
+  "resolved" "https://registry.npmjs.org/use-force-update/-/use-force-update-1.0.8.tgz"
+  "version" "1.0.8"
 
 "util-deprecate@^1.0.2", "util-deprecate@~1.0.1":
   "integrity" "sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8="

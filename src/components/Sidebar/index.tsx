@@ -6,6 +6,7 @@ import { Formik, Field, Form, FormikHelpers, ErrorMessage, FormikState } from 'f
 import Select from 'react-select'
 import { OnChangeValue } from 'react-select';
 import Cookies from 'universal-cookie';
+import * as cmpTypeConst from '../../pages/dashboard';
 
 type Props = {
     //sensorList: Sensor[];
@@ -26,13 +27,15 @@ export class Sidebar extends React.Component<any, any> {
    
     componentDidMount() {
 
+        /*
         this.listCookie = new Cookies();
         if (this.listCookie.get('compList') != undefined)
             this.componentsList = this.listCookie.get('compList');
         else
+        */
             this.componentsList = [];
-
-        this.onTrigger();
+        
+        //this.onTrigger();
 
     }
 
@@ -48,7 +51,7 @@ export class Sidebar extends React.Component<any, any> {
             {ID: 2, componentName: 'Radial Gauge'},
             {ID: 3, componentName: 'Linear Gauge'},
             {ID: 4, componentName: 'Plot'},
-            {ID: 5, componentName: 'Trottle Pressure'},
+            {ID: 5, componentName: 'Circuit map'},
         ],
         opt: [
             {value:{ ID: '1', topicName: 'Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100},label:'Emergency' },
@@ -79,6 +82,7 @@ export class Sidebar extends React.Component<any, any> {
 
 
     onTrigger = () => {
+        console.log('Trigger');
         this.props.parentCallback(this.componentsList);
     }
 
@@ -105,6 +109,8 @@ export class Sidebar extends React.Component<any, any> {
                             prescaler: 1,
                             deleted: false,
                             value: 0,
+                            w:2,
+                            h:2,
                         }}
                         onSubmit={(
                             values: ComponentsPage,
@@ -120,12 +126,14 @@ export class Sidebar extends React.Component<any, any> {
                             prov.compID=this.cmpID;
                             prov.sensorSelected=new Array<Sensor>();
                             prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
+                            prov.w=cmpTypeConst.cmpType[prov.typeComponent-1].w;
+                            prov.h=cmpTypeConst.cmpType[prov.typeComponent-1].h;
                             this.componentsList.push(prov);
 
                             //add cookies
                             console.group('Added cookies')
                             console.log(this.componentsList);
-                            this.listCookie.set('compList', JSON.stringify(this.componentsList));
+                            //this.listCookie.set('compList', JSON.stringify(this.componentsList));
                             this.onTrigger();
                             console.groupEnd();
 
@@ -189,7 +197,7 @@ export class Sidebar extends React.Component<any, any> {
                             
                         </Form>
                     </Formik>
-                    <button className="btn btn-primary interactiveBtn" onClick={this.deleteCookiess}>Rimuovi cookies</button>
+                    <button className="btn btn-primary interactiveBtn mt-1" onClick={this.deleteCookiess}>Remove cookies</button>
                 </div>
             </div >
         )
