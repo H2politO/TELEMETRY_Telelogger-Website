@@ -54,11 +54,11 @@ export class LiveGraph extends Component<any> {
 
             this.dataIndex++;
             const oldItem = this.data[0];
-            const newItem = CategoryChartSharedData.getNewItem(this.data, this.dataIndex);
+            //const newItem = CategoryChartSharedData.getNewItem(this.data, this.dataIndex);
 
             // updating data source and notifying category chart
-            this.data.push(newItem);
-            this.chart.notifyInsertItem(this.data, this.data.length - 1, newItem);
+            //this.data.push(newItem);
+            //this.chart.notifyInsertItem(this.data, this.data.length - 1, newItem);
             this.data.shift();
             this.chart.notifyRemoveItem(this.data, 0, oldItem);
         }
