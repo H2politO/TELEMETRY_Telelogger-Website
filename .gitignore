@@ -2,5 +2,3 @@ node_modules
 .DS_Store
 dist-ssr
 *.local
-dist/composer.json
-dist/composer.lock
