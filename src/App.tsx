@@ -2,6 +2,7 @@ import React, { useState, useEffect, Component } from 'react'
 import { Routes, Route } from 'react-router-dom';
 import { Home } from './pages/home';
 import { Team } from './pages/team';
+import { Demo} from './pages/demo';
 import { Dashboard } from './pages/dashboard';
 import { IoMenu } from "react-icons/io5";
 import { Sidebar } from './components/Sidebar'
@@ -57,6 +58,7 @@ export class App extends React.Component {
             <Route path="/home" element={<Home />} />
             <Route path="/team" element={<Team />} />
             <Route path="/" element={<Dashboard compPageList={this.state.outputList} />} />
+            <Route path="/demo" element={<Demo />} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
             <p>Made with &hearts; by Electronics (and Informatics) division</p>

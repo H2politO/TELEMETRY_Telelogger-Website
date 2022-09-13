@@ -26,17 +26,27 @@ export class LiveMap extends Component<any> {
     mapWithPoints: any;
     marker: any;
 
+    px= 0;
+    py= 0;
+
     componentDidMount() {
 
+        this.points.forEach(p => {
+            this.px+=p[1];
+            this.py+=p[0];
+        });
+        this.px=this.px/(this.points.length);
+        this.py=this.py/(this.points.length);
+        console.log(this.px, this.py);
         // create map
         this.map = L.map('circuitMap',
         ).setView([
-            43.7670631, -0.038333
+            this.px, this.py
         ], 17);
         L.tileLayer('').addTo(this.map);
 
         let mapWithPath = L.geoJSON(this.gpx).addTo(this.map);
-        mapWithPath.setStyle({ color: 'red', weight: 4 });
+        mapWithPath.setStyle({ color: 'white', weight: 4 });
 
 
         this.marker = L.marker([this.points[this.i%(this.points.length-1)][1], this.points[this.i%(this.points.length-1)][0]], {icon: this.carIcon});
@@ -55,13 +65,13 @@ export class LiveMap extends Component<any> {
             this.marker.addTo(this.map);
 
 
-        }, 100)
+        }, 50)
 
     }
 
     render() {
         return (
-            <div>
+            <div className="parentMap">
                 {//<input type="file" id="file-selector" multiple />
                 }
 

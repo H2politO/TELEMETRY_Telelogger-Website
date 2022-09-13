@@ -124,8 +124,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 <button type="button" className="float-right" onClick={() => _init()}><IoReload size={20} style={style2} /></button>
             </div>
 
-            {singleVal}
-
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
@@ -158,8 +156,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             */}
 
                 {passedComp.typeComponent == ComponentType.circuitMap &&
-                    <div className="basis-full" >
-                        <LiveMap style={{height: "200px"}}></LiveMap>
+                    <div className="basis-full" style={{height: "100%"}}>
+                        <LiveMap ></LiveMap>
                     </div>
 
                 }

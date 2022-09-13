@@ -5,7 +5,6 @@ export class ComponentsPage{
 
     compID!: number;
     nameComponent?: string;
-    deleted:boolean;
     sensorSelected!: Sensor[];
     typeComponent!: number;
     cmpMinRange?: number;
