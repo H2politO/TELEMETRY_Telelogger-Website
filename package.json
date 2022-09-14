@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && xcopy composer.json new && xcopy composer.lock new:",
+    "build": "tsc && vite build && xcopy composer.json dist && xcopy composer.lock dist",
     "preview": "vite preview"
   },
   "dependencies": {
