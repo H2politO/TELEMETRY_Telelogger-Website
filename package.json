@@ -1,6 +1,8 @@
 {
-  "name": "mqtt-ts",
-  "version": "0.0.0",
+  "name": "H2politO telemetry",
+  "homepage": "http://teamh2polito.com",
+  "version": "1.0.0",
+  "description": "Telemetry website of the team h2polito",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && xcopy composer.json dist && xcopy composer.lock dist",
