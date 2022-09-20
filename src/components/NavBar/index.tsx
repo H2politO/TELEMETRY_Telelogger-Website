@@ -21,10 +21,10 @@ export class Navbar extends Component {
                                 <a className="nav-link active" aria-current="page" href="/home"><p>Home</p></a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link disabled" aria-current="page" href="/"><p>Demo</p></a>
+                                <a className="nav-link active" aria-current="page" href="/demo"><p>Demo</p></a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link disabled" aria-current="page" href="/"><p>My dashboard</p></a>
+                                <a className="nav-link active" aria-current="page" href="/"><p>My dashboard</p></a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link active" aria-current="page" href="/team">Team</a>

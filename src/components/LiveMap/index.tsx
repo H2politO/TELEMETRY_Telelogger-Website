@@ -17,7 +17,7 @@ export class LiveMap extends Component<any> {
 
 
     carIcon = L.icon({
-        iconUrl: './car.png',
+        iconUrl: './src/myAssets/car.png',
         iconSize: [15, 15]
     })
 

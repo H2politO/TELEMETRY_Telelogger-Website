@@ -1,11 +1,12 @@
 {
   "name": "H2politO telemetry",
-  "homepage": "http://teamh2polito.com",
+  "homepage": "teamh2polito.com",
   "version": "1.0.0",
   "description": "Telemetry website of the team h2polito",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && xcopy composer.json dist && xcopy composer.lock dist",
+    "build": "tsc && vite build",
+    "custombuild": "tsc && vite build && xcopy composer.json dist && xcopy composer.lock dist && xcopy src\\myAssets dist\\myAssets && xcopy .htaccess dist",
     "preview": "vite preview"
   },
   "dependencies": {
