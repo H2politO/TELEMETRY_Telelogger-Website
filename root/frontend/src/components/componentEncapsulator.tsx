@@ -13,6 +13,7 @@ import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import { CastConnected, Check } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
+import { LiveGraph3 } from "../components/LiveGraph3";
 import { useRef } from "react";
 import { LiveGraph } from "./LiveGraph/livegraph";
 import { LiveMap } from "./LiveMap";
@@ -143,7 +144,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full" >
-                        <LiveGraph2 passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange} />
+                        <LiveGraph3 /*passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}*//>
                     </div>
                 }
 
