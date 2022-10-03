@@ -38,8 +38,7 @@ export const Home = () => {
     client.send(message);
 
 
-    let newMex= Math.pow( parseInt(msg) + 100, 2);
-
+    let newMex= (parseInt(msg) + 10)
 
     const message2= new Paho.Message(JSON.stringify(newMex));
     message2.destinationName = "H2polito/Temperature";

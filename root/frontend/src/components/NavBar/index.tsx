@@ -17,9 +17,7 @@ export class Navbar extends Component {
 
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" href="/home"><p>Home</p></a>
-                            </li>
+
                             <li className="nav-item">
                                 <a className="nav-link active" aria-current="page" href="/demo"><p>Demo</p></a>
                             </li>
@@ -35,12 +33,16 @@ export class Navbar extends Component {
                             <li className="nav-item">
                                 <a className="nav-link disabled">Visualize past runs</a>
                             </li>
+
+                            <li className="nav-item">
+                                <a className="nav-link disabled" aria-current="page" href="/testing"><p>Testing</p></a>
+                            </li>
                         </ul>
                     </div>
 
                     <div className='d-flex text-slate-400'>Cookies are momentarily disabled</div>
                     <button className="d-flex btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
-                        <IoAdd size={30} />
+                        <IoAdd size={50} />
                     </button>
                 </div>
             </nav>

@@ -55,7 +55,7 @@ export class App extends React.Component {
 
         <main className="mb-auto mx-auto w-full">
           <Routes>
-            <Route path="/home" element={<Home />} />
+            <Route path="/testing" element={<Home />} />
             <Route path="/team" element={<Team />} />
             <Route path="/" element={<Dashboard compPageList={this.state.outputList} />} />
             <Route path="/demo" element={<Demo />} />

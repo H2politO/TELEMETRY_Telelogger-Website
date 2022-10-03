@@ -31,6 +31,7 @@ export const cmpType: ComponentTypeEncapsulator[] = [
     { compType: ComponentType.linearGauge, w: 6, h: 6 },
     { compType: ComponentType.plot, w: 5, h: 10 },
     { compType: ComponentType.circuitMap, w: 6, h: 12 },
+    { compType: ComponentType.lapTimer, w: 4, h: 12 },
 ]
 
 export const Dashboard: React.FC<Props> = ({ compPageList }) => {

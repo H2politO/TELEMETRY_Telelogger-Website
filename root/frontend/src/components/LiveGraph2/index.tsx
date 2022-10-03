@@ -6,20 +6,19 @@ import ApexAxisChartSeries from "react-apexcharts";
 
 interface Props {
     id: string;
-    passedData: number;
+    passedData: number[];
     minVal: number,
     maxVal: number,
-    sensorList: Sensor
+    sensorList: Sensor[]
 }
 
-const availableColors= ['#E74C3C', '#9B59B6', '#3498DB', '#2ECC71', '#F4D03F', '#5D6D7E']
+const availableColors = ['#E74C3C', '#9B59B6', '#3498DB', '#2ECC71', '#F4D03F', '#5D6D7E']
 
 export class LiveGraph2 extends Component<any> {
     constructor(props: any) {
         super(props);
 
     }
-
 
     componentDidUpdate() {
         //console.log('Update graph');
@@ -39,9 +38,8 @@ export class LiveGraph2 extends Component<any> {
                     speed: 1,
                     dynamicAnimation: {
                         enabled: true,
-                        speed: 1
+                        speed: 50
                     },
-
                 },
                 toolbar: {
                     show: false
@@ -53,43 +51,65 @@ export class LiveGraph2 extends Component<any> {
 
             xaxis: {
                 type: 'numeric',
-                range: 200,
+                range: 100,
             },
-            colors: [availableColors[Math.floor(Math.random()*availableColors.length)]],
+
+            yaxis: {
+                max: Number(this.props.maxVal),
+                min: Number(this.props.minVal)
+              },
+            //colors: [availableColors[Math.floor(Math.random() * availableColors.length)], availableColors[Math.floor(Math.random() * availableColors.length)]],
 
             stroke: {
-                curve: 'stepline'
-            },
+                curve: 'smooth'
+              },
 
             /*
              type: 'line'
              */
 
         },
-        series: [{
-            name: this.props.sensorList.sensorName,
-            data: []
-        }],
+        series:
+            this.props.sensorList.map(el => (
+                {
+                    name: el.sensorName,
+                    data: []
+                })),
 
         newData: this.props.passedData,
     };
 
+
     idInt: any;
+
+    allData: number[][] = []
 
 
     componentDidMount() {
-        this.idInt = setInterval(() => {
-            this.state.newData = this.props.passedData;
-            this.myData.push(this.state.newData);
-            if(this.myData.length>200){
-                this.myData.shift();
-                console.log(this.myData)
-            }
 
-            ApexCharts.exec(this.props.id, 'updateSeries', [{
-                data: this.myData
-            }])
-        }, 200);
+        console.log(this.props.minVal, this.props.maxVal);
+
+        this.props.sensorList.forEach((e, index) => {
+            this.allData[index]=[]
+        });
+
+        console.log(this.state.series)
+
+        this.idInt = setInterval(() => {
+
+
+            this.allData.forEach((data, index) => {
+
+                data.push(this.props.passedData[index])
+                if(data.length>100){
+                    data.shift();
+                }
+            });
+
+            ApexCharts.exec(this.props.id, 'updateSeries', this.allData.map((e, index) => {
+                return {data: this.allData[index]}
+            }))
+        }, 100)
     }
 
     componentWillUnmount() {

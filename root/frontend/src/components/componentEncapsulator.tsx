@@ -18,8 +18,10 @@ import { useRef } from "react";
 import { LiveGraph } from "./LiveGraph/livegraph";
 import { LiveMap } from "./LiveMap";
 import { ComponentTypeEncapsulator } from "../models/componentType";
+import { LapTimer } from "./LapTimer"
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import { SensorList } from "./Sidebar/sensorsList";
 
 export enum ComponentType {
     check = 1,
@@ -27,6 +29,7 @@ export enum ComponentType {
     linearGauge,
     plot,
     circuitMap,
+    lapTimer=6
 }
 
 
@@ -53,7 +56,10 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     //new client
     const _init = () => {
-        console.log('Creating a client for ' + sens.sensorName + ' and starting the connection');
+        console.group('%c Creating a client for the following sensors:'+ passedComp.sensorSelected.map(e => {
+            return ' ' + String(e.sensorName)
+        }), 'color: lightblue; font-weight: bold; font-size: 15px' );
+        
         client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
@@ -69,10 +75,11 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         passedComp.sensorSelected.forEach((s, index) => {
             arrayMessages.push(0);
-            console.log('Subbing to ' + s.topicName);
+            console.log('%c Connecting to the topic: ' + s.topicName, 'color: orange');
             client.subscribe("H2polito/" + s.topicName, {});
         });
 
+        console.groupEnd()
         setSingleVal(0);
         setVal(arrayMessages);
 
@@ -97,14 +104,14 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
                 arrayMessages[index] = JSON.parse(message.payloadString);
                 //console.log('Index: ' + index)
-                console.log(arrayMessages[index]);
+                console.log(sensor.topicName + ' ' + arrayMessages[index]);
             }
 
         });
 
         setSingleVal(JSON.parse(message.payloadString));
         setVal(arrayMessages);
-
+        console.log('Array of messages: ' + val);
 
     }
 
@@ -112,6 +119,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         console.log("Connection failed from " + sens.sensorName);
         setConnected(false);
     }
+
 
     useEffect(() => {
         _init();
@@ -128,23 +136,23 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
-                        <SimpleLight value={singleVal} name={passedComp.nameComponent!} />
+                        <SimpleLight value={val[0]} name={passedComp.nameComponent!} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
                     <div className="basis-1/3">
-                        <Speedometer value={singleVal * passedComp.prescaler} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
+                        <Speedometer value={val[0] * passedComp.prescaler} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.linearGauge &&
                     <div className="basis-full">
-                        <LinearGauge value={singleVal} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
+                        <LinearGauge value={val[0]} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full" >
-                        <LiveGraph3 /*passedData={singleVal} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected[0]} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}*//>
+                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}/>
                     </div>
                 }
 
@@ -157,8 +165,15 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             */}
 
                 {passedComp.typeComponent == ComponentType.circuitMap &&
-                    <div className="basis-full" style={{height: "100%"}}>
+                    <div className="basis-full" style={{ height: "100%" }}>
                         <LiveMap ></LiveMap>
+                    </div>
+
+                }
+
+                {passedComp.typeComponent == ComponentType.lapTimer &&
+                    <div className="basis-full" style={{ height: "100%" }}>
+                        <LapTimer></LapTimer>
                     </div>
 
                 }

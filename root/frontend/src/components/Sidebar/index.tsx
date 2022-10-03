@@ -52,6 +52,7 @@ export class Sidebar extends React.Component<any, any> {
             {ID: 3, componentName: 'Linear Gauge'},
             {ID: 4, componentName: 'Plot'},
             {ID: 5, componentName: 'Circuit map'},
+            {ID: 6, componentName: 'Lap timer'},
         ],
         opt: [
             {value:{ ID: '1', topicName: 'Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100},label:'Emergency' },
@@ -128,6 +129,8 @@ export class Sidebar extends React.Component<any, any> {
                             prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
                             prov.w=cmpTypeConst.cmpType[prov.typeComponent-1].w;
                             prov.h=cmpTypeConst.cmpType[prov.typeComponent-1].h;
+                            prov.cmpMinRange=values.cmpMinRange;
+                            prov.cmpMaxRange=values.cmpMaxRange;
                             this.componentsList.push(prov);
 
                             //add cookies

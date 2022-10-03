@@ -7,8 +7,8 @@ export class ComponentsPage{
     nameComponent?: string;
     sensorSelected!: Sensor[];
     typeComponent!: number;
-    cmpMinRange?: number;
-    cmpMaxRange?: number;
+    cmpMinRange!: number;
+    cmpMaxRange!: number;
     prescaler?: number;
     value: number;
     w?: number;
