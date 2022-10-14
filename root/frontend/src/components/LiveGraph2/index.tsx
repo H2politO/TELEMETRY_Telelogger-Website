@@ -2,7 +2,9 @@
 import React, { Component } from "react";
 import Chart from "react-apexcharts";
 import { Sensor } from "../../models/sensor"
+import { useState } from "react";
 import ApexAxisChartSeries from "react-apexcharts";
+import ApexAnnotations from "react-apexcharts"
 
 interface Props {
     id: string;
@@ -20,15 +22,13 @@ export class LiveGraph2 extends Component<any> {
 
     }
 
-    componentDidUpdate() {
-        //console.log('Update graph');
-    }
-
     myData: number[] = [];
 
     state = {
-        options: {
 
+        avg: 0,
+
+        options: {
             chart: {
                 height: '100%',
                 id: this.props.id,
@@ -41,12 +41,28 @@ export class LiveGraph2 extends Component<any> {
                         speed: 50
                     },
                 },
+
                 toolbar: {
                     show: false
                 },
                 zoom: {
                     enabled: false
                 },
+            },
+
+            annotations: {
+                yaxis: [{
+                    y: 0,
+                    borderColor: 'blue',
+                    label: {
+                        borderColor: '#00E396',
+                        style: {
+                            color: '#fff',
+                            background: '#00E396',
+                        },
+                        text: 'Averge',
+                    }
+                }]
             },
 
             xaxis: {
@@ -57,12 +73,12 @@ export class LiveGraph2 extends Component<any> {
             yaxis: {
                 max: Number(this.props.maxVal),
                 min: Number(this.props.minVal)
-              },
+            },
             //colors: [availableColors[Math.floor(Math.random() * availableColors.length)], availableColors[Math.floor(Math.random() * availableColors.length)]],
 
             stroke: {
                 curve: 'smooth'
-              },
+            },
 
             /*
              type: 'line'
@@ -81,35 +97,32 @@ export class LiveGraph2 extends Component<any> {
 
 
     idInt: any;
-
     allData: number[][] = []
-
 
     componentDidMount() {
 
-        console.log(this.props.minVal, this.props.maxVal);
-
         this.props.sensorList.forEach((e, index) => {
-            this.allData[index]=[]
+            this.allData[index] = []
         });
-
-        console.log(this.state.series)
 
         this.idInt = setInterval(() => {
 
-
+            this.state.avg = this.allData[0].reduce((a, b) => a + b, 0) / this.allData[0].length
             this.allData.forEach((data, index) => {
 
+                this.state.avg=this.allData[0].reduce((a, b) => a + b, 0) / this.allData[0].length
+                this.state.options.annotations.yaxis[0].y = this.state.avg;
+
                 data.push(this.props.passedData[index])
-                if(data.length>100){
+                if (data.length > 100) {
                     data.shift();
                 }
             });
 
             ApexCharts.exec(this.props.id, 'updateSeries', this.allData.map((e, index) => {
-                return {data: this.allData[index]}
+                return { data: this.allData[index] }
             }))
-        }, 100)
+        }, 500)
     }
 
     componentWillUnmount() {

@@ -35,12 +35,11 @@ export class Navbar extends Component {
                             </li>
 
                             <li className="nav-item">
-                                <a className="nav-link disabled" aria-current="page" href="/testing"><p>Testing</p></a>
+                                <a className="nav-link active" aria-current="page" href="/testing"><p>Testing</p></a>
                             </li>
                         </ul>
                     </div>
-
-                    <div className='d-flex text-slate-400'>Cookies are momentarily disabled</div>
+                    
                     <button className="d-flex btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
                         <IoAdd size={50} />
                     </button>

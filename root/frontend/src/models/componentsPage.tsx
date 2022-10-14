@@ -3,7 +3,7 @@ import { Sensor } from './sensor'
 
 export class ComponentsPage{
 
-    compID!: number;
+    compID?: string;
     nameComponent?: string;
     sensorSelected!: Sensor[];
     typeComponent!: number;

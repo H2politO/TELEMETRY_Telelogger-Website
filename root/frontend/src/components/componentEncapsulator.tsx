@@ -11,7 +11,7 @@ import { ComponentsPage } from '../models/componentsPage'
 import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
-import { CastConnected, Check } from "@material-ui/icons";
+import { CastConnected, Check, Message } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
 import { LiveGraph3 } from "../components/LiveGraph3";
 import { useRef } from "react";
@@ -19,9 +19,11 @@ import { LiveGraph } from "./LiveGraph/livegraph";
 import { LiveMap } from "./LiveMap";
 import { ComponentTypeEncapsulator } from "../models/componentType";
 import { LapTimer } from "./LapTimer"
+import { MessageSender } from "./messageSender";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { SensorList } from "./Sidebar/sensorsList";
+import { components } from "react-select";
 
 export enum ComponentType {
     check = 1,
@@ -29,7 +31,8 @@ export enum ComponentType {
     linearGauge,
     plot,
     circuitMap,
-    lapTimer=6
+    lapTimer,
+    messageSender
 }
 
 
@@ -42,33 +45,32 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     const style1 = { color: "red" };
     const style2 = { color: "black" };
-    let filler: number[] = [];
-    const [val, setVal] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
-    const [singleVal, setSingleVal] = useState(0);
+
+    const [val, setVal] = useState<number[]>([]);
+    const [singleVal, setSingleVal] = useState<number>(0);
     const [isConnected, setConnected] = useState(false);
 
     let sens: Sensor = passedComp.sensorSelected[0];
-    //let mine = JSON.parse(sens.toString());
 
     let arrayMessages: number[] = [];
-    //let mqttClientId: string = 'h2politoTest' + mine.ID
-    let client: any;
+    let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
 
-    //new client
+    //Creation a client with a list of sensors
     const _init = () => {
-        console.group('%c Creating a client for the following sensors:'+ passedComp.sensorSelected.map(e => {
-            return ' ' + String(e.sensorName)
-        }), 'color: lightblue; font-weight: bold; font-size: 15px' );
         
-        client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
         client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
     }
 
 
-    // called when the client connects
+    // Function called when the client manages to connect to the topic
     function onConnect() {
+
+        console.group('%c Creating a client for the following sensors:'+ passedComp.sensorSelected.map(e => {
+            return ' ' + String(e.sensorName)
+        }), 'color: lightblue; font-weight: bold; font-size: 15px' );
+
         if (client == undefined) {
             console.log('Client undefined');
         }
@@ -80,49 +82,69 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         });
 
         console.groupEnd()
-        setSingleVal(0);
         setVal(arrayMessages);
 
         setConnected(true);
     }
 
 
-    // called when the client loses its connection
+    // Function called when the connection has been lost
     function onConnectionLost(responseObject: any) {
         if (responseObject.errorCode !== 0) {
-            console.log("onConnectionLost:" + responseObject.errorMessage);
+            console.error("onConnectionLost:" + responseObject.errorMessage);
         }
+
+        console.groupEnd()
         setConnected(false);
     }
 
-    // called when a message arrives
+    // Function called when a message arrives at destination
     function onMessageArrived(message: any) {
 
         console.log('Message arrived on destination: ' + message.destinationName);
 
+        //Finds the matching payload that with the string "H2polito/" + sensor name
         passedComp.sensorSelected.forEach((sensor, index) => {
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
                 arrayMessages[index] = JSON.parse(message.payloadString);
-                //console.log('Index: ' + index)
                 console.log(sensor.topicName + ' ' + arrayMessages[index]);
             }
 
         });
 
-        setSingleVal(JSON.parse(message.payloadString));
+        setSingleVal(arrayMessages[0])
         setVal(arrayMessages);
-        console.log('Array of messages: ' + val);
-
     }
 
     function onFailureConnect() {
-        console.log("Connection failed from " + sens.sensorName);
+        console.error("Connection failed from " + sens.sensorName);
         setConnected(false);
     }
 
+    const sendData = msg => {
 
+        console.log('Sending the following message: ' + msg);
+        let newMsg = new Paho.Message(msg);
+        newMsg.destinationName = 'H2polito/Messaginggg';
+        client.send(newMsg);
+
+    }
+
+
+    //Called once when the component is mounted
     useEffect(() => {
         _init();
+
+        //Return called when the component will unmount
+        return () => {
+            passedComp.sensorSelected.map((s, index) => {
+                console.log('Unsubscribing ' + "H2polito/" + s.topicName);
+                client.unsubscribe("H2polito/" + s.topicName, {});
+                return
+            })
+            client.disconnect();
+            
+        }
     }, []);
 
     return (
@@ -136,23 +158,23 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
-                        <SimpleLight value={val[0]} name={passedComp.nameComponent!} />
+                        <SimpleLight value={singleVal} name={passedComp.nameComponent!} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
                     <div className="basis-1/3">
-                        <Speedometer value={val[0] * passedComp.prescaler} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
+                        <Speedometer value={singleVal} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
                     </div>
                 }
                 {passedComp.typeComponent == ComponentType.linearGauge &&
                     <div className="basis-full">
-                        <LinearGauge value={val[0]} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
+                        <LinearGauge value={singleVal} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
 
                 {passedComp.typeComponent == ComponentType.plot &&
                     <div className="basis-full" >
-                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.sensorSelected[0].ID} maxVal={passedComp.cmpMaxRange}/>
+                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.compID} maxVal={passedComp.cmpMaxRange}/>
                     </div>
                 }
 
@@ -175,7 +197,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     <div className="basis-full" style={{ height: "100%" }}>
                         <LapTimer></LapTimer>
                     </div>
+                }
 
+                {passedComp.typeComponent == ComponentType.messageSender &&
+                    <div>
+                        <MessageSender sendData={sendData}></MessageSender>
+                    </div>
                 }
 
 
@@ -184,8 +211,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             <br />
             {isConnected == false &&
                 <div style={{ display: "block" }} className="card-footer bg-red-200">
-                    {passedComp.sensorSelected.map((s: Sensor) => (
-                        <div>{s.ID} - {s.sensorName}</div>
+                    {passedComp.sensorSelected.map((s: Sensor, index) => (
+                        <div key={index}>{s.ID} - {s.sensorName}</div>
                     )
                     )}
 
@@ -193,8 +220,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             }
             {isConnected == true &&
                 <div style={{ display: "block" }} className="card-footer bg-green-200">
-                    {passedComp.sensorSelected.map((s: Sensor) => (
-                        <div>{s.ID} - {s.sensorName}</div>
+                    {passedComp.sensorSelected.map((s: Sensor, index) => (
+                        <div key={index}>{s.ID} - {s.sensorName}</div>
                     )
                     )}
                 </div>

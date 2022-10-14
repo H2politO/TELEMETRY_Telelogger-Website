@@ -90,7 +90,8 @@ class ApexChart extends React.Component {
         return (
            
             <div id="chart">
-                <Chart options={this.state.options} series={this.state.series} type="treemap" height={350} />
+                {//<Chart options={this.state.options} series={this.state.series} type="treemap" height={350} />
+    }
             </div>
         )
     }

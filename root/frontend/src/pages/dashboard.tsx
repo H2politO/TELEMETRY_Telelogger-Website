@@ -29,15 +29,17 @@ export const cmpType: ComponentTypeEncapsulator[] = [
     { compType: ComponentType.check, w: 3, h: 3 },
     { compType: ComponentType.radialGauge, w: 3, h: 8 },
     { compType: ComponentType.linearGauge, w: 6, h: 6 },
-    { compType: ComponentType.plot, w: 5, h: 10 },
+    { compType: ComponentType.plot, w: 5, h: 9 },
     { compType: ComponentType.circuitMap, w: 6, h: 12 },
-    { compType: ComponentType.lapTimer, w: 4, h: 12 },
+    { compType: ComponentType.lapTimer, w: 3, h: 12 },
+    { compType: ComponentType.messageSender, w: 3, h: 12 },
 ]
 
 export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     const [components, setcompPageList] = useState(compPageList);
     let cookie = new Cookies();
+    let myList=compPageList;
 
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
         console.log('Deleting ');
@@ -45,18 +47,22 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
             return cmp === cmpToDlt;
         })
 
-        setcompPageList(compPageList.splice(ind, 1));
-        //cookie.set('compPage', components);
-        //console.log('Cookies after delete', cookie.get('compPage'));
-        console.log(components);
+        console.log(ind)
+        
+        myList= compPageList;
+        //myList.splice(ind,1);
 
-        //update cookies
+        console.log(myList)
+        setcompPageList(compPageList.splice(ind, 1));
+        //cookie.set('compPage', myList);
+        //console.log('Cookies after delete', cookie.get('compPage'));
     }
 
     useEffect(() => {
-
-        setcompPageList(compPageList);
-        //cookie.set('compPage', components);
+        
+        setcompPageList(myList);
+        cookie.set('compPage', myList);
+        //console.log(cookie.get('compPage'))
         //console.log('Cookies A', cookie.get('compPage'));
     })
 
@@ -64,8 +70,8 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
     return (
         <div>
             {
-            //<LiveMap></LiveMap>
-        }
+                //<LiveMap></LiveMap>
+            }
 
             <ReactGridLayout
                 rowHeight={50}
@@ -73,16 +79,11 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
                 className="layout"
             >
 
-
                 {components.map((comp: ComponentsPage, index) => (
-
-                    
                     <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
                         <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
                     </div>
-
-                )
-                )}
+                ))}
             </ReactGridLayout >
         </div>
     )

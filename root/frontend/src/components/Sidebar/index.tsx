@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Sensor } from '../../models/sensor';
 import { ComponentsPage } from '../../models/componentsPage';
 import { SensorList } from './sensorsList';
+import { v4 as uuidv4 } from 'uuid';
 import { Formik, Field, Form, FormikHelpers, ErrorMessage, FormikState } from 'formik';
 import Select from 'react-select'
 import { OnChangeValue } from 'react-select';
@@ -23,20 +24,13 @@ export class Sidebar extends React.Component<any, any> {
 
     listCookie: Cookies;
     componentsList: ComponentsPage[];
-
    
     componentDidMount() {
-
-        /*
         this.listCookie = new Cookies();
-        if (this.listCookie.get('compList') != undefined)
-            this.componentsList = this.listCookie.get('compList');
+        if (this.listCookie.get('compPage') != undefined)
+            this.componentsList = this.listCookie.get('compPage');
         else
-        */
             this.componentsList = [];
-        
-        //this.onTrigger();
-
     }
 
     deleteCookiess = () => {
@@ -53,6 +47,7 @@ export class Sidebar extends React.Component<any, any> {
             {ID: 4, componentName: 'Plot'},
             {ID: 5, componentName: 'Circuit map'},
             {ID: 6, componentName: 'Lap timer'},
+            {ID: 7, componentName: 'Message Sender'},
         ],
         opt: [
             {value:{ ID: '1', topicName: 'Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100},label:'Emergency' },
@@ -67,6 +62,7 @@ export class Sidebar extends React.Component<any, any> {
             {value:{ ID: '10', topicName: 'PowerMode', sensorName: 'Power Mode On', minValue: 1, maxValue: 100 },label:'PowerMode'},
             {value:{ ID: '11', topicName: 'Short', sensorName: 'Short On', minValue: 1, maxValue: 100 },label:'Short'},
             {value:{ ID: '12', topicName: 'FCCurrent', sensorName: 'Fuel Cell Current', minValue: 1, maxValue: 100 },label:'FCCurrent'},
+            {value:{ ID: '13', topicName: 'Messaging', sensorName: 'Messaging client', minValue: 1, maxValue: 100 },label:'Messaging'},
         ]
     }
 
@@ -83,7 +79,6 @@ export class Sidebar extends React.Component<any, any> {
 
 
     onTrigger = () => {
-        console.log('Trigger');
         this.props.parentCallback(this.componentsList);
     }
 
@@ -95,13 +90,12 @@ export class Sidebar extends React.Component<any, any> {
                     <h2>Sensor menu</h2>
                 </div>
 
-                <img src='../../sensor.png' width="50%" className="center"></img>
+                <img src='./s1.png' width="50%" className="center"></img>
                 <div className="offcanvas-body">
                     <hr className="my-4" />
 
                     <Formik
                         initialValues={{
-                            compID: 1,
                             nameComponent: '',
                             typeComponent: 1,
                             cmpMinRange: 0,
@@ -121,10 +115,10 @@ export class Sidebar extends React.Component<any, any> {
                         ) => {
                             let prov = {} as ComponentsPage;
 
+                            this.componentsList=this.listCookie.get('compPage');
                             //push into components
                             prov = values;
-                            this.cmpID++;
-                            prov.compID=this.cmpID;
+                            prov.compID=uuidv4();
                             prov.sensorSelected=new Array<Sensor>();
                             prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
                             prov.w=cmpTypeConst.cmpType[prov.typeComponent-1].w;
@@ -134,11 +128,11 @@ export class Sidebar extends React.Component<any, any> {
                             this.componentsList.push(prov);
 
                             //add cookies
-                            console.group('Added cookies')
-                            console.log(this.componentsList);
-                            //this.listCookie.set('compList', JSON.stringify(this.componentsList));
+                            //console.group('Added cookies')
+                            //console.log(this.componentsList);
+                           // this.listCookie.set('compList', JSON.stringify(this.componentsList));
                             this.onTrigger();
-                            console.groupEnd();
+                            //console.groupEnd();
 
                             //reset
                             action.resetForm();
@@ -154,7 +148,7 @@ export class Sidebar extends React.Component<any, any> {
                                 <label>Select component</label>
                                 <Field component="select" className="form-select" id='typeComponent' name='typeComponent'>
                                 {this.state.indicatorList.map((Indicator)=>(
-                                        <option value={Indicator.ID}>{Indicator.componentName}</option>
+                                        <option key={'Indicator' + Indicator.ID} value={Indicator.ID}>{Indicator.componentName}</option>
                                     ))
                                     }
                                 </Field>
@@ -189,7 +183,7 @@ export class Sidebar extends React.Component<any, any> {
                                     <option value={1000}>x1000</option>
                                     <option value={100}>x100</option>
                                     <option value={10}>x10</option>
-                                    <option value={1} selected>x1</option>
+                                    <option defaultValue={1} >x1</option>
                                     <option value={0.1}>x0.1</option>
                                     <option value={0.01}>x0.01</option>
                                     <option value={0.001}>x0.001</option>

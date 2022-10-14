@@ -2,7 +2,7 @@ import React, { useState, useEffect, Component } from 'react'
 import { Routes, Route } from 'react-router-dom';
 import { Home } from './pages/home';
 import { Team } from './pages/team';
-import { Demo} from './pages/demo';
+import { Demo } from './pages/demo';
 import { Dashboard } from './pages/dashboard';
 import { IoMenu } from "react-icons/io5";
 import { Sidebar } from './components/Sidebar'
@@ -17,33 +17,30 @@ import { MinSummaryCalculator } from 'igniteui-react-core';
 
 export class App extends React.Component {
 
-
   state = {
     outputList: new Array<ComponentsPage>(),
   }
 
-  setOutputList = () => {
-    this.setState(this.state.outputList);
-  }
-
   cookie = new Cookies();
 
+  constructor(props: any) {
+    super(props);
+    if (this.cookie.get('compPage') != undefined) {
+      console.log('%c Found the following cookies ', 'color: lihtyellow; font-weight: bold; font-size: 25px');
+      console.table(this.cookie.get('compPage'));
+      this.state.outputList = this.cookie.get('compPage');
+    } else {
+      console.log("Didn't find any cookie");
+      this.state.outputList = [];
+    }
+  }
+
   handleCallback = (childData: ComponentsPage[]) => {
-    
-    console.log('cookieeeee', this.cookie.get('compList'));
-    if (this.cookie.get('compList') != undefined)
-      this.setState({ outputList: this.cookie.get('compList') })
+    if (this.cookie.get('compPage') != undefined)
+      this.setState({ outputList: childData })
     else
       this.setState({ outputList: childData })
   }
-
-
-
-  useEffect = (
-    console.log(''), [this.state.outputList]
-  )
-
-
 
   render() {
 

@@ -6,6 +6,8 @@ import 'react-resizable/css/styles.css';
 import './App.css';
 import App from './App'
 import {BrowserRouter} from 'react-router-dom'
+import { createRoot } from 'react-dom/client';
+
 import 'flowbite';
 
 ReactDOM.render(

@@ -26,7 +26,8 @@ export const Demo = () => {
             >
                 {components.map((comp, index) => (
                     <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
-                        <ComponentEncapsulator passedComp={comp as ComponentsPage} onDelete={null}></ComponentEncapsulator>
+                        {//<ComponentEncapsulator passedComp={comp as ComponentsPage} onDelete={null}></ComponentEncapsulator>
+}
                     </div>
                 ))}
                 {/*
