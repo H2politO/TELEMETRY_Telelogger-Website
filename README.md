@@ -10,6 +10,7 @@ The data is gahered from a smartphone located inside the car and sent via MQTT p
 
 Future implementations will see: 
 
+- [ ] Fix the actual smartphone app to be more secure and to work also in harsher conditions
 - [ ] GPS tracking and the relative visualization of the car in a  circuit map
 - [ ] Add a database to save and store data to access remotely in a second time
 - [ ] Implement a backend to create APIs for the WebApp and the Smartphone App
