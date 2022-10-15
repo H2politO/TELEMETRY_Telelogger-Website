@@ -1,27 +1,35 @@
 type Props = {
-    title : string,
-    status: number
+    comp: ComponentsPage,
+    value: number[]
 }
 
 import React from 'react';
+import { components } from 'react-select';
+import { ComponentsPage } from '../../models/componentsPage';
 
-export default class SimpleLight extends React.Component <any,any>{
+export default class SimpleLight extends React.Component<any, any>{
 
-    constructor(props : Props){
+    constructor(props: Props) {
         super(props);
-
-        this.state = {componentVisible: true};
     }
 
     public render(): JSX.Element {
         return (
-            <>
-            {this.props.status}
-            <div className={this.props.status ? "bg-green-500" : "bg-red-500"}>
-                <h1 className="text-center">{this.props.title}&nbsp;</h1>
+
+            <div>
+                {this.props.comp.sensorSelected.map((s, index) => (
+                    <div>
+                        <div className="led-box" >
+                            <div className={this.props.value[index] != 0 ? "led-green led-component" : "led-red led-component"}></div>
+
+                        </div>
+                        <div>{JSON.stringify(s.sensorName)}</div>
+                        {this.props.value[index]}
+                    </div>
+                ))}
+
             </div>
-            </>
-        );
+        )
     }
 
 }

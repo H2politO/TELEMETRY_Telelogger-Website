@@ -1,10 +1,29 @@
 const express = require('express');
-
+const mongoose = require('mongoose')
+require('dotenv').config()
 //all the routes are located inside routes/runs file
-const runRoutes = require('./routes/runs')
+const circuitRoutes = require('./routes/circuit')
+const circuitModel = require('./models/circuitModel')
+
+var bodyParser = require('body-parser')
 
 //express app
 const app = express();
+app.use(bodyParser.json())
+
+mongoose.connect(process.env.MONGOOSE_URI)
+    .then(() => {
+        //listen to port number 3000 ONLY afer the connection to the database
+        app.listen(process.env.PORT, () => {
+            console.log('Connected to database');
+        })
+    })
+    .catch((err) => {
+        console.error(err)
+    })
+
+//Goes to circuitRoutes when the path is the one that matches the string inside
+app.use('/circuit' , circuitRoutes)
 
 //middleware to log all the requests and where they come from
 app.use((req, res, next) => {
@@ -14,12 +33,8 @@ app.use((req, res, next) => {
 
 
 //the first paramether is to use the runRoutes only when the route /api/runs is invoked
-app.use('/api/allRuns', runRoutes) 
+//app.use('/', circuit)
 
 
-//listen to port number 3000
-app.listen(3000, () => {
-    console.log('listening on 3000!');
-})
 
 

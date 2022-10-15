@@ -3,10 +3,12 @@ import 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-realtime'
 import 'leaflet-gpx'
+import car from './carA.png'
 declare const L: any
 
 import { GeoJsonObject } from "geojson";
 import { TRACK } from './track.js'
+import src from "react-select/dist/declarations/src/index.js";
 
 export class LiveMap extends Component<any> {
 
@@ -17,7 +19,7 @@ export class LiveMap extends Component<any> {
 
 
     carIcon = L.icon({
-        iconUrl: './src/myAssets/car.png',
+        iconUrl: car,
         iconSize: [15, 15]
     })
 
@@ -39,15 +41,15 @@ export class LiveMap extends Component<any> {
         this.py=this.py/(this.points.length);
         console.log(this.px, this.py);
         // create map
+       
         this.map = L.map('circuitMap',
         ).setView([
             this.px, this.py
         ], 17);
-        L.tileLayer('').addTo(this.map);
+        //L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
 
         let mapWithPath = L.geoJSON(this.gpx).addTo(this.map);
         mapWithPath.setStyle({ color: 'white', weight: 4 });
-
 
         this.marker = L.marker([this.points[this.i%(this.points.length-1)][1], this.points[this.i%(this.points.length-1)][0]], {icon: this.carIcon});
         this.myFunction();
@@ -58,6 +60,7 @@ export class LiveMap extends Component<any> {
     myFunction() {
         setInterval(() => {
 
+        
             this.i++
             this.marker.remove();
 
@@ -67,16 +70,20 @@ export class LiveMap extends Component<any> {
 
         }, 50)
 
+
     }
 
     render() {
         return (
+            
             <div className="parentMap">
                 {//<input type="file" id="file-selector" multiple />
                 }
 
                 <div id="circuitMap"></div>
             </div>
+            
+
         )
     }
 }

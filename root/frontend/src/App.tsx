@@ -4,7 +4,7 @@ import { Home } from './pages/home';
 import { Team } from './pages/team';
 import { Demo } from './pages/demo';
 import { Dashboard } from './pages/dashboard';
-import { IoMenu } from "react-icons/io5";
+import { Analysis } from './pages/analysis';
 import { Sidebar } from './components/Sidebar'
 import { Navbar } from './components/NavBar';
 import { Sensor } from './models/sensor';
@@ -56,6 +56,7 @@ export class App extends React.Component {
             <Route path="/team" element={<Team />} />
             <Route path="/" element={<Dashboard compPageList={this.state.outputList} />} />
             <Route path="/demo" element={<Demo />} />
+            <Route path="/analysis" element={<Analysis/>} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
             <p>Made with &hearts; by Electronics (and Informatics) division</p>

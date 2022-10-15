@@ -11,19 +11,14 @@ import { ComponentsPage } from '../models/componentsPage'
 import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
-import { CastConnected, Check, Message } from "@material-ui/icons";
 import LiveGraph2 from "../components/LiveGraph2";
-import { LiveGraph3 } from "../components/LiveGraph3";
-import { useRef } from "react";
-import { LiveGraph } from "./LiveGraph/livegraph";
+
 import { LiveMap } from "./LiveMap";
-import { ComponentTypeEncapsulator } from "../models/componentType";
 import { LapTimer } from "./LapTimer"
 import { MessageSender } from "./messageSender";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { SensorList } from "./Sidebar/sensorsList";
-import { components } from "react-select";
+
 
 export enum ComponentType {
     check = 1,
@@ -158,8 +153,9 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&
                     <div className="">
-                        <SimpleLight value={singleVal} name={passedComp.nameComponent!} />
+                        <SimpleLight value={val} comp={passedComp} />
                     </div>
+                    
                 }
                 {passedComp.typeComponent == ComponentType.radialGauge &&
                     <div className="basis-1/3">

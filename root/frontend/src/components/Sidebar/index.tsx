@@ -9,6 +9,8 @@ import { OnChangeValue } from 'react-select';
 import Cookies from 'universal-cookie';
 import * as cmpTypeConst from '../../pages/dashboard';
 
+import sensorImage from './sensor.png'
+
 type Props = {
     //sensorList: Sensor[];
     outputList: ComponentsPage[];
@@ -86,11 +88,8 @@ export class Sidebar extends React.Component<any, any> {
         return (
 
             <div className="offcanvas offcanvas-end" id="offcanvasRight">
-                <div className="offcanvas-header sidebar-title">
-                    <h2>Sensor menu</h2>
-                </div>
 
-                <img src='./s1.png' width="50%" className="center"></img>
+                <img src={sensorImage} className="sensorImage"></img>
                 <div className="offcanvas-body">
                     <hr className="my-4" />
 
@@ -194,7 +193,6 @@ export class Sidebar extends React.Component<any, any> {
                             
                         </Form>
                     </Formik>
-                    <button className="btn btn-primary interactiveBtn mt-1" onClick={this.deleteCookiess}>Remove cookies</button>
                 </div>
             </div >
         )

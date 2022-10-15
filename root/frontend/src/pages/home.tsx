@@ -31,13 +31,14 @@ export const Home = () => {
   // called when sending payload
   const _sendPayload = () => {
     if (client == undefined || msg === "") return
+
     const message = new Paho.Message(msg);
     message.destinationName = "H2polito/Speed";
     console.log("Sending");
     console.log(message.payloadString);
     client.send(message);
 
-
+    
     let newMex= (parseInt(msg) + 10)
 
     const message2= new Paho.Message(JSON.stringify(newMex));
@@ -46,7 +47,28 @@ export const Home = () => {
     console.log(message2.payloadString);
     client.send(message2);
 
+    setMsg("false");
+
+    const messageIdra= new Paho.Message(JSON.stringify(true));
+    messageIdra.destinationName = "H2polito/IdraStatus";
+    console.log("Sending idra status");
+    console.log(messageIdra.payloadString);
+    client.send(messageIdra);
+
     setMsg("");
+
+    setTimeout(() => {
+      const falseMessage= new Paho.Message(JSON.stringify(false));
+      falseMessage.destinationName = "H2polito/IdraStatus";
+      console.log("Sending idra status 2 " + falseMessage.payloadString);
+      client.send(falseMessage);
+    }, 5000)
+
+    let vehicleStatus = false;
+
+
+
+    
 
   }
 
