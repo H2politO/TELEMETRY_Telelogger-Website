@@ -10,6 +10,8 @@ import idraPNG from './idra.png';
 import junoPNG from './juno.png';
 import '../../App.css'
 
+import logoTeam from './logoTeam.svg'
+
 export const Navbar = () => {
 
     const [idraOn, setIdra] = useState(false);
@@ -76,7 +78,7 @@ export const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-sm py-4  bg-slate-100 border-b-2 border-stone-200">
             <div className="container-fluid">
-                <img src={"../../logo_team.svg"} alt="Logo" height={80} width={80} />
+                <img src={logoTeam} alt="Logo" height={80} width={80} />
                 <a className="navbar-brand" href="/">H2politO telemetry</a>
 
                 <div className="collapse navbar-collapse" id="navbarNav">

@@ -50,18 +50,17 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
         console.log(ind)
 
         myList = compPageList;
-        //myList.splice(ind,1);
 
         console.log(myList)
         setcompPageList(compPageList.splice(ind, 1));
-        //cookie.set('compPage', myList);
-        //console.log('Cookies after delete', cookie.get('compPage'));
+
     }
 
     useEffect(() => {
 
         setcompPageList(myList);
-        cookie.set('compPage', myList);
+        //Set age of the cookies to 1 year (60 seconds * 60 minutes * 24 hours * 365 days)
+        cookie.set('compPage', myList, {maxAge: 60*60*24*365});
         //console.log(cookie.get('compPage'))
         //console.log('Cookies A', cookie.get('compPage'));
     })

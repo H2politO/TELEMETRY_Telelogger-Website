@@ -72,7 +72,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         passedComp.sensorSelected.forEach((s, index) => {
             arrayMessages.push(0);
-            console.log('%c Connecting to the topic: ' + s.topicName, 'color: orange');
+            console.log('%c Connecting to the topic: ' + "H2polito/" + s.topicName, 'color: orange');
             client.subscribe("H2polito/" + s.topicName, {});
         });
 
@@ -119,8 +119,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const sendData = msg => {
 
         console.log('Sending the following message: ' + msg);
-        let newMsg = new Paho.Message(msg);
-        newMsg.destinationName = 'H2polito/Messaginggg';
+        const newMsg = new Paho.Message(msg);
+        newMsg.destinationName = 'H2polito/Messaging';
         client.send(newMsg);
 
     }
@@ -144,11 +144,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     return (
         <div className="card dashboardElement">
+            {window.location.pathname == "/"  && 
             <div className="card-header bg-transparent">
                 <span className="cards-title">{passedComp.nameComponent}</span>
                 <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
                 <button type="button" className="float-right" onClick={() => _init()}><IoReload size={20} style={style2} /></button>
-            </div>
+            </div>}
 
             <div className="card-body">
                 {passedComp.typeComponent == ComponentType.check &&

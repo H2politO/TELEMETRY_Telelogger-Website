@@ -21,10 +21,7 @@ export default class SimpleLight extends React.Component<any, any>{
                     <div>
                         <div className="led-box" >
                             <div className={this.props.value[index] != 0 ? "led-green led-component" : "led-red led-component"}></div>
-
                         </div>
-                        <div>{JSON.stringify(s.sensorName)}</div>
-                        {this.props.value[index]}
                     </div>
                 ))}
 

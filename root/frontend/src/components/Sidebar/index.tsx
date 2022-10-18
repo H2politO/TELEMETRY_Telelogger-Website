@@ -35,12 +35,6 @@ export class Sidebar extends React.Component<any, any> {
             this.componentsList = [];
     }
 
-    deleteCookiess = () => {
-        console.log('Removing cookie');
-        this.listCookie.remove('compList');
-
-    }
-
     state = {
         indicatorList:[
             {ID: 1, componentName: 'Check Light'},
