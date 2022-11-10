@@ -45,7 +45,7 @@ export class App extends React.Component {
   render() {
 
     return (
-      <div className="bg-slate-600 flex flex-col min-h-screen justify-between">
+      <div className="bg-slate-600 flex flex-col min-h-screen justify-between backgroundImage">
 
         <Navbar></Navbar>
         <Sidebar parentCallback={this.handleCallback}></Sidebar>
@@ -59,10 +59,9 @@ export class App extends React.Component {
             <Route path="/analysis" element={<Analysis/>} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
-            <p>Made with &hearts; by Electronics (and Informatics) division</p>
+            <p>Made with &hearts; by (Informatics) division</p>
           </div>
         </main>
-
 
       </div>
     );
