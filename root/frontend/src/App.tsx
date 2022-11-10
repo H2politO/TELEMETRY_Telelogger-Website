@@ -59,7 +59,7 @@ export class App extends React.Component {
             <Route path="/analysis" element={<Analysis/>} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
-            <p>Made with &hearts; by Electronics (and Informatics) division</p>
+            <p>Made with &hearts; by Automation (and Informatics) division</p>
           </div>
         </main>
 
