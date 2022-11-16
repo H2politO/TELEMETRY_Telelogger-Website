@@ -16,6 +16,9 @@ import LiveGraph2 from "../components/LiveGraph2";
 import { LiveMap } from "./LiveMap";
 import { LapTimer } from "./LapTimer"
 import { MessageSender } from "./messageSender";
+
+import { AVAILABLE_COMPONENTS } from "../models/constants";
+
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -56,6 +59,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
         client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
+        //client.subscribe('H2polito/Messaging')
     }
 
 
@@ -116,15 +120,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         setConnected(false);
     }
 
-    const sendData = msg => {
-
-        console.log('Sending the following message: ' + msg);
-        const newMsg = new Paho.Message(msg);
-        newMsg.destinationName = 'H2polito/Messaging';
-        client.send(newMsg);
-
-    }
-
 
     //Called once when the component is mounted
     useEffect(() => {
@@ -148,28 +143,28 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             <div className="card-header bg-transparent">
                 <span className="cards-title">{passedComp.nameComponent}</span>
                 <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
-                <button type="button" className="float-right" onClick={() => _init()}><IoReload size={20} style={style2} /></button>
+                <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>
             </div>}
 
             <div className="card-body">
-                {passedComp.typeComponent == ComponentType.check &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[0].ID &&
                     <div className="">
                         <SimpleLight value={val} comp={passedComp} />
                     </div>
                     
                 }
-                {passedComp.typeComponent == ComponentType.radialGauge &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[1].ID &&
                     <div className="basis-1/3">
                         <Speedometer value={singleVal} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
                     </div>
                 }
-                {passedComp.typeComponent == ComponentType.linearGauge &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[2].ID &&
                     <div className="basis-full">
                         <LinearGauge value={singleVal} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
 
-                {passedComp.typeComponent == ComponentType.plot &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[3].ID &&
                     <div className="basis-full" >
                         <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.compID} maxVal={passedComp.cmpMaxRange}/>
                     </div>
@@ -183,22 +178,22 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     </div>
             */}
 
-                {passedComp.typeComponent == ComponentType.circuitMap &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
                     <div className="basis-full" style={{ height: "100%" }}>
                         <LiveMap ></LiveMap>
                     </div>
 
                 }
 
-                {passedComp.typeComponent == ComponentType.lapTimer &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[5].ID &&
                     <div className="basis-full" style={{ height: "100%" }}>
                         <LapTimer></LapTimer>
                     </div>
                 }
 
-                {passedComp.typeComponent == ComponentType.messageSender &&
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[6].ID &&
                     <div>
-                        <MessageSender sendData={sendData}></MessageSender>
+                        <MessageSender></MessageSender>
                     </div>
                 }
 
