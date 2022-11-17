@@ -25,22 +25,14 @@ type Props = {
     useMountEffect?: () => (void)
 };
 
-export const cmpType: ComponentTypeEncapsulator[] = [
-    { compType: ComponentType.check, w: 3, h: 3 },
-    { compType: ComponentType.radialGauge, w: 3, h: 8 },
-    { compType: ComponentType.linearGauge, w: 6, h: 6 },
-    { compType: ComponentType.plot, w: 5, h: 9 },
-    { compType: ComponentType.circuitMap, w: 3, h: 9 },
-    { compType: ComponentType.lapTimer, w: 3, h: 12 },
-    { compType: ComponentType.messageSender, w: 3, h: 12 },
-]
-
 export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     const [components, setcompPageList] = useState(compPageList);
     let cookie = new Cookies();
     let myList = compPageList;
 
+
+    //Function used to delete the passed components
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
         console.log('Deleting ');
         let ind = compPageList.findIndex((cmp) => {
@@ -56,13 +48,11 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
 
     }
 
+    //On each change of the page, set new cookies
     useEffect(() => {
-
         setcompPageList(myList);
         //Set age of the cookies to 1 year (60 seconds * 60 minutes * 24 hours * 365 days)
         cookie.set('compPage', myList, {maxAge: 60*60*24*365});
-        //console.log(cookie.get('compPage'))
-        //console.log('Cookies A', cookie.get('compPage'));
     })
 
 
@@ -74,7 +64,6 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
                 cols={12}
                 compactType="vertical"
             >
-
                 {components.map((comp: ComponentsPage, index) => (
                     <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
                             <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>

@@ -9,6 +9,9 @@ import { OnChangeValue } from 'react-select';
 import Cookies from 'universal-cookie';
 import * as cmpTypeConst from '../../pages/dashboard';
 
+import { IDRA_SENSORS } from '../../models/constants';
+import { AVAILABLE_COMPONENTS } from '../../models/constants';
+
 import sensorImage from './sensor.png'
 
 type Props = {
@@ -36,33 +39,10 @@ export class Sidebar extends React.Component<any, any> {
     }
 
     state = {
-        indicatorList:[
-            {ID: 1, componentName: 'Check Light'},
-            {ID: 2, componentName: 'Radial Gauge'},
-            {ID: 3, componentName: 'Linear Gauge'},
-            {ID: 4, componentName: 'Plot'},
-            {ID: 5, componentName: 'Circuit map'},
-            {ID: 6, componentName: 'Lap timer'},
-            {ID: 7, componentName: 'Message Sender'},
-        ],
-        opt: [
-            {value:{ ID: '1', topicName: 'Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100},label:'Emergency' },
-            {value:{ ID: '2', topicName: 'Speed', sensorName: 'Speed', minValue: 1, maxValue: 100 },label:'Speed'},
-            {value:{ ID: '3', topicName: 'Temperature', sensorName: 'Temperature', minValue: 1, maxValue: 100 },label:'Temperature'},
-            {value:{ ID: '4', topicName: 'FCVoltage', sensorName: 'Fuel Cell Voltage', minValue: 1, maxValue: 100 },label:'FCVoltage'},
-            {value:{ ID: '5', topicName: 'SCVoltage', sensorName: 'Supercap Voltage', minValue: 1, maxValue: 100 },label:'SCVoltage'},
-            {value:{ ID: '6', topicName: 'Strategy', sensorName: 'Strategy', minValue: 1, maxValue: 100 },label:'Strategy'},
-            {value:{ ID: '7', topicName: 'MotorOn', sensorName: 'Motor On', minValue: 1, maxValue: 100 },label:'MotorOn'},
-            {value:{ ID: '8', topicName: 'ActuationOn', sensorName: 'Actuation On', minValue: 1, maxValue: 100 },label:'ActuationOn'},
-            {value:{ ID: '9', topicName: 'Purge', sensorName: 'Purge On', minValue: 1, maxValue: 100 },label:'Purge'},
-            {value:{ ID: '10', topicName: 'PowerMode', sensorName: 'Power Mode On', minValue: 1, maxValue: 100 },label:'PowerMode'},
-            {value:{ ID: '11', topicName: 'Short', sensorName: 'Short On', minValue: 1, maxValue: 100 },label:'Short'},
-            {value:{ ID: '12', topicName: 'FCCurrent', sensorName: 'Fuel Cell Current', minValue: 1, maxValue: 100 },label:'FCCurrent'},
-            {value:{ ID: '13', topicName: 'Messaging', sensorName: 'Messaging client', minValue: 1, maxValue: 100 },label:'Messaging'},
-        ]
+        AVAILABLE_COMPONENTS,
+        IDRA_SENSORS,
     }
 
-    cmpID=0;
     sensors: any;
     
     handleChange = (
@@ -114,8 +94,8 @@ export class Sidebar extends React.Component<any, any> {
                             prov.compID=uuidv4();
                             prov.sensorSelected=new Array<Sensor>();
                             prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
-                            prov.w=cmpTypeConst.cmpType[prov.typeComponent-1].w;
-                            prov.h=cmpTypeConst.cmpType[prov.typeComponent-1].h;
+                            prov.w=AVAILABLE_COMPONENTS[prov.typeComponent-1].w
+                            prov.h=AVAILABLE_COMPONENTS[prov.typeComponent-1].h
                             prov.cmpMinRange=values.cmpMinRange;
                             prov.cmpMaxRange=values.cmpMaxRange;
                             this.componentsList.push(prov);
@@ -140,7 +120,7 @@ export class Sidebar extends React.Component<any, any> {
                             <div className='myFormGroup'>
                                 <label>Select component</label>
                                 <Field component="select" className="form-select" id='typeComponent' name='typeComponent'>
-                                {this.state.indicatorList.map((Indicator)=>(
+                                {this.state.AVAILABLE_COMPONENTS.map((Indicator)=>(
                                         <option key={'Indicator' + Indicator.ID} value={Indicator.ID}>{Indicator.componentName}</option>
                                     ))
                                     }
@@ -150,7 +130,7 @@ export class Sidebar extends React.Component<any, any> {
 
                             <div className='myFormGroup'>
                                 <label>Select multi-sensor</label>
-                                <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.state.opt} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
+                                <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.state.IDRA_SENSORS} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
                             </div>
 
                             <div className='myFormGroup'>

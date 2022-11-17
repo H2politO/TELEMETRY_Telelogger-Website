@@ -65,11 +65,6 @@ export const Home = () => {
     }, 5000)
 
     let vehicleStatus = false;
-
-
-
-    
-
   }
 
   // called when client lost connection
