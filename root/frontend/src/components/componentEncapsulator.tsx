@@ -12,6 +12,7 @@ import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import LiveGraph2 from "../components/LiveGraph2";
+import { MyFileUppy } from "./FileUploader/MyFileUppy";
 
 import { LiveMap } from "./LiveMap";
 import { LapTimer } from "./LapTimer"
@@ -55,7 +56,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     //Creation a client with a list of sensors
     const _init = () => {
-        
+
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
         client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
@@ -66,9 +67,9 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     // Function called when the client manages to connect to the topic
     function onConnect() {
 
-        console.group('%c Creating a client for the following sensors:'+ passedComp.sensorSelected.map(e => {
+        console.group('%c Creating a client for the following sensors:' + passedComp.sensorSelected.map(e => {
             return ' ' + String(e.sensorName)
-        }), 'color: lightblue; font-weight: bold; font-size: 15px' );
+        }), 'color: lightblue; font-weight: bold; font-size: 15px');
 
         if (client == undefined) {
             console.log('Client undefined');
@@ -133,25 +134,25 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 return
             })
             client.disconnect();
-            
+
         }
     }, []);
 
     return (
         <div className="card dashboardElement">
-            {window.location.pathname == "/"  && 
-            <div className="card-header bg-transparent">
-                <span className="cards-title">{passedComp.nameComponent}</span>
-                <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
-                <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>
-            </div>}
+            {window.location.pathname == "/" &&
+                <div className="card-header bg-transparent">
+                    <span className="cards-title">{passedComp.nameComponent}</span>
+                    <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
+                    <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>
+                </div>}
 
             <div className="card-body">
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[0].ID &&
                     <div className="">
                         <SimpleLight value={val} comp={passedComp} />
                     </div>
-                    
+
                 }
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[1].ID &&
                     <div className="basis-1/3">
@@ -166,7 +167,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[3].ID &&
                     <div className="basis-full" >
-                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.compID} maxVal={passedComp.cmpMaxRange}/>
+                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.compID} maxVal={passedComp.cmpMaxRange} />
                     </div>
                 }
 
@@ -197,6 +198,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     </div>
                 }
 
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID &&
+                    <div>
+                        <MyFileUppy></MyFileUppy>
+                    </div>
+                }
+
 
 
             </div>
@@ -218,6 +225,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     )}
                 </div>
             }
+
+
 
         </div >
 
