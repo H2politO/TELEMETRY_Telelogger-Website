@@ -4,20 +4,32 @@ import 'leaflet-draw';
 import 'leaflet-realtime'
 import 'leaflet-gpx'
 import car from './carA.png'
+import { AltimetryMap } from './altimetryMap'
 declare const L: any
+
+type Props = {
+}
+
+type state = {
+    selectedFile: undefined,
+    isFilePicked: false
+    altimetryPoints: number[]
+    carPosition: 0
+}
 
 import { GeoJsonObject } from "geojson";
 import { TRACK } from './track.js'
 import src from "react-select/dist/declarations/src/index.js";
 
-export class LiveMap extends Component<any> {
+export class LiveMap extends Component<any, any> {
 
-    state = {
-        selectedFile: undefined,
-        isFilePicked: false
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            altimetryPoints: [],
+        }
     }
 
-    gpx = TRACK as GeoJsonObject;
     i = 0;
 
     carIcon = L.icon({
@@ -45,11 +57,8 @@ export class LiveMap extends Component<any> {
         ).setView([
             0, 0
         ], 0);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
 
-        let mapWithPath = L.geoJSON(this.gpx).addTo(this.map);
-        mapWithPath.setStyle({ color: 'white', weight: 4 });
-
+        //L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
     }
 
     computeCenter(tp) {
@@ -72,18 +81,26 @@ export class LiveMap extends Component<any> {
             this.marker = L.marker([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], { icon: this.carIcon });
             this.marker.addTo(this.map);
 
-        }, 50)
+            this.setState({ carPosition: this.i }, () => {
+            });
+
+            //Enable to follow car
+            //this.map.setView([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], 17);
+
+        }, 200)
     }
 
     changeHandler = (event) => {
-        this.state.selectedFile = event.target.files[0];
-        this.state.isFilePicked = true;
+        this.setState({ selectedFile: event.target.files[0] });
+        this.setState({ isFilePicked: true });
 
         console.log(event.target.files[0])
 
         const reader = new FileReader();
 
         reader.onload = async (e) => {
+
+            console.log("Loading file")
 
             let lines = reader.result.toString().split("\n");
             var headers = lines[0].split(";");
@@ -94,7 +111,7 @@ export class LiveMap extends Component<any> {
                 var obj = {};
                 var currentline = lines[i].split(";");
 
-                for (var j = 0; j < headers.length; j++) {
+                for (var j = 0; j < headers.length - 1; j++) {
                     obj[headers[j]] = currentline[j];
                 }
                 result.push(obj);
@@ -102,6 +119,12 @@ export class LiveMap extends Component<any> {
 
             this.trackPoints = result.map((p) => {
                 return [parseFloat(p.Lat), parseFloat(p.Long)]
+            })
+
+            this.setState({
+                altimetryPoints: result.map((p) => {
+                    return parseFloat(p.Alt.replace("\r", ""))
+                })
             })
 
             let loadedGeoJSON = {
@@ -128,7 +151,7 @@ export class LiveMap extends Component<any> {
             }
 
             console.log(loadedGeoJSON);
-            this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'orange', weight: 4 });
+            this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'white', weight: 4 });
             this.map.setView([
                 this.px, this.py
             ], 17);
@@ -144,9 +167,16 @@ export class LiveMap extends Component<any> {
     };
 
     render() {
+
+        let fileUP
+        if (this.state.isFilePicked) {
+            fileUP = <input type="file" name="file" onChange={this.changeHandler} />
+        } else {
+
+        }
         return (
             <div >
-                {this.state.isFilePicked == false &&
+                {
                     <input type="file" name="file" onChange={this.changeHandler} />
                 }
                 {/*<div>
@@ -154,8 +184,11 @@ export class LiveMap extends Component<any> {
     
                 </div>*/
                 }
+                <div className="parentMap" id="circuitMap"></div>
+                {
+                    <AltimetryMap data={[this.state.altimetryPoints, this.state.carPosition]}></AltimetryMap>
+                }
 
-                    <div className="parentMap" id="circuitMap"></div>
 
             </div>
 
