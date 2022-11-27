@@ -66,6 +66,9 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
                 cols={12}
                 compactType="vertical"
                 draggableHandle='.handle'
+                autoSize={true}
+                //isResizable={false}
+                margin={[5,5]}
             >
                 {components.map((comp: ComponentsPage, index) => (
                     <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>

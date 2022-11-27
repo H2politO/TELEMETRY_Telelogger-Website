@@ -58,7 +58,7 @@ export class LiveMap extends Component<any, any> {
             0, 0
         ], 0);
 
-        //L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+       // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
     }
 
     computeCenter(tp) {
@@ -103,27 +103,34 @@ export class LiveMap extends Component<any, any> {
             console.log("Loading file")
 
             let lines = reader.result.toString().split("\n");
-            var headers = lines[0].split(";");
+            var headers = lines[0].replace("\r", "").split(";");
+            console.log(headers)
             var result = [];
 
+            //Looping inside file until it reaches the end of it
             for (var i = 1; i < lines.length - 1; i++) {
 
                 var obj = {};
                 var currentline = lines[i].split(";");
 
-                for (var j = 0; j < headers.length - 1; j++) {
-                    obj[headers[j]] = currentline[j];
+                //For each line, scan through it and save the data
+                for (var j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = currentline[j].replace("\r", "");
                 }
                 result.push(obj);
             }
 
+            //Compute trackpoints used to draw the map
             this.trackPoints = result.map((p) => {
                 return [parseFloat(p.Lat), parseFloat(p.Long)]
             })
 
+            console.log(result);
+
+            //Compute altimetryPoints used to draw the graph
             this.setState({
                 altimetryPoints: result.map((p) => {
-                    return parseFloat(p.Alt.replace("\r", ""))
+                    return parseFloat(p.Alt.replace("\r", "")).toFixed(2)
                 })
             })
 
@@ -140,15 +147,15 @@ export class LiveMap extends Component<any, any> {
                     }]
             }
 
-            this.computeCenter(this.trackPoints)
+
 
             if (this.m != undefined) {
                 this.m.remove()
-
                 this.px = 0;
                 this.py = 0;
-                this.computeCenter(this.trackPoints)
             }
+
+            this.computeCenter(this.trackPoints)
 
             console.log(loadedGeoJSON);
             this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'white', weight: 4 });
@@ -163,30 +170,31 @@ export class LiveMap extends Component<any, any> {
     };
 
     handleSubmission = () => {
+        this.setState({isFilePicked : !this.state.isFilePicked})
 
     };
 
     render() {
 
-        let fileUP
+        let altimetryMap
+        let filePicker
         if (this.state.isFilePicked) {
-            fileUP = <input type="file" name="file" onChange={this.changeHandler} />
+            altimetryMap = <AltimetryMap data={[this.state.altimetryPoints, this.state.carPosition]}></AltimetryMap>
         } else {
-
+            filePicker = <input type="file" name="file" onChange={this.changeHandler} />
         }
         return (
             <div >
                 {
-                    <input type="file" name="file" onChange={this.changeHandler} />
+                    filePicker
                 }
-                {/*<div>
-                    //<button onClick={this.handleSubmission}>Submit</button>
-    
-                </div>*/
-                }
+                <div>
+                    <button onClick={this.handleSubmission}>Toggle altimetry</button>
+
+                </div>
                 <div className="parentMap" id="circuitMap"></div>
                 {
-                    <AltimetryMap data={[this.state.altimetryPoints, this.state.carPosition]}></AltimetryMap>
+                    altimetryMap
                 }
 
 

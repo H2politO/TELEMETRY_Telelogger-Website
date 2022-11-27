@@ -13,8 +13,8 @@ export const AltimetryMap = (passedData) => {
             points:
                 [
                     {
-                        x: 100,
-                        y: 292,
+                        x: 0,
+                        y: 0,
                         marker: {
                             size: 8,
                         },
@@ -26,7 +26,6 @@ export const AltimetryMap = (passedData) => {
                 ]
         },
         chart: {
-            height: 350,
             type: 'line',
             zoom: {
                 enabled: false
@@ -50,6 +49,10 @@ export const AltimetryMap = (passedData) => {
                 colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
                 opacity: 0.5
             },
+        },
+
+        yaxis: {
+            forceNiceScale: true,
         }
     });
 
@@ -85,10 +88,9 @@ export const AltimetryMap = (passedData) => {
                     ]
             },
             chart: {
-                height: 350,
                 type: 'line',
                 zoom: {
-                    enabled: true
+                    enabled: false
                 }
             },
             xaxis: {
@@ -102,13 +104,16 @@ export const AltimetryMap = (passedData) => {
             },
             title: {
                 text: 'Altimetry',
-                align: 'left'
+                align: 'center'
             },
             grid: {
                 row: {
                     colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
                     opacity: 0.5
                 },
+            },
+            yaxis: {
+                forceNiceScale: true,
             }
         });
 
@@ -116,13 +121,13 @@ export const AltimetryMap = (passedData) => {
 
     return (
 
-        <div id="chartASD">
+        <div id="chartASD" >
             <Chart
                 // @ts-ignore
                 options={chartOptions}
                 // @ts-ignore
                 series={series}
-                type="line" height={350} />
+                type="line" height={300}/>
         </div>
         )
 }

@@ -141,7 +141,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     return (
         <div className="card dashboardElement">
             {window.location.pathname == "/" &&
-                <div className="card-header handle bg-slate-100">
+                <div className="card-header handle">
                     <span className="cards-title">{passedComp.nameComponent}</span>
                     <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
                     <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>

@@ -60,7 +60,7 @@ export class LiveGraph2 extends Component<any> {
                             color: '#fff',
                             background: '#00E396',
                         },
-                        text: 'Averge',
+                        text: 'Average',
                     }
                 }]
             },
