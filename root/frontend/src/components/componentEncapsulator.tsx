@@ -178,10 +178,39 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     return (
         <div className="card dashboardElement">
             {window.location.pathname == "/" &&
-                <div className="card-header bg-transparent">
-                    <span className="cards-title">{passedComp.nameComponent}</span>
-                    <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
-                    <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>
+                <div className="card-header handle">
+                    <span className="cards-title">{passedComp.nameComponent} </span>
+                    {isConnected == false &&
+                            <span className="text-red-500">
+                                {passedComp.sensorSelected.map((s: Sensor, index) => (
+                                    <span key={index}>{s.sensorName} </span>
+                                )
+                                )}
+
+                            </span>
+                        }
+                        {isConnected == true &&
+                        
+                            <span className=" text-green-500">
+                                {passedComp.sensorSelected.map((s: Sensor, index) => (
+                                    <span key={index}>{s.sensorName} </span>
+                                )
+                                )}
+                            </span>
+                        }
+
+
+                {SVC == true && 
+                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChange}></input>
+                    }
+                    <span>
+
+                        <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
+                        <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>
+                    </span>
+
+
+
                 </div>}
 
             <div className="card-body">
@@ -244,34 +273,15 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
 
             </div>
-            <br />
-            {isConnected == false &&
-                <div style={{ display: "block" }} className="card-footer bg-red-200">
-                  {passedComp.sensorSelected.map((s: Sensor, index) => (
-                        <div key={index}>{s.ID} - {s.sensorName}</div>
-                    )
-                    )}
 
-                </div>
-            }
-            {isConnected == true &&
-                <div style={{ display: "block" }} className="card-footer bg-green-200">
 
-                    {passedComp.sensorSelected.map((s: Sensor, index) => (
-                        <span key={index}>{s.ID} - {s.sensorName}</span>
-                    )
-                    )}
-                {SVC == true && 
-                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChange} style={{"float": "right"}}></input>
-                    }
-                </div>
-            }
+            {/*
                  <div style={{ position: "absolute",top: 0, left: 0, right: 0, zIndex: 0 }}>
                     <Stack sx={{ width: '100%' }} spacing={2}>
                       <Alert severity="error"> SCV Alto!</Alert>                               
                          </Stack>
-                 </div>
-            
+                 </div>*/
+}
 
 
 

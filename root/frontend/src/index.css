@@ -32,8 +32,9 @@ code {
 }
 
 #sidebar {
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 10%;
+  max-width: 30%;
+  width: 1000px;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -52,7 +53,7 @@ code {
   background: rgba(0, 0, 0, 0.7);
   /* middle layer, i.e. appears below the sidebar */
   z-index: 998;
-  opacity: 0;
+  opacity: 1;
   /* animate the transition */
   transition: all 0.5s ease-in-out;
 }
@@ -72,7 +73,7 @@ code {
 }
 
 .myFormGroup {
-  margin: 10px;
+  margin-top: 10px;
 }
 
 .centerButton {

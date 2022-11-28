@@ -33,7 +33,7 @@ export const Home = () => {
     if (client == undefined || msg === "") return
 
     const message = new Paho.Message(msg);
-    message.destinationName = "H2polito/Speed";
+    message.destinationName = "H2polito/Idra/SCVoltage";
     console.log("Sending");
     console.log(message.payloadString);
     client.send(message);
@@ -42,7 +42,7 @@ export const Home = () => {
     let newMex= (parseInt(msg) + 10)
 
     const message2= new Paho.Message(JSON.stringify(newMex));
-    message2.destinationName = "H2polito/SCVoltage";
+    message2.destinationName = "H2polito/Idra/Temperature";
     console.log("Sending");
     console.log(message2.payloadString);
     client.send(message2);

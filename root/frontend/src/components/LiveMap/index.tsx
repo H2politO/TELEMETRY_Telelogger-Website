@@ -4,20 +4,32 @@ import 'leaflet-draw';
 import 'leaflet-realtime'
 import 'leaflet-gpx'
 import car from './carA.png'
+import { AltimetryMap } from './altimetryMap'
 declare const L: any
+
+type Props = {
+}
+
+type state = {
+    selectedFile: undefined,
+    isFilePicked: false
+    altimetryPoints: number[]
+    carPosition: 0
+}
 
 import { GeoJsonObject } from "geojson";
 import { TRACK } from './track.js'
 import src from "react-select/dist/declarations/src/index.js";
 
-export class LiveMap extends Component<any> {
+export class LiveMap extends Component<any, any> {
 
-    state = {
-        selectedFile: undefined,
-        isFilePicked: false
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            altimetryPoints: [],
+        }
     }
 
-    gpx = TRACK as GeoJsonObject;
     i = 0;
 
     carIcon = L.icon({
@@ -45,11 +57,8 @@ export class LiveMap extends Component<any> {
         ).setView([
             0, 0
         ], 0);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
 
-        let mapWithPath = L.geoJSON(this.gpx).addTo(this.map);
-        mapWithPath.setStyle({ color: 'white', weight: 4 });
-
+       // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
     }
 
     computeCenter(tp) {
@@ -72,12 +81,18 @@ export class LiveMap extends Component<any> {
             this.marker = L.marker([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], { icon: this.carIcon });
             this.marker.addTo(this.map);
 
-        }, 50)
+            this.setState({ carPosition: this.i }, () => {
+            });
+
+            //Enable to follow car
+            //this.map.setView([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], 17);
+
+        }, 200)
     }
 
     changeHandler = (event) => {
-        this.state.selectedFile = event.target.files[0];
-        this.state.isFilePicked = true;
+        this.setState({ selectedFile: event.target.files[0] });
+        this.setState({ isFilePicked: true });
 
         console.log(event.target.files[0])
 
@@ -85,23 +100,38 @@ export class LiveMap extends Component<any> {
 
         reader.onload = async (e) => {
 
+            console.log("Loading file")
+
             let lines = reader.result.toString().split("\n");
-            var headers = lines[0].split(";");
+            var headers = lines[0].replace("\r", "").split(";");
+            console.log(headers)
             var result = [];
 
+            //Looping inside file until it reaches the end of it
             for (var i = 1; i < lines.length - 1; i++) {
 
                 var obj = {};
                 var currentline = lines[i].split(";");
 
+                //For each line, scan through it and save the data
                 for (var j = 0; j < headers.length; j++) {
-                    obj[headers[j]] = currentline[j];
+                    obj[headers[j]] = currentline[j].replace("\r", "");
                 }
                 result.push(obj);
             }
 
+            //Compute trackpoints used to draw the map
             this.trackPoints = result.map((p) => {
                 return [parseFloat(p.Lat), parseFloat(p.Long)]
+            })
+
+            console.log(result);
+
+            //Compute altimetryPoints used to draw the graph
+            this.setState({
+                altimetryPoints: result.map((p) => {
+                    return parseFloat(p.Alt.replace("\r", "")).toFixed(2)
+                })
             })
 
             let loadedGeoJSON = {
@@ -117,18 +147,18 @@ export class LiveMap extends Component<any> {
                     }]
             }
 
-            this.computeCenter(this.trackPoints)
+
 
             if (this.m != undefined) {
                 this.m.remove()
-
                 this.px = 0;
                 this.py = 0;
-                this.computeCenter(this.trackPoints)
             }
 
+            this.computeCenter(this.trackPoints)
+
             console.log(loadedGeoJSON);
-            this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'orange', weight: 4 });
+            this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'white', weight: 4 });
             this.map.setView([
                 this.px, this.py
             ], 17);
@@ -140,22 +170,33 @@ export class LiveMap extends Component<any> {
     };
 
     handleSubmission = () => {
+        this.setState({isFilePicked : !this.state.isFilePicked})
 
     };
 
     render() {
+
+        let altimetryMap
+        let filePicker
+        if (this.state.isFilePicked) {
+            altimetryMap = <AltimetryMap data={[this.state.altimetryPoints, this.state.carPosition]}></AltimetryMap>
+        } else {
+            filePicker = <input type="file" name="file" onChange={this.changeHandler} />
+        }
         return (
             <div >
-                {this.state.isFilePicked == false &&
-                    <input type="file" name="file" onChange={this.changeHandler} />
+                {
+                    filePicker
                 }
-                {/*<div>
-                    //<button onClick={this.handleSubmission}>Submit</button>
-    
-                </div>*/
+                <div>
+                    <button onClick={this.handleSubmission}>Toggle altimetry</button>
+
+                </div>
+                <div className="parentMap" id="circuitMap"></div>
+                {
+                    altimetryMap
                 }
 
-                    <div className="parentMap" id="circuitMap"></div>
 
             </div>
 

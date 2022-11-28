@@ -18,7 +18,9 @@ import { LiveMap } from '../components/LiveMap';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
+
 const ReactGridLayout = WidthProvider(RGL);
+
 
 type Props = {
     compPageList: ComponentsPage[];
@@ -63,10 +65,14 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
                 rowHeight={50}
                 cols={12}
                 compactType="vertical"
+                draggableHandle='.handle'
+                autoSize={true}
+                //isResizable={false}
+                margin={[5,5]}
             >
                 {components.map((comp: ComponentsPage, index) => (
                     <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
-                            <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
+                            <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} ></ComponentEncapsulator>
                         </div>
                 ))}
             </ReactGridLayout >
