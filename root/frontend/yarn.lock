@@ -1024,14 +1024,14 @@
   dependencies:
     "is-arrayish" "^0.2.1"
 
-"esbuild-windows-64@0.13.15":
-  "integrity" "sha512-9aMsPRGDWCd3bGjUIKG/ZOJPKsiztlxl/Q3C1XDswO6eNX/Jtwu4M+jb6YDH9hRSUflQWX0XKAfWzgy5Wk54JQ=="
-  "resolved" "https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-0.13.15.tgz"
+"esbuild-darwin-64@0.13.15":
+  "integrity" "sha512-ihOQRGs2yyp7t5bArCwnvn2Atr6X4axqPpEdCFPVp7iUj4cVSdisgvEKdNR7yH3JDjW6aQDw40iQFoTqejqxvQ=="
+  "resolved" "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.13.15.tgz"
   "version" "0.13.15"
 
-"esbuild-windows-64@0.13.4":
-  "integrity" "sha512-uVL11vORRPjocGLYam67rwFLd0LvkrHEs+JG+1oJN4UD9MQmNGZPa4gBHo6hDpF+kqRJ9kXgQSeDqUyRy0tj/Q=="
-  "resolved" "https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-0.13.4.tgz"
+"esbuild-darwin-64@0.13.4":
+  "integrity" "sha512-zJQGyHRAdZUXlRzbN7W+7ykmEiGC+bq3Gc4GxKYjjWTgDRSEly98ym+vRNkDjXwXYD3gGzSwvH35+MiHAtWvLA=="
+  "resolved" "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.13.4.tgz"
   "version" "0.13.4"
 
 "esbuild@^0.13.12":
@@ -1155,6 +1155,11 @@
   "resolved" "https://registry.npmjs.org/fraction.js/-/fraction.js-4.2.0.tgz"
   "version" "4.2.0"
 
+"fsevents@~2.3.2":
+  "integrity" "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="
+  "resolved" "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
+  "version" "2.3.2"
+
 "function-bind@^1.1.1":
   "integrity" "sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A=="
   "resolved" "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz"
@@ -1260,6 +1265,20 @@
 "igniteui-react-grids@^16.15.0":
   "integrity" "sha512-TW19SdHXcXeu7Mv8kbjHMdWAl71ObFGhKQiA030EKbRykackpy16p6rlUyz5R/aKK3odEKUZiqEI5/8/lZZ83g=="
   "resolved" "https://registry.npmjs.org/igniteui-react-grids/-/igniteui-react-grids-16.15.0.tgz"
+  "version" "16.15.0"
+  dependencies:
+    "tslib" "^2.3.1"
+
+"igniteui-react-inputs@16.15.0":
+  "integrity" "sha512-0BVD4oPYPGlGraBOqKsrmNdbKFKvZfbP8K8PsYghukcUqK8M2I3vaqBQsTErlG+QWL3Lcz8nlE+4NERbFSAgPA=="
+  "resolved" "https://registry.npmjs.org/igniteui-react-inputs/-/igniteui-react-inputs-16.15.0.tgz"
+  "version" "16.15.0"
+  dependencies:
+    "tslib" "^2.3.1"
+
+"igniteui-react-layouts@16.15.0":
+  "integrity" "sha512-HHJ3xz6hQRTGHh/jq5+maWXSUxHpfwZWHdSXfoFELeK+YhR9rT6S9K2ede1mcv1RWGMMBl+qq+VDr+qI5v7a9A=="
+  "resolved" "https://registry.npmjs.org/igniteui-react-layouts/-/igniteui-react-layouts-16.15.0.tgz"
   "version" "16.15.0"
   dependencies:
     "tslib" "^2.3.1"

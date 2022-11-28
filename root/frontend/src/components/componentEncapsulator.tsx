@@ -23,6 +23,9 @@ import { AVAILABLE_COMPONENTS } from "../models/constants";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+
 
 export enum ComponentType {
     check = 1,
@@ -48,8 +51,16 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const [val, setVal] = useState<number[]>([]);
     const [singleVal, setSingleVal] = useState<number>(0);
     const [isConnected, setConnected] = useState(false);
+    const [SVC, setSCV] = useState(false);
 
+    const [TextValue, setTextValue] = useState(' ');
+    const [SCVinteger, setSCVinteger] = useState(0);
+    
+
+    let newVal=0;
     let sens: Sensor = passedComp.sensorSelected[0];
+
+    let supercapInputValue = 0;
 
     let arrayMessages: number[] = [];
     let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
@@ -108,7 +119,16 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
                 arrayMessages[index] = JSON.parse(message.payloadString);
                 console.log(sensor.topicName + ' ' + arrayMessages[index]);
+
+                if (sensor.sensorName == "Supercap Voltage") {
+                    //setting newSC value to the most recent, then perform a comparison
+                    if(arrayMessages[index]>supercapInputValue){
+                        console.log("Values: ", arrayMessages[index], newVal)
+                    }   
+                }
+          
             }
+            
 
         });
 
@@ -126,6 +146,13 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     useEffect(() => {
         _init();
 
+        passedComp.sensorSelected.forEach((s)=>{
+            if (s.sensorName == "Supercap Voltage") {
+                setSCV(true)
+            }
+        })
+
+
         //Return called when the component will unmount
         return () => {
             passedComp.sensorSelected.map((s, index) => {
@@ -137,6 +164,16 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         }
     }, []);
+
+    function handleChange(event){
+
+        supercapInputValue=parseInt(event.target.value)
+        setSCVinteger(parseInt(event.target.value))
+        setTextValue(event.target.value)
+
+    }
+
+
 
     return (
         <div className="card dashboardElement">
@@ -179,6 +216,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     </div>
             */}
 
+
+
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
                     <div className="basis-full" style={{ height: "100%" }}>
                         <LiveMap ></LiveMap>
@@ -204,13 +243,11 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     </div>
                 }
 
-
-
             </div>
             <br />
             {isConnected == false &&
                 <div style={{ display: "block" }} className="card-footer bg-red-200">
-                    {passedComp.sensorSelected.map((s: Sensor, index) => (
+                  {passedComp.sensorSelected.map((s: Sensor, index) => (
                         <div key={index}>{s.ID} - {s.sensorName}</div>
                     )
                     )}
@@ -219,12 +256,22 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             }
             {isConnected == true &&
                 <div style={{ display: "block" }} className="card-footer bg-green-200">
+
                     {passedComp.sensorSelected.map((s: Sensor, index) => (
-                        <div key={index}>{s.ID} - {s.sensorName}</div>
+                        <span key={index}>{s.ID} - {s.sensorName}</span>
                     )
                     )}
+                {SVC == true && 
+                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChange} style={{"float": "right"}}></input>
+                    }
                 </div>
             }
+                 <div style={{ position: "absolute",top: 0, left: 0, right: 0, zIndex: 0 }}>
+                    <Stack sx={{ width: '100%' }} spacing={2}>
+                      <Alert severity="error"> SCV Alto!</Alert>                               
+                         </Stack>
+                 </div>
+            
 
 
 
