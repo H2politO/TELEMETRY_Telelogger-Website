@@ -29,14 +29,18 @@ export const AltimetryMap = (passedData) => {
             type: 'line',
             zoom: {
                 enabled: false
-            }
+            },
+            //foreColor: '#373d3f',
+            //background: '#001d3d'
         },
+        colors: ['#ffc300'],
         xaxis: {
             type: 'numeric'
         },
         dataLabels: {
             enabled: false
         },
+        
         stroke: {
             curve: 'smooth'
         },
@@ -46,7 +50,7 @@ export const AltimetryMap = (passedData) => {
         },
         grid: {
             row: {
-                colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                //colors: ['#f3f3f3', '#000000'], // takes an array which will be repeated on columns
                 opacity: 0.5
             },
         },
@@ -91,8 +95,12 @@ export const AltimetryMap = (passedData) => {
                 type: 'line',
                 zoom: {
                     enabled: false
-                }
+                },
+                //foreColor: '#FFC300',
+                //background: ' #001d3d'
             },
+            colors: ['#ffc300'],
+
             xaxis: {
                 type: 'numeric'
             },
@@ -108,8 +116,8 @@ export const AltimetryMap = (passedData) => {
             },
             grid: {
                 row: {
-                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                    opacity: 0.5
+                    //colors: ['var(--myLightBlue)'], // takes an array which will be repeated on columns
+                    opacity: 0.4
                 },
             },
             yaxis: {

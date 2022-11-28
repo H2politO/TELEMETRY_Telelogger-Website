@@ -24,6 +24,14 @@
   color: white;
 }
 
+:root {
+  --myDarker: #000814;
+  --myDarkBlue: #001D3D;
+  --myLightBlue: #003566;
+  --myDarkYellow: #FFC300;
+  --myLightYellow: #FFD60A;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -77,6 +85,7 @@ button {
   padding: 1px;
   height: 100%;
   box-sizing: border-box;
+  /*background-color: var(--myDarkBlue);*/
 }
 
 .dashboardElementSm {
@@ -91,12 +100,14 @@ button {
 }
 
 .cards-title {
+  /*color: var(--myDarkYellow); */
   font-size: 1em;
   font-weight: bold;
 }
 
 .navbar {
   height: 10vh;
+  color: var(--myDarkBlue)
 }
 
 .react-grid-item.react-grid-placeholder {
@@ -105,7 +116,7 @@ button {
 
 #circuitMap {
   height: 50vh;
-  background-color: #282c34;
+  background-color: #001d3d;
 
 }
 
@@ -157,6 +168,7 @@ button {
 }
 
 .handle {
+  /*background-color: var(--myDarker);*/
   cursor: move; /* fallback if grab cursor is unsupported */
   cursor: grab;
   cursor: -moz-grab;
