@@ -52,15 +52,22 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const [singleVal, setSingleVal] = useState<number>(0);
     const [isConnected, setConnected] = useState(false);
     const [SVC, setSCV] = useState(false);
-
+    const [FCV, setFCV]= useState(false);
+    const [TextValueFC, setTextFC]= useState(' ');
+    
     const [TextValue, setTextValue] = useState(' ');
     const [SCVinteger, setSCVinteger] = useState(0);
+    const [FCVinteger, setFCVinteger]= useState(0)
+    const [SCVHigh, setSCVHigh]= useState(false)
+    const [FCVHigh, setFCVHigh]= useState(false)
     
 
-    let newVal=0;
+    let newValFC=0
     let sens: Sensor = passedComp.sensorSelected[0];
+    let supercapInputValue;
+    let FCInputValue = 0;
 
-    let supercapInputValue = 0;
+    let supercapArrivedValue;
 
     let arrayMessages: number[] = [];
     let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
@@ -98,7 +105,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         setConnected(true);
     }
 
-
+    
     // Function called when the connection has been lost
     function onConnectionLost(responseObject: any) {
         if (responseObject.errorCode !== 0) {
@@ -122,9 +129,19 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 if (sensor.sensorName == "Supercap Voltage") {
                     //setting newSC value to the most recent, then perform a comparison
-                    if(arrayMessages[index]>supercapInputValue){
-                        console.log("Values: ", arrayMessages[index], newVal)
-                    }   
+                    supercapArrivedValue = arrayMessages[index];
+                    
+                    if(supercapArrivedValue>supercapInputValue){
+                        console.log("Values: ", arrayMessages[index], supercapInputValue)
+                        setSCVHigh(true)
+                    }  
+                }
+                if (sensor.sensorName == "Fuel Cell Voltage"){
+                    //setting newSC value to the most recent, then perform a comparison
+                    if(arrayMessages[index]>FCInputValue){
+                        console.log("ValuesASD: ", arrayMessages[index], newValFC )
+                        setFCVHigh(true)   
+                    }
                 }
           
             }
@@ -148,11 +165,17 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         passedComp.sensorSelected.forEach((s)=>{
             if (s.sensorName == "Supercap Voltage") {
-                setSCV(true)
+                setSCV(true)   
+            }
+         
+        })
+        passedComp.sensorSelected.forEach((s)=>{
+            if (s.sensorName == "Fuel Cell Voltage") {
+                setFCV(true)
+            
             }
         })
-
-
+        
         //Return called when the component will unmount
         return () => {
             passedComp.sensorSelected.map((s, index) => {
@@ -165,12 +188,16 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         }
     }, []);
 
-    function handleChange(event){
-
-        supercapInputValue=parseInt(event.target.value)
-        setSCVinteger(parseInt(event.target.value))
-        setTextValue(event.target.value)
-
+    function handleChangeSVC(event1){
+        setSCVinteger(parseInt(event1.target.value));
+        setTextValue(event1.target.value)
+    }
+    
+    function handleChange1(event2){
+        FCInputValue=parseInt(event2.target.value)
+        setFCVinteger(parseInt(event2.target.value))
+        setTextFC(event2.target.value)
+    
     }
 
 
@@ -198,10 +225,14 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                                 )}
                             </span>
                         }
+             
+                {FCV == true &&
+                  <input type="text" id="Message" name="Message" value={TextValueFC} onChange={handleChange1}></input>
+                    }
 
 
                 {SVC == true && 
-                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChange}></input>
+                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChangeSVC}></input>
                     }
                     <span>
 
@@ -274,14 +305,23 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
             </div>
 
-
-            {/*
-                 <div style={{ position: "absolute",top: 0, left: 0, right: 0, zIndex: 0 }}>
+            { SCVHigh == true &&
+                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
                     <Stack sx={{ width: '100%' }} spacing={2}>
                       <Alert severity="error"> SCV Alto!</Alert>                               
                          </Stack>
-                 </div>*/
+                 </div>
 }
+
+            { FCVHigh == true &&
+                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
+                    <Stack sx={{ width: '100%' }} spacing={2}>
+                      <Alert severity="error"> FCV Alto!</Alert>                               
+                         </Stack>
+                 </div>
+}
+
+            
 
 
 
