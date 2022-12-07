@@ -8,6 +8,7 @@ import { AltimetryMap } from './altimetryMap'
 declare const L: any
 
 type Props = {
+    position: Object,
 }
 
 type state = {
@@ -27,6 +28,7 @@ export class LiveMap extends Component<any, any> {
         super(props);
         this.state = {
             altimetryPoints: [],
+            strategyPoints: []
         }
     }
 
@@ -40,7 +42,8 @@ export class LiveMap extends Component<any, any> {
     map: any;
     layer: any;
     mapWithPoints: any;
-    marker: any;
+    marker = L.marker([0,0], { icon: this.carIcon });
+    //marker: any;
 
     m: any;
 
@@ -52,13 +55,19 @@ export class LiveMap extends Component<any, any> {
     componentDidMount() {
 
         // create map
-
         this.map = L.map('circuitMap',
         ).setView([
             0, 0
         ], 0);
 
-       // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+    }
+
+    componentDidUpdate(){
+        //console.log('comp update')
+        //console.log(this.props.position)
+        //if(this.props.position.latitude!=undefined)
+         //   this.playPosition()
     }
 
     computeCenter(tp) {
@@ -85,10 +94,18 @@ export class LiveMap extends Component<any, any> {
             });
 
             //Enable to follow car
-            //this.map.setView([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], 17);
+            this.map.setView([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], 17);
 
         }, 200)
     }
+
+    playPosition() {
+
+        this.marker.remove();
+        this.marker = L.marker([this.props.position.latitude, this.props.position.longitude], { icon: this.carIcon });
+        this.marker.addTo(this.map);
+    }
+
 
     changeHandler = (event) => {
         this.setState({ selectedFile: event.target.files[0] });
@@ -131,8 +148,13 @@ export class LiveMap extends Component<any, any> {
             this.setState({
                 altimetryPoints: result.map((p) => {
                     return parseFloat(p.Alt.replace("\r", "")).toFixed(2)
+                }),
+                strategyPoints: result.map((p) => {
+                    return parseInt(p.Distance)
                 })
             })
+
+            console.log(this.state.strategyPoints)
 
             let loadedGeoJSON = {
                 "type": "FeatureCollection",
@@ -158,7 +180,7 @@ export class LiveMap extends Component<any, any> {
             this.computeCenter(this.trackPoints)
 
             console.log(loadedGeoJSON);
-            this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'white', weight: 4 });
+            this.m = L.geoJSON(loadedGeoJSON).addTo(this.map).setStyle({ color: 'red', weight: 4 });
             this.map.setView([
                 this.px, this.py
             ], 17);
@@ -170,7 +192,7 @@ export class LiveMap extends Component<any, any> {
     };
 
     handleSubmission = () => {
-        this.setState({isFilePicked : !this.state.isFilePicked})
+        this.setState({ isFilePicked: !this.state.isFilePicked })
 
     };
 
@@ -184,7 +206,7 @@ export class LiveMap extends Component<any, any> {
             filePicker = <input type="file" name="file" onChange={this.changeHandler} />
         }
         return (
-            <div >
+            <div>
                 {
                     filePicker
                 }

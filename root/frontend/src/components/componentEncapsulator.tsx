@@ -50,14 +50,15 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     const [val, setVal] = useState<number[]>([]);
     const [singleVal, setSingleVal] = useState<number>(0);
+    const [position, setPosition] = useState({});
     const [isConnected, setConnected] = useState(false);
     const [SVC, setSCV] = useState(false);
 
     const [TextValue, setTextValue] = useState(' ');
     const [SCVinteger, setSCVinteger] = useState(0);
-    
 
-    let newVal=0;
+
+    let newVal = 0;
     let sens: Sensor = passedComp.sensorSelected[0];
 
     let supercapInputValue = 0;
@@ -112,23 +113,31 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     // Function called when a message arrives at destination
     function onMessageArrived(message: any) {
 
-        console.log('Message arrived on destination: ' + message.destinationName);
+        console.log('Message arrived on destination: ' + message.destinationName + ' ' + message.payloadString);
 
         //Finds the matching payload that with the string "H2polito/" + sensor name
         passedComp.sensorSelected.forEach((sensor, index) => {
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
-                arrayMessages[index] = JSON.parse(message.payloadString);
-                console.log(sensor.topicName + ' ' + arrayMessages[index]);
-
-                if (sensor.sensorName == "Supercap Voltage") {
+                if (sensor.sensorName == "Position") {
                     //setting newSC value to the most recent, then perform a comparison
-                    if(arrayMessages[index]>supercapInputValue){
-                        console.log("Values: ", arrayMessages[index], newVal)
-                    }   
+                    console.log(JSON.parse(message.payloadString))
+                    setPosition(JSON.parse(message.payloadString))
+                } else {
+                    arrayMessages[index] = JSON.parse(message.payloadString);
+                    console.log(sensor.topicName + ' ' + arrayMessages[index]);
+
+                    if (sensor.sensorName == "Supercap Voltage") {
+                        //setting newSC value to the most recent, then perform a comparison
+                        if (arrayMessages[index] > supercapInputValue) {
+                            console.log("Values: ", arrayMessages[index], newVal)
+                        }
+                    }
                 }
-          
+
+
+
             }
-            
+
 
         });
 
@@ -146,7 +155,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     useEffect(() => {
         _init();
 
-        passedComp.sensorSelected.forEach((s)=>{
+        passedComp.sensorSelected.forEach((s) => {
             if (s.sensorName == "Supercap Voltage") {
                 setSCV(true)
             }
@@ -165,9 +174,9 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         }
     }, []);
 
-    function handleChange(event){
+    function handleChange(event) {
 
-        supercapInputValue=parseInt(event.target.value)
+        supercapInputValue = parseInt(event.target.value)
         setSCVinteger(parseInt(event.target.value))
         setTextValue(event.target.value)
 
@@ -181,27 +190,27 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 <div className="card-header handle">
                     <span className="cards-title">{passedComp.nameComponent} </span>
                     {isConnected == false &&
-                            <span className="text-red-500">
-                                {passedComp.sensorSelected.map((s: Sensor, index) => (
-                                    <span key={index}>{s.sensorName} </span>
-                                )
-                                )}
+                        <span className="text-red-500">
+                            {passedComp.sensorSelected.map((s: Sensor, index) => (
+                                <span key={index}>{s.sensorName} </span>
+                            )
+                            )}
 
-                            </span>
-                        }
-                        {isConnected == true &&
-                        
-                            <span className=" text-green-500">
-                                {passedComp.sensorSelected.map((s: Sensor, index) => (
-                                    <span key={index}>{s.sensorName} </span>
-                                )
-                                )}
-                            </span>
-                        }
+                        </span>
+                    }
+                    {isConnected == true &&
+
+                        <span className=" text-green-500">
+                            {passedComp.sensorSelected.map((s: Sensor, index) => (
+                                <span key={index}>{s.sensorName} </span>
+                            )
+                            )}
+                        </span>
+                    }
 
 
-                {SVC == true && 
-                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChange}></input>
+                    {SVC == true &&
+                        <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChange}></input>
                     }
                     <span>
 
@@ -249,7 +258,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
                     <div className="basis-full" style={{ height: "100%" }}>
-                        <LiveMap ></LiveMap>
+                        <LiveMap position={position}></LiveMap>
                     </div>
 
                 }
@@ -275,13 +284,13 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             </div>
 
 
-            {/*
-                 <div style={{ position: "absolute",top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                      <Alert severity="error"> SCV Alto!</Alert>                               
-                         </Stack>
-                 </div>*/
-}
+{/*
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 0 }}>
+                <Stack sx={{ width: '100%' }} spacing={2}>
+                    <Alert severity="error"> SCV Alto!</Alert>
+                </Stack>
+            </div>*/
+            }
 
 
 

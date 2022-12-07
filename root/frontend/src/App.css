@@ -84,7 +84,7 @@ button {
 .dashboardElement {
   padding: 1px;
   height: 100%;
-  box-sizing: border-box;
+  /*box-sizing: border-box;*/
   /*background-color: var(--myDarkBlue);*/
 }
 
