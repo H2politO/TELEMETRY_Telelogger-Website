@@ -16,21 +16,22 @@ export const Navbar = () => {
 
     const [idraOn, setIdra] = useState(false);
     const [prov, setProv] = useState(false);
+    let timeoutId = null; 
     const [junoOn, setJuno] = useState(false)
     let navBarClient = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", 'navBar' + new Date().getTime());
 
 
     useEffect(() => {
         _init();
-      }, [])
-    
-      const _init = () => {
-        
+    }, [])
+
+    const _init = () => {
+
         navBarClient.onConnectionLost = onConnectionLost;
         navBarClient.onMessageArrived = onMessageArrived;
         navBarClient.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
 
-      }
+    }
 
 
     // Function called when the client manages to connect to the topic
@@ -38,7 +39,7 @@ export const Navbar = () => {
         if (navBarClient == undefined) {
             console.log('Client undefined');
         }
-        navBarClient.subscribe("H2polito/IdraStatus");
+        navBarClient.subscribe("H2polito/Idra/Status");
         //navBarClient.subscribe("H2polito/" + 'junoStatus', {});
 
         console.log('Navbar connected');
@@ -56,7 +57,7 @@ export const Navbar = () => {
 
     function onFailureConnect() {
         console.error("Connection failed from navbar");
-        
+
         setInterval(() => {
             _init();
         }, 1000);
@@ -66,12 +67,16 @@ export const Navbar = () => {
     // Function called when a message arrives at destination
     function onMessageArrived(message: any) {
 
-        if (message.destinationName === "H2polito/IdraStatus") {
-            setIdra(message.payloadString === 'true');
+        if (message.destinationName === "H2polito/Idra/Status") {
+            setIdra(message.payloadString === '1');
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                setIdra(false);
+            }, 1000);
         }
 
-        if (message.destinationName === "H2polito/junoStatus") {
-            setJuno(message.payloadString === 'true')
+        if (message.destinationName === "H2polito/Juno/Status") {
+            setJuno(message.payloadString === '1')
         }
     }
 
@@ -91,13 +96,13 @@ export const Navbar = () => {
                             <a className="nav-link active" aria-current="page" href="/"><p>My dashboard</p></a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link active" aria-current="page" href="/team">Team</a>
+                            <a className="nav-link active" aria-current="page" href="https://areeweb.polito.it/didattica/h2polito/">Team</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link disabled " href="/team">Add sensors</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link active" href="/analysis">Analysis </a>
+                            <a className="nav-link active" href="/database">Database </a>
                         </li>
 
                         <li className="nav-item">
@@ -121,10 +126,10 @@ export const Navbar = () => {
                 </div>
 
                 <div className='nav-item'>
-                    <img src={junoPNG} style={{ "height": "100px" }} className='carImages'/>
+                    <img src={junoPNG} style={{ "height": "100px" }} className='carImages' />
                 </div>
 
-                {window.location.pathname == "/dashboard" ||  window.location.pathname == "/" && <button className="d-flex btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
+                {window.location.pathname == "/dashboard" || window.location.pathname == "/" && <button className="d-flex btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight">
                     <IoAdd size={50} />
                 </button>}
             </div>

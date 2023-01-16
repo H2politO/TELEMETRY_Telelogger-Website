@@ -10,6 +10,7 @@ import Cookies from 'universal-cookie';
 import * as cmpTypeConst from '../../pages/dashboard';
 
 import { IDRA_SENSORS } from '../../models/constants';
+import { JUNO_SENSORS } from '../../models/constants';
 import { AVAILABLE_COMPONENTS } from '../../models/constants';
 
 import sensorImage from './sensor.png'
@@ -21,15 +22,14 @@ type Props = {
 
 type Option = {
     label: string,
-    value: Sensor,
+    value: any,
 }
-
 
 export class Sidebar extends React.Component<any, any> {
 
     listCookie: Cookies;
     componentsList: ComponentsPage[];
-   
+
     componentDidMount() {
         this.listCookie = new Cookies();
         if (this.listCookie.get('compPage') != undefined)
@@ -41,18 +41,28 @@ export class Sidebar extends React.Component<any, any> {
     state = {
         AVAILABLE_COMPONENTS,
         IDRA_SENSORS,
+        JUNO_SENSORS,
+        idraSelected: true
     }
 
     sensors: any;
-    
+
+    onCarSelect = (selection) => {
+        if (selection.target.value == "Idra") {
+            this.setState({ idraSelected: true })
+
+        } else {
+            this.setState({ idraSelected: false })
+        }
+    }
+
     handleChange = (
         newSensors: OnChangeValue<Option, true>
-      ) => {
-        this.sensors=newSensors;
-      };
-    
-    //calls the database and retrieves all the available sensors 
+    ) => {
+        this.sensors = newSensors;
+    };
 
+    //calls the database and retrieves all the available sensors 
 
     onTrigger = () => {
         this.props.parentCallback(this.componentsList);
@@ -77,8 +87,8 @@ export class Sidebar extends React.Component<any, any> {
                             prescaler: 1,
                             deleted: false,
                             value: 0,
-                            w:2,
-                            h:2,
+                            w: 2,
+                            h: 2,
                         }}
                         onSubmit={(
                             values: ComponentsPage,
@@ -88,24 +98,23 @@ export class Sidebar extends React.Component<any, any> {
                         ) => {
                             let prov = {} as ComponentsPage;
 
-                            this.componentsList=this.listCookie.get('compPage');
+                            this.componentsList = this.listCookie.get('compPage');
                             //push into components
                             prov = values;
-                            prov.compID=uuidv4();
-                            prov.sensorSelected=new Array<Sensor>();
-                            prov.sensorSelected=this.sensors.map((sens:any) => sens.value);
-                            prov.w=AVAILABLE_COMPONENTS[prov.typeComponent-1].w
-                            prov.h=AVAILABLE_COMPONENTS[prov.typeComponent-1].h
-                            prov.cmpMinRange=values.cmpMinRange;
-                            prov.cmpMaxRange=values.cmpMaxRange;
+                            prov.compID = uuidv4();
+                            prov.sensorSelected = new Array<Sensor>();
+                            prov.sensorSelected = this.sensors.map((sens: any) => sens.value);
+                            prov.w = AVAILABLE_COMPONENTS[prov.typeComponent - 1].w
+                            prov.h = AVAILABLE_COMPONENTS[prov.typeComponent - 1].h
+                            prov.cmpMinRange = values.cmpMinRange;
+                            prov.cmpMaxRange = values.cmpMaxRange;
                             this.componentsList.push(prov);
 
                             //add cookies
                             //console.group('Added cookies')
                             //console.log(this.componentsList);
-                           // this.listCookie.set('compList', JSON.stringify(this.componentsList));
+                            // this.listCookie.set('compList', JSON.stringify(this.componentsList));
                             this.onTrigger();
-                            //console.groupEnd();
 
                             //reset
                             action.resetForm();
@@ -120,19 +129,35 @@ export class Sidebar extends React.Component<any, any> {
                             <div className='myFormGroup'>
                                 <label>Select component</label>
                                 <Field component="select" className="form-select" id='typeComponent' name='typeComponent'>
-                                {this.state.AVAILABLE_COMPONENTS.map((Indicator)=>(
+                                    {this.state.AVAILABLE_COMPONENTS.map((Indicator) => (
                                         <option key={'Indicator' + Indicator.ID} value={Indicator.ID}>{Indicator.componentName}</option>
                                     ))
                                     }
                                 </Field>
                             </div>
-                            
 
                             <div className='myFormGroup'>
-                                <label>Select multi-sensor</label>
-                                <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.state.IDRA_SENSORS} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
+                                <label>Select car</label>
+                                <Field component="select" className="form-select" id='carSelect' name='carSelect' onChange={this.onCarSelect}>
+                                    <option value="Idra">Idra</option>
+                                    <option value="Juno">Juno</option>
+                                </Field>
                             </div>
 
+
+                            {this.state.idraSelected &&
+                                <div className='myFormGroup'>
+                                    <label>Select multi-sensor for Idra</label>
+                                    <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.state.IDRA_SENSORS} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
+                                </div>
+                            }
+
+                            {!this.state.idraSelected &&
+                                <div className='myFormGroup'>
+                                    <label>Select multi-sensor for Juno</label>
+                                    <Select key={`my_unique_select_key__${JSON.stringify(this.sensors)}`} options={this.state.JUNO_SENSORS} onChange={this.handleChange} isMulti={true} isClearable={true} isSearchable={true}></Select>
+                                </div>
+                            }
                             <div className='myFormGroup'>
                                 <label>Select a name</label>
                                 <div className="input-group mb-3">
@@ -164,13 +189,11 @@ export class Sidebar extends React.Component<any, any> {
                             </div>
 
                             <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input>
-                            
+
                         </Form>
                     </Formik>
                 </div>
             </div >
         )
     }
-
-
 }

@@ -92,7 +92,7 @@ export class LiveGraph2 extends Component<any> {
                     data: []
                 })),
 
-        newData: this.props.passedData,
+        newData: 0,
     };
 
 

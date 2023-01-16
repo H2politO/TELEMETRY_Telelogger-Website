@@ -1,4 +1,5 @@
 {
+  "proxy": "http://localhost:3000",
   "name": "H2politO telemetry",
   "homepage": "teamh2polito.com",
   "version": "1.0.0",
