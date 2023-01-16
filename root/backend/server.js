@@ -15,7 +15,7 @@ mongoose.connect(process.env.MONGOOSE_URI)
     .then(() => {
         //listen to port number 3000 ONLY afer the connection to the database
         app.listen(process.env.PORT, () => {
-            console.log('Connected to database');
+            console.log('Connected to database, listening for requests');
         })
     })
     .catch((err) => {
