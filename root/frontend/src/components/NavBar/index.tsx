@@ -40,9 +40,9 @@ export const Navbar = () => {
             console.log('Client undefined');
         }
         navBarClient.subscribe("H2polito/Idra/Status");
-        //navBarClient.subscribe("H2polito/" + 'junoStatus', {});
+        navBarClient.subscribe("H2polito/Juno/Status");
 
-        console.log('Navbar connected');
+        //console.log('Navbar connected');
     }
 
 

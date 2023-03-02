@@ -18,26 +18,18 @@ import { MinSummaryCalculator } from 'igniteui-react-core';
 export class App extends React.Component {
 
   state = {
-    outputList: new Array<ComponentsPage>(),
+    appComponent: new ComponentsPage()
   }
 
   cookie = new Cookies();
 
   constructor(props: any) {
     super(props);
-    if (this.cookie.get('compPage') != undefined) {
-      console.log('%c Found the following cookies ', 'color: lihtyellow; font-weight: bold; font-size: 25px');
-      console.table(this.cookie.get('compPage'));
-      this.state.outputList = this.cookie.get('compPage');
-    } else {
-      console.log("Didn't find any cookie");
-      this.state.outputList = [];
-    }
   }
 
-  handleCallback = (childData: ComponentsPage[]) => {
-    console.log("Cookies callback")
-    this.setState({ outputList: childData })
+  handleCallback = (childComponent: ComponentsPage) => {
+
+    this.setState({ appComponent: childComponent })
   }
 
   render() {
@@ -52,7 +44,7 @@ export class App extends React.Component {
           <Routes>
             <Route path="/testing" element={<Home />} />
             <Route path="/team" element={<Team />} />
-            <Route path="/" element={<Dashboard compPageList={this.state.outputList} />} />
+            <Route path="/" element={<Dashboard receivedComponent={this.state.appComponent} />} />
             <Route path="/demo" element={<Demo />} />
             <Route path="/database" element={<Database/>} />
           </Routes>

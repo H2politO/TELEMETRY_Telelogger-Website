@@ -64,8 +64,8 @@ export class Sidebar extends React.Component<any, any> {
 
     //calls the database and retrieves all the available sensors 
 
-    onTrigger = () => {
-        this.props.parentCallback(this.componentsList);
+    onTrigger = (provComponent :ComponentsPage) => {
+        this.props.parentCallback(provComponent);
     }
 
     render() {
@@ -108,19 +108,11 @@ export class Sidebar extends React.Component<any, any> {
                             prov.h = AVAILABLE_COMPONENTS[prov.typeComponent - 1].h
                             prov.cmpMinRange = values.cmpMinRange;
                             prov.cmpMaxRange = values.cmpMaxRange;
-                            this.componentsList.push(prov);
-
-                            //add cookies
-                            //console.group('Added cookies')
-                            //console.log(this.componentsList);
-                            // this.listCookie.set('compList', JSON.stringify(this.componentsList));
-                            this.onTrigger();
+                            this.onTrigger(prov);
 
                             //reset
                             action.resetForm();
                             setTimeout(() => {
-                                //alert(JSON.stringify(values));
-                                //setSubmitting(false);
                             }, 500);
                         }}
                     >
