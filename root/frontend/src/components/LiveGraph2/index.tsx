@@ -102,7 +102,7 @@ export class LiveGraph2 extends Component<any> {
     componentDidMount() {
 
         this.props.sensorList.forEach((e, index) => {
-            this.allData[index] = []
+            this.allData[index] = [0]
         });
 
         this.idInt = setInterval(() => {
@@ -124,6 +124,20 @@ export class LiveGraph2 extends Component<any> {
             }))
         }, 500)
     }
+
+    dataX=[0];
+
+    /*
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<{}>, snapshot?: any): void {
+        if(prevProps.passedData != this.props.passedData){
+            console.log("component updating")
+            //new data just arrived
+            this.dataX.push(this.props.passedData[0])
+            ApexCharts.exec(this.props.id, 'updateSeries', this.allData.map((e, index) => {
+                return { data: this.allData[0] }
+            }))
+        }
+    }*/
 
     componentWillUnmount() {
         console.log('Unmount graph');

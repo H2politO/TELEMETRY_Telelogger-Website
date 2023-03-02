@@ -36,10 +36,8 @@ export class App extends React.Component {
   }
 
   handleCallback = (childData: ComponentsPage[]) => {
-    if (this.cookie.get('compPage') != undefined)
-      this.setState({ outputList: childData })
-    else
-      this.setState({ outputList: childData })
+    console.log("Cookies callback")
+    this.setState({ outputList: childData })
   }
 
   render() {

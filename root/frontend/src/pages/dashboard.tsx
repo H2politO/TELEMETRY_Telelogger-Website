@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import '../index.css';
-import Speedometer from "../components/Speedometer";
-import Tachometer from '../components/Tachometer';
-import LinearGauge from "../components/LinearGauge";
-import ThrottlePressure from "../components/ThrottlePressure";
-import SimpleLight from "../components/SimpleLight";
 import Cookies from "universal-cookie"
-import Paho from 'paho-mqtt';
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
 import { ComponentsPage } from '../models/componentsPage';
-import { updateStatement } from 'typescript';
-import { ComponentTypeEncapsulator } from '../models/componentType';
-import { ComponentType } from '../components/componentEncapsulator';
-import { LiveGraph } from '../components/LiveGraph/livegraph';
-import { LiveMap } from '../components/LiveMap';
+
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
@@ -41,19 +31,22 @@ export const Dashboard: React.FC<Props> = ({ compPageList }) => {
             return cmp === cmpToDlt;
         })
 
-        console.log(ind)
+        console.log("this component is being deleted " + ind)
 
         myList = compPageList;
 
         console.log(myList)
-        setcompPageList(compPageList.splice(ind, 1));
+        setcompPageList(compPageList.splice(ind, 1));;
 
     }
 
     //On each change of the page, set new cookies
     useEffect(() => {
+        console.log("useEffect")
         setcompPageList(myList);
+        
         //Set age of the cookies to 1 year (60 seconds * 60 minutes * 24 hours * 365 days)
+        //cookie.set('compPage', myList, {maxAge: 60*60*24*365});
         cookie.set('compPage', myList, {maxAge: 60*60*24*365});
     })
 

@@ -25,6 +25,7 @@ import 'react-resizable/css/styles.css';
 
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { type } from "os";
 
 
 export enum ComponentType {
@@ -52,31 +53,14 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const [singleVal, setSingleVal] = useState<number>(0);
     const [position, setPosition] = useState({});
     const [isConnected, setConnected] = useState(false);
-    const [SVC, setSCV] = useState(false);
-    const [FCV, setFCV] = useState(false);
-    const [TextValueFC, setTextFC] = useState(' ');
 
-    const [TextValue, setTextValue] = useState(' ');
-    const [SCVinteger, setSCVinteger] = useState(0);
-
-    const [FCVinteger, setFCVinteger] = useState(0)
-    const [SCVHigh, setSCVHigh] = useState(false)
-    const [FCVHigh, setFCVHigh] = useState(false)
-
-
-    let newVal = 0;
-    let sens: Sensor = passedComp.sensorSelected[0];
-    let supercapInputValue;
-    let FCInputValue = 0;
-
-    let supercapArrivedValue;
-
+    //Topic name uses all sensors of the object and the local time
+    let topicName = passedComp.sensorSelected.map(e => {return ' ' + String(e.sensorName)}).toString() + " " + new Date().getTime();
     let arrayMessages: number[] = [];
-    let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
+    let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", topicName);
 
     //Creation a client with a list of sensors
     const _init = () => {
-
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
         client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
@@ -86,9 +70,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     // Function called when the client manages to connect to the topic
     function onConnect() {
 
-        console.group('%c Creating a client for the following sensors:' + passedComp.sensorSelected.map(e => {
-            return ' ' + String(e.sensorName)
-        }), 'color: lightblue; font-weight: bold; font-size: 15px');
+        console.group('%c Creating a client for the following sensors: ' + topicName, 'color: lightblue; font-weight: bold; font-size: 15px');
 
         if (client == undefined) {
             console.log('Client undefined');
@@ -125,22 +107,17 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
         passedComp.sensorSelected.forEach((sensor, index) => {
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
+                if(message.payloadString)
                 if (sensor.sensorName == "Position") {
-                    //setting newSC value to the most recent, then perform a comparison
-                    if (supercapArrivedValue > supercapInputValue) {
-                        console.log("Values: ", arrayMessages[index], supercapInputValue)
-                        setSCVHigh(true)
-                    }
                 }
                 else{
-                    arrayMessages[index] = JSON.parse(message.payloadString);
-                }
-                if (sensor.sensorName == "Fuel Cell Voltage") {
-                    //setting newSC value to the most recent, then perform a comparison
-                    if (arrayMessages[index] > FCInputValue) {
-                        setFCVHigh(true)
+                    if(typeof JSON.parse(message.payloadString) != "number"){
+                        console.error("Got a string on channel " + message.destinationName)        
+                    }else{
+                        arrayMessages[index] = JSON.parse(message.payloadString);
                     }
                 }
+
             }
         });
 
@@ -149,7 +126,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     }
 
     function onFailureConnect() {
-        console.error("Connection failed from " + sens.sensorName);
+        console.error("Connection failed from " + topicName);
         setConnected(false);
     }
 
@@ -158,41 +135,26 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     useEffect(() => {
         _init();
 
-        passedComp.sensorSelected.forEach((s) => {
-            if (s.sensorName == "Supercap Voltage") {
-                setSCV(true)
-            }
-
-        })
-        passedComp.sensorSelected.forEach((s) => {
-            if (s.sensorName == "Fuel Cell Voltage") {
-                setFCV(true)
-
-            }
-        })
-
         //Return called when the component will unmount
         return () => {
             passedComp.sensorSelected.map((s, index) => {
                 console.log('Unsubscribing ' + "H2polito/" + s.topicName);
+                try{
+                    console.log("Unsubscribe went well")
                 client.unsubscribe("H2polito/" + s.topicName, {});
+                } catch(InvalidState){
+                    console.log("Error unsubscribing")
+                }
                 return
             })
+            try{
             client.disconnect();
-
+            }
+            catch(InvalidState){
+                console.log("Error disconnect")
+            }
         }
     }, []);
-
-    function handleChangeSVC(event1) {
-        setSCVinteger(parseInt(event1.target.value));
-        setTextValue(event1.target.value)
-    }
-
-    function handleChange1(event2) {
-        FCInputValue = parseInt(event2.target.value)
-        setTextFC(event2.target.value)
-
-    }
 
 
 
@@ -220,14 +182,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                         </span>
                     }
 
-                    {FCV == true &&
-                        <input type="text" id="Message" name="Message" value={TextValueFC} onChange={handleChange1}></input>
-                    }
-
-
-                    {SVC == true &&
-                        <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChangeSVC}></input>
-                    }
                     <span>
 
                         <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
@@ -298,26 +252,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
 
             </div>
-
-            {SCVHigh == true &&
-                <div style={{ position: "relative", top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                        <Alert severity="error"> SCV Alto!</Alert>
-                    </Stack>
-                </div>
-            }
-
-            {FCVHigh == true &&
-                <div style={{ position: "relative", top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                        <Alert severity="error"> FCV Alto!</Alert>
-                    </Stack>
-                </div>
-            }
-
-
-
-
 
         </div >
 
