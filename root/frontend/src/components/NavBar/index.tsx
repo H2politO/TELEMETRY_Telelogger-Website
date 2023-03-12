@@ -16,7 +16,8 @@ export const Navbar = () => {
 
     const [idraOn, setIdra] = useState(false);
     const [prov, setProv] = useState(false);
-    let timeoutId = null; 
+    let timeoutIdIdra = null; 
+    let timeoutIdJuno = null; 
     const [junoOn, setJuno] = useState(false)
     let navBarClient = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", 'navBar' + new Date().getTime());
 
@@ -30,7 +31,6 @@ export const Navbar = () => {
         navBarClient.onConnectionLost = onConnectionLost;
         navBarClient.onMessageArrived = onMessageArrived;
         navBarClient.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
-
     }
 
 
@@ -69,14 +69,18 @@ export const Navbar = () => {
 
         if (message.destinationName === "H2polito/Idra/Status") {
             setIdra(message.payloadString === '1');
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
+            clearTimeout(timeoutIdIdra);
+            timeoutIdIdra = setTimeout(() => {
                 setIdra(false);
             }, 1000);
         }
 
         if (message.destinationName === "H2polito/Juno/Status") {
             setJuno(message.payloadString === '1')
+            clearTimeout(timeoutIdJuno);
+            timeoutIdJuno = setTimeout(() => {
+                setJuno(false);
+            }, 1000);
         }
     }
 

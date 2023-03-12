@@ -23,6 +23,14 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
 
     
     const [components, setcompPageList] = useState([]);
+    const [myLayout, setLayout] = useState([]);
+
+    //Callback happens whenever the layout is changed; apply the new layout and save cookies of this layout for next accesses to the page
+    const onLayoutChange = (newLayout) => {
+        setLayout(newLayout);
+        cookie.set("layout", newLayout, {maxAge: 60*60*24*365});
+      }
+
 
     //Function used to delete the passed components
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
@@ -44,6 +52,11 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
             setcompPageList(cookie.get('compPage'))
         } else{
             console.log("Cookies empty")
+        }
+
+        if(cookie.get('layout') != undefined){
+            console.log("Layout has been loaded")
+            setLayout(cookie.get('layout'))
         }
             
     }, [])
@@ -75,9 +88,12 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
                 draggableHandle='.handle'
                 autoSize={true}
                 margin={[5, 5]}
+                layout={myLayout}
+                onLayoutChange={onLayoutChange}
+
             >
                 {components.map((comp: ComponentsPage, index) => (
-                    <div key={comp.compID} data-grid={{ x: 0, y: 0, w: comp.w, h: comp.h }}>
+                    <div key={comp.compID} data-grid={{w: comp.w, h: comp.h, x:0, y:0}}>
                         <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} ></ComponentEncapsulator>
                     </div>
                 ))}

@@ -50,6 +50,7 @@ export class LiveGraph2 extends Component<any> {
                 },
             },
 
+            /*
             annotations: {
                 yaxis: [{
                     y: 0,
@@ -63,7 +64,7 @@ export class LiveGraph2 extends Component<any> {
                         text: 'Average',
                     }
                 }]
-            },
+            },*/
 
             xaxis: {
                 type: 'numeric',
@@ -101,6 +102,7 @@ export class LiveGraph2 extends Component<any> {
 
     componentDidMount() {
 
+        //setting all data values to 0 (errors may occur otherwise)
         this.props.sensorList.forEach((e, index) => {
             this.allData[index] = [0]
         });
@@ -111,7 +113,7 @@ export class LiveGraph2 extends Component<any> {
             this.allData.forEach((data, index) => {
 
                 this.state.avg=this.allData[0].reduce((a, b) => a + b, 0) / this.allData[0].length
-                this.state.options.annotations.yaxis[0].y = this.state.avg;
+                //this.state.options.annotations.yaxis[0].y = this.state.avg;
 
                 data.push(this.props.passedData[index])
                 if (data.length > 100) {
@@ -155,7 +157,10 @@ export class LiveGraph2 extends Component<any> {
                             series={this.state.series}
                             type="line"
                             width="100%"
+                            
                         />
+                    </div>
+                    <div>
                     </div>
                 </div>
             </div>

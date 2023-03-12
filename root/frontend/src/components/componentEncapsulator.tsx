@@ -109,9 +109,14 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
                 if(message.payloadString)
                 if (sensor.sensorName == "Position") {
+                    //do stuff for the GNSS sensor
                 }
                 else{
-                    if(typeof JSON.parse(message.payloadString) != "number"){
+                    console.log(message.payloadString);
+                    console.log(parseInt(message.payloadString))
+
+                    //added condition to protect crashes due to strings sent to the channels
+                    if(Number.isNaN(parseInt(message.payloadString))){
                         console.error("Got a string on channel " + message.destinationName)        
                     }else{
                         arrayMessages[index] = JSON.parse(message.payloadString);
