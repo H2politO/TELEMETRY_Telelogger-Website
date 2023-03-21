@@ -13,6 +13,7 @@ import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import LiveGraph2 from "../components/LiveGraph2";
 import { MyFileUppy } from "./FileUploader/MyFileUppy";
+import { ResistiveForce } from "./ResistiveForce";
 
 import { LiveMap } from "./LiveMap";
 import { LapTimer } from "./LapTimer"
@@ -55,6 +56,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const [SVC, setSCV] = useState(false);
     const [FCV, setFCV]= useState(false);
     const [TextValueFC, setTextFC]= useState(' ');
+    const [data1, setData1] = useState([{vel1: 0, force1: 0}])
     
     const [TextValue, setTextValue] = useState(' ');
     const [SCVinteger, setSCVinteger] = useState(0);
@@ -299,6 +301,13 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID &&
                     <div>
                         <MyFileUppy></MyFileUppy>
+                    </div>
+                }
+
+
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID &&
+                    <div>
+                        <ResistiveForce></ResistiveForce>
                     </div>
                 }
 

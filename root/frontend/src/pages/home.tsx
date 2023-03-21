@@ -42,7 +42,7 @@ export const Home = () => {
     let newMex= (parseInt(msg) + 10)
 
     const message2= new Paho.Message(JSON.stringify(newMex));
-    message2.destinationName = "H2polito/Idra/Temperature";
+    message2.destinationName = "H2polito/Idra/ResistiveForce";
     console.log("Sending");
     console.log(message2.payloadString);
     client.send(message2);

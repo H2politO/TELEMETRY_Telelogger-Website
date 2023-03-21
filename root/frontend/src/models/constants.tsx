@@ -24,6 +24,7 @@ const AVAILABLE_COMPONENTS = [
     { ID: 6, componentName: 'Lap timer', w: 3, h: 12},
     { ID: 7, componentName: 'Message Sender', w: 3, h: 12 },
     { ID: 8, componentName: 'Uploader', w: 5, h: 9 },
+    { ID: 9, componentName: 'Resistive force', w: 5, h: 6 }
 ]
 
 export { IDRA_SENSORS }
