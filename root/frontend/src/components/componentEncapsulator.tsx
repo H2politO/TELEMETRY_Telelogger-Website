@@ -51,7 +51,9 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     const [val, setVal] = useState<number[]>([]);
     const [singleVal, setSingleVal] = useState<number>(0);
-    const [position, setPosition] = useState({});
+    const [lng, setLng] = useState(0);
+    const [lat, setLat] = useState(0);
+    const [position, setPosition] = useState([undefined,undefined]);
     const [isConnected, setConnected] = useState(false);
 
     //Topic name uses all sensors of the object and the local time
@@ -76,6 +78,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
             console.log('Client undefined');
         }
 
+        //Connect each sensor to the topic
         passedComp.sensorSelected.forEach((s, index) => {
             arrayMessages.push(0);
             console.log('%c Connecting to the topic: ' + "H2polito/" + s.topicName, 'color: orange');
@@ -106,15 +109,19 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
         passedComp.sensorSelected.forEach((sensor, index) => {
+            if(message.payloadString)
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
-                if(message.payloadString)
-                if (sensor.sensorName == "Position") {
+                if (sensor.topicName == "Idra/Position") {
                     //do stuff for the GNSS sensor
+                    let lat = parseFloat(message.payloadString.split(';') [0]);
+                    let lng = parseFloat(message.payloadString.split(';') [1]);
+                    console.log("position received", message.payloadString, lat, lng)
+                    setLng(lng);
+                    setLat(lat);
+                    setPosition([lat, lng])
+            
                 }
                 else{
-                    console.log(message.payloadString);
-                    console.log(parseInt(message.payloadString))
-
                     //added condition to protect crashes due to strings sent to the channels
                     if(Number.isNaN(parseInt(message.payloadString))){
                         console.error("Got a string on channel " + message.destinationName)        
@@ -233,7 +240,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
                     <div className="basis-full" style={{ height: "100%" }}>
-                        <LiveMap position={position}></LiveMap>
+                        <LiveMap position={[position[0], position[1]]}></LiveMap>
                     </div>
 
                 }
