@@ -124,7 +124,7 @@ export class LiveGraph2 extends Component<any> {
             ApexCharts.exec(this.props.id, 'updateSeries', this.allData.map((e, index) => {
                 return { data: this.allData[index] }
             }))
-        }, 500)
+        }, 1000)
     }
 
     dataX=[0];
