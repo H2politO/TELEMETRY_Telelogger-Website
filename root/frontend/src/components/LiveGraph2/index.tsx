@@ -68,14 +68,14 @@ export class LiveGraph2 extends Component<any> {
 
             xaxis: {
                 type: 'numeric',
-                range: 100,
+                range: 99,
             },
 
             yaxis: {
                 max: Number(this.props.maxVal),
                 min: Number(this.props.minVal)
             },
-            //colors: [availableColors[Math.floor(Math.random() * availableColors.length)], availableColors[Math.floor(Math.random() * availableColors.length)]],
+            colors: [availableColors[Math.floor(Math.random() * availableColors.length)], availableColors[Math.floor(Math.random() * availableColors.length)]],
 
             stroke: {
                 curve: 'smooth'

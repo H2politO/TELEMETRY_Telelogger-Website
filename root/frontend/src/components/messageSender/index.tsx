@@ -11,7 +11,6 @@ export const MessageSender = () => {
     const [client, setClient] = useState<Paho.Client>();
 
     useEffect(() => {
-        console.log('Paho')
         _init();
     }, [])
 
@@ -21,6 +20,8 @@ export const MessageSender = () => {
         c.onMessageArrived = _onMessageArrived;
         c.connect({ onSuccess: onConnect });
         setClient(c);
+
+
     }
 
     const onConnect = () => {
@@ -34,8 +35,10 @@ export const MessageSender = () => {
 
     // called when messages arrived
     const _onMessageArrived = (message: any) => {
-        var msg2 = message.payloadString;
-        msg2 = String(msg2)
+        console.log("new message arrived")
+        console.log(message.payloadString)
+        //var msg2 = message.payloadString;
+        //msg2 = String(msg2)
     }
 
     const internalSendData = (e) => {
@@ -50,7 +53,7 @@ export const MessageSender = () => {
 
         console.log('Sending the following message: ' + msg);
         const pahomessage = new Paho.Message(msg);
-        pahomessage.destinationName = 'H2polito/Messaging';
+        pahomessage.destinationName = 'H2polito/Idra/Messaging';
         client.send(pahomessage);
 
     }
@@ -71,7 +74,7 @@ export const MessageSender = () => {
                 return (
                     <div>
                         <span>{msg}</span>
-                        <div>{times[i]}</div>
+                        <div>{msg} {times[i]}</div>
                     </div>
                 )
             })}
