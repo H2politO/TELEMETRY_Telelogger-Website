@@ -22,12 +22,12 @@ const createCircuit = async (req, res) => {
 
 //Get all the available circuits
 const getCircuits = async (req, res) => {
+    console.log(res)
     const circuits = await circuitModel.find({}).sort({createdAt: -1})
-    res.status(200).json(circuits)
+    console.log(res.status(200).json(circuits))
+    
     
 }
-
-
 
 //Remember to export the functions that you want to use in the model
 module.exports = {

@@ -8,7 +8,12 @@ import { AltimetryMap } from './altimetryMap'
 declare const L: any
 
 type Props = {
-    position: Object,
+    position: Position
+}
+
+type Position= {
+    lng: number,
+    lat: number
 }
 
 type state = {
@@ -42,7 +47,7 @@ export class LiveMap extends Component<any, any> {
     map: any;
     layer: any;
     mapWithPoints: any;
-    marker = L.marker([0,0], { icon: this.carIcon });
+    marker = L.marker([0, 0], { icon: this.carIcon });
     //marker: any;
 
     m: any;
@@ -63,13 +68,21 @@ export class LiveMap extends Component<any, any> {
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
     }
 
-    componentDidUpdate(){
+    componentDidUpdate() {
+
+        //on props change (updating of lat and lng)
+        console.log("Update");
+        if(this.props.position[0] != undefined && this.props.position[1] !=undefined)
+            this.playPosition(this.props.position[0], this.props.position[1])
+
         //console.log('comp update')
         //console.log(this.props.position)
         //if(this.props.position.latitude!=undefined)
-         //   this.playPosition()
+        //this.playPosition()
     }
 
+
+    //function needed to compute the center of the map in order to center it when the component is loaded or when the new position is updated 
     computeCenter(tp) {
         tp.forEach(p => {
             this.px += p[1];
@@ -99,15 +112,18 @@ export class LiveMap extends Component<any, any> {
         }, 200)
     }
 
-    playPosition() {
+    //puts the marker on the latitude and longitude passed to the component; this function should be updated on the new props received
+    playPosition(lat, lng) {
 
+        console.log("Playing car at ", lat, lng) 
         this.marker.remove();
-        this.marker = L.marker([this.props.position.latitude, this.props.position.longitude], { icon: this.carIcon });
+        this.map.setView([lat, lng], 17);
+        this.marker = L.marker([lat, lng], { icon: this.carIcon });
         this.marker.addTo(this.map);
     }
 
 
-    changeHandler = (event) => {
+    fileInsertion = (event) => {
         this.setState({ selectedFile: event.target.files[0] });
         this.setState({ isFilePicked: true });
 
@@ -116,8 +132,6 @@ export class LiveMap extends Component<any, any> {
         const reader = new FileReader();
 
         reader.onload = async (e) => {
-
-            console.log("Loading file")
 
             let lines = reader.result.toString().split("\n");
             var headers = lines[0].replace("\r", "").split(";");
@@ -137,24 +151,21 @@ export class LiveMap extends Component<any, any> {
                 result.push(obj);
             }
 
-            //Compute trackpoints used to draw the map
+            //Compute trackpoints needed to draw the map
             this.trackPoints = result.map((p) => {
                 return [parseFloat(p.Lat), parseFloat(p.Long)]
             })
 
-            console.log(result);
-
             //Compute altimetryPoints used to draw the graph
             this.setState({
                 altimetryPoints: result.map((p) => {
-                    return parseFloat(p.Alt.replace("\r", "")).toFixed(2)
+                    return parseFloat(p.Altitude.replace("\r", "")).toFixed(2)
                 }),
                 strategyPoints: result.map((p) => {
                     return parseInt(p.Distance)
                 })
             })
 
-            console.log(this.state.strategyPoints)
 
             let loadedGeoJSON = {
                 "type": "FeatureCollection",
@@ -185,7 +196,7 @@ export class LiveMap extends Component<any, any> {
                 this.px, this.py
             ], 17);
 
-            this.playCar(this.trackPoints)
+            //this.playCar(this.trackPoints)
         }
 
         reader.readAsText(event.target.files[0]);
@@ -203,7 +214,7 @@ export class LiveMap extends Component<any, any> {
         if (this.state.isFilePicked) {
             altimetryMap = <AltimetryMap data={[this.state.altimetryPoints, this.state.carPosition]}></AltimetryMap>
         } else {
-            filePicker = <input type="file" name="file" onChange={this.changeHandler} />
+            filePicker = <input type="file" name="file" onChange={this.fileInsertion} />
         }
         return (
             <div>

@@ -10,9 +10,23 @@ const IDRA_SENSORS = [
     { value: { ID: '9', topicName: 'Idra/Purge', sensorName: 'Purge On', minValue: 1, maxValue: 100 }, label: 'Purge' },
     { value: { ID: '10', topicName: 'Idra/PowerMode', sensorName: 'Power Mode On', minValue: 1, maxValue: 100 }, label: 'PowerMode' },
     { value: { ID: '11', topicName: 'Idra/Short', sensorName: 'Short On', minValue: 1, maxValue: 100 }, label: 'Short' },
-    { value: { ID: '12', topicName: 'Idra/FCCurrent', sensorName: 'Fuel Cell Current', minValue: 1, maxValue: 100 }, label: 'FCCurrent' },
+    { value: { ID: '12', topicName: 'Idra/MotorCurrent', sensorName: 'Motor Current', minValue: 1, maxValue: 100 }, label: 'MotorCurrent' },
     { value: { ID: '13', topicName: 'Idra/Messaging', sensorName: 'Messaging client', minValue: 1, maxValue: 100 }, label: 'Messaging' },
     { value: { ID: '14', topicName: 'Idra/Position', sensorName: 'Position', minValue: 1, maxValue: 100 }, label: 'Position' }
+]
+
+const JUNO_SENSORS = [
+    { value: { ID: '1', topicName: 'Juno/Emergency', sensorName: 'Emergency', minValue: 1, maxValue: 100 }, label: 'Emergency' },
+    { value: { ID: '2', topicName: 'Juno/Speed', sensorName: 'Speed', minValue: 1, maxValue: 100 }, label: 'Speed' },
+    { value: { ID: '3', topicName: 'Juno/EngineCoolantTemperature', sensorName: 'Temperature', minValue: 1, maxValue: 100 }, label: 'Temperature' },
+    { value: { ID: '6', topicName: 'Juno/RPM', sensorName: 'RPM', minValue: 1, maxValue: 100 }, label: 'RPM' },
+    { value: { ID: '7', topicName: 'Juno/MotorOn', sensorName: 'Motor On', minValue: 1, maxValue: 100 }, label: 'MotorOn' },
+    { value: { ID: '13', topicName: 'Juno/Messaging', sensorName: 'Messaging client', minValue: 1, maxValue: 100 }, label: 'Messaging' },
+    { value: { ID: '14', topicName: 'Juno/Position', sensorName: 'Position', minValue: 1, maxValue: 100 }, label: 'Position' },
+    { value: { ID: '15', topicName: 'Juno/TPS', sensorName: 'TPS', minValue: 1, maxValue: 100 }, label: 'TPS' },
+    { value: { ID: '16', topicName: 'Juno/Lambda', sensorName: 'Lambda', minValue: 1, maxValue: 100 }, label: 'Lambda' },
+    { value: { ID: '17', topicName: 'Juno/VoltageBattery', sensorName: 'Vbat', minValue: 1, maxValue: 100 }, label: 'Voltage battery' },
+
 ]
 
 const AVAILABLE_COMPONENTS = [
@@ -28,4 +42,5 @@ const AVAILABLE_COMPONENTS = [
 ]
 
 export { IDRA_SENSORS }
+export { JUNO_SENSORS }
 export { AVAILABLE_COMPONENTS }

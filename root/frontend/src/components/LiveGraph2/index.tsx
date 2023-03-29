@@ -50,6 +50,7 @@ export class LiveGraph2 extends Component<any> {
                 },
             },
 
+            /*
             annotations: {
                 yaxis: [{
                     y: 0,
@@ -63,18 +64,18 @@ export class LiveGraph2 extends Component<any> {
                         text: 'Average',
                     }
                 }]
-            },
+            },*/
 
             xaxis: {
                 type: 'numeric',
-                range: 100,
+                range: 99,
             },
 
             yaxis: {
                 max: Number(this.props.maxVal),
                 min: Number(this.props.minVal)
             },
-            //colors: [availableColors[Math.floor(Math.random() * availableColors.length)], availableColors[Math.floor(Math.random() * availableColors.length)]],
+            colors: [availableColors[Math.floor(Math.random() * availableColors.length)], availableColors[Math.floor(Math.random() * availableColors.length)]],
 
             stroke: {
                 curve: 'smooth'
@@ -92,7 +93,7 @@ export class LiveGraph2 extends Component<any> {
                     data: []
                 })),
 
-        newData: this.props.passedData,
+        newData: 0,
     };
 
 
@@ -101,8 +102,9 @@ export class LiveGraph2 extends Component<any> {
 
     componentDidMount() {
 
+        //setting all data values to 0 (errors may occur otherwise)
         this.props.sensorList.forEach((e, index) => {
-            this.allData[index] = []
+            this.allData[index] = [0]
         });
 
         this.idInt = setInterval(() => {
@@ -111,7 +113,7 @@ export class LiveGraph2 extends Component<any> {
             this.allData.forEach((data, index) => {
 
                 this.state.avg=this.allData[0].reduce((a, b) => a + b, 0) / this.allData[0].length
-                this.state.options.annotations.yaxis[0].y = this.state.avg;
+                //this.state.options.annotations.yaxis[0].y = this.state.avg;
 
                 data.push(this.props.passedData[index])
                 if (data.length > 100) {
@@ -122,8 +124,22 @@ export class LiveGraph2 extends Component<any> {
             ApexCharts.exec(this.props.id, 'updateSeries', this.allData.map((e, index) => {
                 return { data: this.allData[index] }
             }))
-        }, 500)
+        }, 1000)
     }
+
+    dataX=[0];
+
+    /*
+    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<{}>, snapshot?: any): void {
+        if(prevProps.passedData != this.props.passedData){
+            console.log("component updating")
+            //new data just arrived
+            this.dataX.push(this.props.passedData[0])
+            ApexCharts.exec(this.props.id, 'updateSeries', this.allData.map((e, index) => {
+                return { data: this.allData[0] }
+            }))
+        }
+    }*/
 
     componentWillUnmount() {
         console.log('Unmount graph');
@@ -141,7 +157,10 @@ export class LiveGraph2 extends Component<any> {
                             series={this.state.series}
                             type="line"
                             width="100%"
+                            
                         />
+                    </div>
+                    <div>
                     </div>
                 </div>
             </div>

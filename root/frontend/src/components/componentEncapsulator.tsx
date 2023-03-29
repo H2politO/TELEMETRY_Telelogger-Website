@@ -26,6 +26,7 @@ import 'react-resizable/css/styles.css';
 
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { type } from "os";
 
 
 export enum ComponentType {
@@ -51,52 +52,34 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
     const [val, setVal] = useState<number[]>([]);
     const [singleVal, setSingleVal] = useState<number>(0);
-    const [position, setPosition] = useState({});
+    const [lng, setLng] = useState(0);
+    const [lat, setLat] = useState(0);
+    const [position, setPosition] = useState([undefined,undefined]);
     const [isConnected, setConnected] = useState(false);
-    const [SVC, setSCV] = useState(false);
-    const [FCV, setFCV]= useState(false);
-    const [TextValueFC, setTextFC]= useState(' ');
-    const [data1, setData1] = useState([{vel1: 0, force1: 0}])
-    
-    const [TextValue, setTextValue] = useState(' ');
-    const [SCVinteger, setSCVinteger] = useState(0);
 
-    const [FCVinteger, setFCVinteger]= useState(0)
-    const [SCVHigh, setSCVHigh]= useState(false)
-    const [FCVHigh, setFCVHigh]= useState(false)
-    
-
-    let newVal = 0;
-    let sens: Sensor = passedComp.sensorSelected[0];
-    let supercapInputValue;
-    let FCInputValue = 0;
-
-    let supercapArrivedValue;
-
+    //Topic name uses all sensors of the object and the local time
+    let topicName = passedComp.sensorSelected.map(e => {return ' ' + String(e.sensorName)}).toString() + " " + new Date().getTime();
     let arrayMessages: number[] = [];
-    let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", sens.sensorName! + new Date().getTime());
+    let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", topicName);
 
     //Creation a client with a list of sensors
     const _init = () => {
-
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
         client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
-        //client.subscribe('H2polito/Messaging')
     }
 
 
     // Function called when the client manages to connect to the topic
     function onConnect() {
 
-        console.group('%c Creating a client for the following sensors:' + passedComp.sensorSelected.map(e => {
-            return ' ' + String(e.sensorName)
-        }), 'color: lightblue; font-weight: bold; font-size: 15px');
+        console.group('%c Creating a client for the following sensors: ' + topicName, 'color: lightblue; font-weight: bold; font-size: 15px');
 
         if (client == undefined) {
             console.log('Client undefined');
         }
 
+        //Connect each sensor to the topic
         passedComp.sensorSelected.forEach((s, index) => {
             arrayMessages.push(0);
             console.log('%c Connecting to the topic: ' + "H2polito/" + s.topicName, 'color: orange');
@@ -109,7 +92,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         setConnected(true);
     }
 
-    
+
     // Function called when the connection has been lost
     function onConnectionLost(responseObject: any) {
         if (responseObject.errorCode !== 0) {
@@ -125,30 +108,30 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         console.log('Message arrived on destination: ' + message.destinationName + ' ' + message.payloadString);
 
-        //Finds the matching payload that with the string "H2polito/" + sensor name
+        //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
         passedComp.sensorSelected.forEach((sensor, index) => {
+            if(message.payloadString)
             if (('H2polito/' + sensor.topicName) == message.destinationName) {
-                if (sensor.sensorName == "Position") {
-                    //setting newSC value to the most recent, then perform a comparison
-                    supercapArrivedValue = arrayMessages[index];
-                    
-                    if(supercapArrivedValue>supercapInputValue){
-                        console.log("Values: ", arrayMessages[index], supercapInputValue)
-                        setSCVHigh(true)
-                    }  
+                if (sensor.topicName == "Idra/Position") {
+                    //do stuff for the GNSS sensor
+                    let lat = parseFloat(message.payloadString.split(';') [0]);
+                    let lng = parseFloat(message.payloadString.split(';') [1]);
+                    console.log("position received", message.payloadString, lat, lng)
+                    setLng(lng);
+                    setLat(lat);
+                    setPosition([lat, lng])
+            
                 }
-                if (sensor.sensorName == "Fuel Cell Voltage"){
-                    //setting newSC value to the most recent, then perform a comparison
-                    if(arrayMessages[index]>FCInputValue){
-                        setFCVHigh(true)   
+                else{
+                    //added condition to protect crashes due to strings sent to the channels
+                    if(Number.isNaN(parseInt(message.payloadString))){
+                        console.error("Got a string on channel " + message.destinationName)        
+                    }else{
+                        arrayMessages[index] = JSON.parse(message.payloadString);
                     }
                 }
 
-
-
             }
-
-
         });
 
         setSingleVal(arrayMessages[0])
@@ -156,7 +139,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     }
 
     function onFailureConnect() {
-        console.error("Connection failed from " + sens.sensorName);
+        console.error("Connection failed from " + topicName);
         setConnected(false);
     }
 
@@ -165,41 +148,26 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     useEffect(() => {
         _init();
 
-        passedComp.sensorSelected.forEach((s) => {
-            if (s.sensorName == "Supercap Voltage") {
-                setSCV(true)   
-            }
-         
-        })
-        passedComp.sensorSelected.forEach((s)=>{
-            if (s.sensorName == "Fuel Cell Voltage") {
-                setFCV(true)
-            
-            }
-        })
-        
         //Return called when the component will unmount
         return () => {
             passedComp.sensorSelected.map((s, index) => {
                 console.log('Unsubscribing ' + "H2polito/" + s.topicName);
+                try{
+                    console.log("Unsubscribe went well")
                 client.unsubscribe("H2polito/" + s.topicName, {});
+                } catch(InvalidState){
+                    console.log("Error unsubscribing")
+                }
                 return
             })
+            try{
             client.disconnect();
-
+            }
+            catch(InvalidState){
+                console.log("Error disconnect")
+            }
         }
     }, []);
-
-    function handleChangeSVC(event1){
-        setSCVinteger(parseInt(event1.target.value));
-        setTextValue(event1.target.value)
-    }
-    
-    function handleChange1(event2){
-        FCInputValue=parseInt(event2.target.value)
-        setTextFC(event2.target.value)
-    
-    }
 
 
 
@@ -215,26 +183,18 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                             )
                             )}
 
-                            </span>
-                        }
-                        {isConnected == true &&
-                        
-                            <span className=" text-green-500">
-                                {passedComp.sensorSelected.map((s: Sensor, index) => (
-                                    <span key={index}>{s.sensorName} </span>
-                                )
-                                )}
-                            </span>
-                        }
-             
-                {FCV == true &&
-                  <input type="text" id="Message" name="Message" value={TextValueFC} onChange={handleChange1}></input>
+                        </span>
+                    }
+                    {isConnected == true &&
+
+                        <span className=" text-green-500">
+                            {passedComp.sensorSelected.map((s: Sensor, index) => (
+                                <span key={index}>{s.sensorName} </span>
+                            )
+                            )}
+                        </span>
                     }
 
-
-                {SVC == true && 
-                     <input type="text" id="Message" name="Message" value={TextValue} onChange={handleChangeSVC}></input>
-                    }
                     <span>
 
                         <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
@@ -281,7 +241,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
                     <div className="basis-full" style={{ height: "100%" }}>
-                        <LiveMap position={position}></LiveMap>
+                        <LiveMap position={[position[0], position[1]]}></LiveMap>
                     </div>
 
                 }
@@ -301,13 +261,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID &&
                     <div>
                         <MyFileUppy></MyFileUppy>
-                    </div>
-                }
-
-
-                {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID &&
-                    <div>
-                        <ResistiveForce></ResistiveForce>
                     </div>
                 }
 

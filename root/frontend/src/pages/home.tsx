@@ -32,17 +32,18 @@ export const Home = () => {
   const _sendPayload = () => {
     if (client == undefined || msg === "") return
 
+    
     const message = new Paho.Message(msg);
-    message.destinationName = "H2polito/Idra/SCVoltage";
+    message.destinationName = "H2polito/Idra/Speed";
     console.log("Sending");
     console.log(message.payloadString);
     client.send(message);
 
     
-    let newMex= (parseInt(msg) + 10)
+    let newMex= ('45.0004943916667;7.488038575');
 
-    const message2= new Paho.Message(JSON.stringify(newMex));
-    message2.destinationName = "H2polito/Idra/ResistiveForce";
+    const message2= new Paho.Message(newMex);
+    message2.destinationName = "H2polito/Idra/Position";
     console.log("Sending");
     console.log(message2.payloadString);
     client.send(message2);
@@ -50,21 +51,24 @@ export const Home = () => {
     setMsg("false");
 
     const messageIdra= new Paho.Message(JSON.stringify(true));
-    messageIdra.destinationName = "H2polito/IdraStatus";
+    messageIdra.destinationName = "H2polito/Idra/Status";
     console.log("Sending idra status");
     console.log(messageIdra.payloadString);
     client.send(messageIdra);
 
     setMsg("");
+    
 
-    setTimeout(() => {
-      const falseMessage= new Paho.Message(JSON.stringify(false));
-      falseMessage.destinationName = "H2polito/IdraStatus";
-      console.log("Sending idra status 2 " + falseMessage.payloadString);
-      client.send(falseMessage);
-    }, 5000)
+    //let newMex = "asd"
 
-    let vehicleStatus = false;
+    const messageSender= new Paho.Message(newMex);
+    messageSender.destinationName = "H2polito/Idra/Messaging";
+    console.log("Sending");
+    console.log(messageSender.payloadString);
+    client.send(messageSender);
+
+
+    
   }
 
   // called when client lost connection
