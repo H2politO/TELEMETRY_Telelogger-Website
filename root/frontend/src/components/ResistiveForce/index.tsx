@@ -5,14 +5,20 @@ import { render } from "react-dom";
 
 
 
-export const ResistiveForce = () => {
+export const ResistiveForce = (velocity, car) => {
 
+  const IDRAMASS=30;
+  const JUNOMASS=130;
   const [isFilePicked, setFileP] = useState(false);
   const [selectedFile, setselectedF] = useState();
   const [result, setResult] = useState([{vel: 0, force: 0,  actualForce: 0}])
-  const [newresult, setNewresult]= useState ([{vel: 0, force: 0, actualForce: 0}])
-  const data = [{ name: '0', value:200 }, { name: '10', value: 60 }, { name: '20', value: 40 }, { name: '30', value: 30 }, { name: '40', value: 30 }];
   
+  const data = [{ name: '0', value:200 }, { name: '10', value: 60 }, { name: '20', value: 40 }, { name: '30', value: 30 }, { name: '40', value: 30 }];
+  let oldVelocity = 0;
+
+  const d= new Date()
+  let oldTime = d.getTime()
+
   
   const changeHandler = (event) => {
     
@@ -53,6 +59,42 @@ export const ResistiveForce = () => {
 
 
   }
+
+
+  useEffect(() => {
+    
+    let a=(velocity-oldVelocity)/(d.getTime()-oldTime);
+
+    oldTime=d.getTime();
+    oldVelocity=velocity;
+    console.log(velocity)
+    velocity.toFixed(2);
+    
+    if(car == "Idra/Speed"){
+      //idra
+
+      let resultCopy = result;
+      let f=result.find(f => f.vel===velocity)
+      let index = result.indexOf(f)
+      resultCopy[index].actualForce = a * IDRAMASS;
+      
+      setResult(resultCopy);
+      
+     }else{
+      //juno
+      let resultCopy= result;
+      let f=result.find(f => f.vel===velocity)
+      let index = result.indexOf(f);
+      //resultCopy[index].actualForce= a * JUNOMASS;
+
+      setResult(resultCopy)
+      
+    }
+
+    }, [velocity])
+
+
+  
 
 
 
