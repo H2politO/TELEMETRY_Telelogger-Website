@@ -13,6 +13,7 @@ import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import LiveGraph2 from "../components/LiveGraph2";
 import { MyFileUppy } from "./FileUploader/MyFileUppy";
+import { ResistiveForce } from "./ResistiveForce";
 
 import { LiveMap } from "./LiveMap";
 import { LapTimer } from "./LapTimer"
@@ -264,6 +265,26 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
 
             </div>
+
+            { SCVHigh == true &&
+                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
+                    <Stack sx={{ width: '100%' }} spacing={2}>
+                      <Alert severity="error"> SCV Alto!</Alert>                               
+                         </Stack>
+                 </div>
+}
+
+            { FCVHigh == true &&
+                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
+                    <Stack sx={{ width: '100%' }} spacing={2}>
+                      <Alert severity="error"> FCV Alto!</Alert>                               
+                         </Stack>
+                 </div>
+}
+
+            
+
+
 
         </div >
 
