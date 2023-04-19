@@ -51,9 +51,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
     const style2 = { color: "black" };
 
     const [val, setVal] = useState<number[]>([]);
-    const [singleVal, setSingleVal] = useState<number>(0);
-    const [lng, setLng] = useState(0);
-    const [lat, setLat] = useState(0);
     const [position, setPosition] = useState([undefined,undefined]);
     const [isConnected, setConnected] = useState(false);
 
@@ -117,8 +114,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     let lat = parseFloat(message.payloadString.split(';') [0]);
                     let lng = parseFloat(message.payloadString.split(';') [1]);
                     console.log("position received", message.payloadString, lat, lng)
-                    setLng(lng);
-                    setLat(lat);
                     setPosition([lat, lng])
             
                 }
@@ -133,9 +128,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
             }
         });
-
-        setSingleVal(arrayMessages[0])
-        setVal(arrayMessages);
+        setVal([...arrayMessages]);
     }
 
     function onFailureConnect() {
@@ -175,7 +168,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         <div className="card dashboardElement">
             {window.location.pathname == "/" &&
                 <div className="card-header handle">
-                    <span className="cards-title">{passedComp.nameComponent} </span>
+                    <span className="cards-title">{passedComp.sensorSelected[0].topicName.split('/')[0]} </span>
                     {isConnected == false &&
                         <span className="text-red-500">
                             {passedComp.sensorSelected.map((s: Sensor, index) => (
@@ -189,7 +182,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                         <span className=" text-green-500">
                             {passedComp.sensorSelected.map((s: Sensor, index) => (
-                                <span key={index}>{s.sensorName} </span>
+                                <span key={index}>{s.sensorName} {val[index]} | </span>
                             )
                             )}
                         </span>
@@ -214,13 +207,15 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 }
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[1].ID &&
                     <div className="basis-1/3">
-                        <Speedometer value={singleVal} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
+                        <Speedometer value={val} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
                     </div>
                 }
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[2].ID &&
                     <div className="basis-full">
-                        <LinearGauge value={singleVal} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
+                        <LinearGauge value={val} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
+                        <div>{val}</div>
                     </div>
+                    
                 }
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[3].ID &&
@@ -258,33 +253,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     </div>
                 }
 
-                {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID &&
-                    <div>
-                        <MyFileUppy></MyFileUppy>
-                    </div>
-                }
-
             </div>
-
-            { SCVHigh == true &&
-                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                      <Alert severity="error"> SCV Alto!</Alert>                               
-                         </Stack>
-                 </div>
-}
-
-            { FCVHigh == true &&
-                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                      <Alert severity="error"> FCV Alto!</Alert>                               
-                         </Stack>
-                 </div>
-}
-
-            
-
-
 
         </div >
 

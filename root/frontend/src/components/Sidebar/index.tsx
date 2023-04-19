@@ -30,6 +30,7 @@ export class Sidebar extends React.Component<any, any> {
     listCookie: Cookies;
     componentsList: ComponentsPage[];
 
+    //on mount of the component (so page loading), get the cookies; if they're not present, initialize the component list to an empty array; if it is not empty, get the cookies
     componentDidMount() {
         this.listCookie = new Cookies();
         if (this.listCookie.get('compPage') != undefined)
@@ -47,6 +48,14 @@ export class Sidebar extends React.Component<any, any> {
 
     sensors: any;
 
+    //clears the input of the "component max and min range"
+    clearInput() {
+        console.log("clearing");
+        (document.getElementById("cmpMinRange") as HTMLInputElement).value = '';
+        (document.getElementById("cmpMaxRange") as HTMLInputElement).value = '';
+    }
+
+    //Selects the car used in order to show the menu
     onCarSelect = (selection) => {
         if (selection.target.value == "Idra") {
             this.setState({ idraSelected: true })
@@ -59,12 +68,20 @@ export class Sidebar extends React.Component<any, any> {
     handleChange = (
         newSensors: OnChangeValue<Option, true>
     ) => {
+
         this.sensors = newSensors;
+        if (this.sensors.at(-1) != undefined) {
+            (document.getElementById("cmpMinRange") as HTMLInputElement).value = this.sensors.at(-1).value.minValue;
+            (document.getElementById("cmpMaxRange") as HTMLInputElement).value = this.sensors.at(-1).value.maxValue;
+        }
+
     };
 
-    //calls the database and retrieves all the available sensors 
+    //need a function that calls the database and retrieves all the available sensors 
 
-    onTrigger = (provComponent :ComponentsPage) => {
+
+    //trigger to do the callback in order to pass the just generated component to the parent, and render in the page immediately later
+    onCreationOfComponent = (provComponent: ComponentsPage) => {
         this.props.parentCallback(provComponent);
     }
 
@@ -81,11 +98,10 @@ export class Sidebar extends React.Component<any, any> {
                         initialValues={{
                             nameComponent: '',
                             typeComponent: 1,
-                            cmpMinRange: 0,
-                            cmpMaxRange: 100,
+                            cmpMinRange: null,
+                            cmpMaxRange: null,
                             sensorSelected: new Array<Sensor>(),
                             prescaler: 1,
-                            deleted: false,
                             value: 0,
                             w: 2,
                             h: 2,
@@ -106,13 +122,15 @@ export class Sidebar extends React.Component<any, any> {
                             prov.sensorSelected = this.sensors.map((sens: any) => sens.value);
                             prov.w = AVAILABLE_COMPONENTS[prov.typeComponent - 1].w
                             prov.h = AVAILABLE_COMPONENTS[prov.typeComponent - 1].h
-                            prov.cmpMinRange = values.cmpMinRange;
-                            prov.cmpMaxRange = values.cmpMaxRange;
-                            this.onTrigger(prov);
+                            prov.cmpMinRange = values.cmpMinRange || prov.sensorSelected[0].minValue
+                            prov.cmpMaxRange = values.cmpMaxRange || prov.sensorSelected[0].maxValue
+                            this.onCreationOfComponent(prov);
 
                             //reset
                             action.resetForm();
+
                             setTimeout(() => {
+
                             }, 500);
                         }}
                     >
@@ -163,9 +181,10 @@ export class Sidebar extends React.Component<any, any> {
                                 <label>Insert Min and Max value on the scale</label>
                                 <div className="input-group mb-3">
                                     <Field className="form-control" id="cmpMinRange" name="cmpMinRange" placeholder="Minimum range" />
-                                    <Field className="form-control" id="cmpMaxRange" name="cmpMaxRange" placeholder="Maximum range" />
+                                    <Field className="form-control" id="cmpMaxRange" name="cmpMaxRange" placeholder="Maximum range"/>
                                 </div>
                             </div>
+
 
                             <div className='myFormGroup'>
                                 <label>Insert a prescaler</label>
@@ -180,7 +199,8 @@ export class Sidebar extends React.Component<any, any> {
                                 </Field>
                             </div>
 
-                            <input className="btn btn-primary interactiveBtn" type="submit" value="Submit"></input>
+
+                            <input className="btn btn-primary interactiveBtn" type="submit" value="Submit" onClick={this.clearInput}></input>
 
                         </Form>
                     </Formik>
