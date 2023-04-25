@@ -264,27 +264,13 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                     </div>
                 }
 
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID &&
+                    <div>
+                        <ResistiveForce velocity={singleVal} car={"Idra/Speed"}></ResistiveForce>
+                    </div>
+                }
+
             </div>
-
-            { SCVHigh == true &&
-                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                      <Alert severity="error"> SCV Alto!</Alert>                               
-                         </Stack>
-                 </div>
-}
-
-            { FCVHigh == true &&
-                 <div style={{ position: "relative",top: 0, left: 0, right: 0, zIndex: 0 }}>
-                    <Stack sx={{ width: '100%' }} spacing={2}>
-                      <Alert severity="error"> FCV Alto!</Alert>                               
-                         </Stack>
-                 </div>
-}
-
-            
-
-
 
         </div >
 

@@ -3,9 +3,12 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useState, useEffect } from "react";
 import { render } from "react-dom";
 
+interface passedData{
+  velocity: number,
+  car: string
+}
 
-
-export const ResistiveForce = (velocity, car) => {
+export const ResistiveForce = (passedDataVariable : passedData) => {
 
   const IDRAMASS=30;
   const JUNOMASS=130;
@@ -13,11 +16,10 @@ export const ResistiveForce = (velocity, car) => {
   const [selectedFile, setselectedF] = useState();
   const [result, setResult] = useState([{vel: 0, force: 0,  actualForce: 0}])
   
-  const data = [{ name: '0', value:200 }, { name: '10', value: 60 }, { name: '20', value: 40 }, { name: '30', value: 30 }, { name: '40', value: 30 }];
   let oldVelocity = 0;
 
-  const d= new Date()
-  let oldTime = d.getTime()
+  let d= new Date()
+  let oldTime = d.getTime() - 10
 
   
   const changeHandler = (event) => {
@@ -46,66 +48,53 @@ export const ResistiveForce = (velocity, car) => {
 
         //For each line, scan through it and save the data
         for (var j = 0; j < headers.length; j++) {
-          obj[headers[j]] = currentline[j].replace("\r", "");
+          obj[headers[j]] = parseFloat(currentline[j].replace("\r", ""));
         }
         obj["actualForce"]=0
         provResult.push(obj);
       }
-      console.log(provResult);
+      for(let i=0; i<provResult.length; i++){
+        provResult[i].vel = provResult[i].vel.toFixed(1)
+      }
       setResult(provResult)
     }
     reader.readAsText(event.target.files[0]);
      
-
-
   }
-
 
   useEffect(() => {
     
-    let a=(velocity-oldVelocity)/(d.getTime()-oldTime);
+    let a=(passedDataVariable.velocity-oldVelocity)/(100);
 
-    oldTime=d.getTime();
-    oldVelocity=velocity;
-    console.log(velocity)
-    velocity.toFixed(2);
+    //oldTime=d.getTime();
+    oldVelocity=passedDataVariable.velocity;
     
-    if(car == "Idra/Speed"){
+    if(passedDataVariable.car == "Idra/Speed"){
       //idra
-
-      let resultCopy = result;
-      let f=result.find(f => f.vel===velocity)
-      let index = result.indexOf(f)
-      resultCopy[index].actualForce = a * IDRAMASS;
-      
-      setResult(resultCopy);
-      
+      let resultCopy= result;
+      console.log(resultCopy)
+      resultCopy[parseFloat(passedDataVariable.velocity.toFixed(1))*10].actualForce = a * IDRAMASS;
+      setResult([...resultCopy]);
      }else{
       //juno
       let resultCopy= result;
-      let f=result.find(f => f.vel===velocity)
+      let f=result.find(f => f.vel===passedDataVariable.velocity)
       let index = result.indexOf(f);
+      //resultCopy[index].actualForce = a * IDRAMASS;
       //resultCopy[index].actualForce= a * JUNOMASS;
 
       setResult(resultCopy)
-      
     }
 
-    }, [velocity])
-
-
-  
-
-
-
+    }, [passedDataVariable])
 
 
  const filePicker = <input type="file" name="file" onChange={changeHandler} />
   const renderLineChart = (
     <div>
       <LineChart width={500} height={300} data={result}>
-        <Line type="monotone" dataKey="force" stroke="#8884d8" />
-        <Line type="monotone" dataKey="actualForce" stroke="#82ca9d"/>
+        <Line type="monotone" dataKey="force" stroke="#ffa500" />
+        <Line type="monotone" dataKey="actualForce" stroke="#6495ed"/>
         <CartesianGrid stroke="#ccc" />
         <XAxis dataKey="velFile" />
 
