@@ -6,6 +6,7 @@ import { Demo } from './pages/demo';
 import { Dashboard } from './pages/dashboard';
 import { Database } from './pages/database';
 import { Sidebar } from './components/Sidebar'
+import { PostRun } from './pages/postRun';
 import { Navbar } from './components/NavBar';
 import { Sensor } from './models/sensor';
 import { ComponentsPage } from './models/componentsPage';
@@ -13,7 +14,6 @@ import Cookies from 'universal-cookie';
 import './App.css'
 
 import Paho from 'paho-mqtt';
-import { MinSummaryCalculator } from 'igniteui-react-core';
 
 export class App extends React.Component {
 
@@ -38,7 +38,8 @@ export class App extends React.Component {
       <div className="bg-slate-600 flex flex-col min-h-screen justify-between backgroundImage">
 
         <Navbar></Navbar>
-        <Sidebar parentCallback={this.handleCallback}></Sidebar>
+        {window.location.pathname == "/dashboard" || window.location.pathname == "/" &&
+        <Sidebar parentCallback={this.handleCallback}></Sidebar>}
 
         <main className="mb-auto mx-auto w-full">
           <Routes>
@@ -47,6 +48,7 @@ export class App extends React.Component {
             <Route path="/" element={<Dashboard receivedComponent={this.state.appComponent} />} />
             <Route path="/demo" element={<Demo />} />
             <Route path="/database" element={<Database/>} />
+            <Route path="/postRun" element={<PostRun/>} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
             <p>Made with &hearts; by Informatics (and Electronics) division</p>
