@@ -8,6 +8,9 @@ interface passedData{
   car: string
 }
 
+
+let oldVelocity = 0;
+
 export const ResistiveForce = (passedDataVariable : passedData) => {
 
   const IDRAMASS=30;
@@ -16,7 +19,6 @@ export const ResistiveForce = (passedDataVariable : passedData) => {
   const [selectedFile, setselectedF] = useState();
   const [result, setResult] = useState([{vel: 0, force: 0,  actualForce: 0}])
   
-  let oldVelocity = 0;
 
   let d= new Date()
   let oldTime = d.getTime() - 10
@@ -49,12 +51,21 @@ export const ResistiveForce = (passedDataVariable : passedData) => {
         //For each line, scan through it and save the data
         for (var j = 0; j < headers.length; j++) {
           obj[headers[j]] = parseFloat(currentline[j].replace("\r", ""));
+         //console.log(obj[headers[j]])
+        
         }
         obj["actualForce"]=0
         provResult.push(obj);
+       
       }
+
+      console.log(provResult)
+
       for(let i=0; i<provResult.length; i++){
-        provResult[i].vel = provResult[i].vel.toFixed(1)
+        console.log(provResult[i].Vel)
+       // console.log(provResult)
+       provResult[i].Vel = provResult[i].Vel.toFixed(1)
+
       }
       setResult(provResult)
     }
@@ -64,7 +75,9 @@ export const ResistiveForce = (passedDataVariable : passedData) => {
 
   useEffect(() => {
     
-    let a=(passedDataVariable.velocity-oldVelocity)/(100);
+    let a=(passedDataVariable.velocity-oldVelocity)/(500);
+
+    
 
     //oldTime=d.getTime();
     oldVelocity=passedDataVariable.velocity;
@@ -72,16 +85,19 @@ export const ResistiveForce = (passedDataVariable : passedData) => {
     if(passedDataVariable.car == "Idra/Speed"){
       //idra
       let resultCopy= result;
-      console.log(resultCopy)
-      resultCopy[parseFloat(passedDataVariable.velocity.toFixed(1))*10].actualForce = a * IDRAMASS;
-      setResult([...resultCopy]);
+      if(resultCopy.length==1){
+        return
+      }
+     if (a<0){
+      console.log(a, passedDataVariable.velocity)
+      resultCopy[parseFloat(passedDataVariable.velocity.toFixed(1))*10].actualForce = Math.abs(a * IDRAMASS);
+      setResult([...resultCopy]);}
      }else{
       //juno
       let resultCopy= result;
+     
       let f=result.find(f => f.vel===passedDataVariable.velocity)
       let index = result.indexOf(f);
-      //resultCopy[index].actualForce = a * IDRAMASS;
-      //resultCopy[index].actualForce= a * JUNOMASS;
 
       setResult(resultCopy)
     }
@@ -93,10 +109,10 @@ export const ResistiveForce = (passedDataVariable : passedData) => {
   const renderLineChart = (
     <div>
       <LineChart width={500} height={300} data={result}>
-        <Line type="monotone" dataKey="force" stroke="#ffa500" />
+        <Line type="monotone" dataKey="Force" stroke="#ffa500" />
         <Line type="monotone" dataKey="actualForce" stroke="#6495ed"/>
         <CartesianGrid stroke="#ccc" />
-        <XAxis dataKey="velFile" />
+        <XAxis dataKey="Vel" />
 
 
         <YAxis />
