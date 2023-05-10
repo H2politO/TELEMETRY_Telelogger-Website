@@ -12,7 +12,9 @@ const IDRA_SENSORS = [
     { value: { ID: '11', topicName: 'Idra/Short', sensorName: 'Short On', minValue: 0, maxValue: 1 }, label: 'Short' },
     { value: { ID: '12', topicName: 'Idra/MotorCurrent', sensorName: 'Motor Current', minValue: 0, maxValue: 20 }, label: 'MotorCurrent' },
     { value: { ID: '13', topicName: 'Idra/Messaging', sensorName: 'Messaging client', minValue: 1, maxValue: 100 }, label: 'Messaging' },
-    { value: { ID: '14', topicName: 'Idra/Position', sensorName: 'Position', minValue: 1, maxValue: 100 }, label: 'Position' }
+    { value: { ID: '14', topicName: 'Idra/Position', sensorName: 'Position', minValue: 1, maxValue: 100 }, label: 'Position' },
+    { value: { ID: '15', topicName: 'Idra/BARHeight', sensorName: 'Altimetry', minValue: 365, maxValue: 385 }, label: 'Altimetry' },
+    { value: { ID: '16', topicName: 'Idra/GPSSpeed', sensorName: 'Gps Speed', minValue: 0, maxValue: 60 }, label: 'Gps Speed' }
 ]
 
 const JUNO_SENSORS = [
@@ -30,14 +32,15 @@ const JUNO_SENSORS = [
 ]
 
 const AVAILABLE_COMPONENTS = [
-    { ID: 1, componentName: 'Check Light', w: 3, h: 3 },
+    { ID: 1, componentName: 'BUGGED - Check Light', w: 3, h: 3 },
     { ID: 2, componentName: 'Radial Gauge', w: 3, h: 8 },
     { ID: 3, componentName: 'Linear Gauge', w: 6, h: 6 },
     { ID: 4, componentName: 'Plot', w: 5, h: 9 },
     { ID: 5, componentName: 'Circuit map', w: 6, h: 16},
     { ID: 6, componentName: 'Lap timer', w: 3, h: 12},
     { ID: 7, componentName: 'Message Sender', w: 3, h: 12 },
-    { ID: 8, componentName: 'Resistive force', w: 5, h: 6 }
+    { ID: 8, componentName: 'BETA - Uplot live', w: 5, h: 9 },
+    { ID: 9, componentName: 'Resistive force', w: 5, h: 6 },
 ]
 
 export { IDRA_SENSORS }

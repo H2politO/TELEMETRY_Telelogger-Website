@@ -21,7 +21,7 @@ export default class SimpleLight extends React.Component<any, any>{
                 {//this.props.comp.sensorSelected.map((s, index) => (
                     //<div>
                     <div className="led-box" >
-                        <div key={uuidv4()} className={this.props.value[0] != 0 ? "led-green led-component" : "led-red led-component"}></div>
+                        <div  className={this.props.value[0] != 0 ? "led-green led-component" : "led-red led-component"}></div>
                     </div>
                     // </div>
                     //))

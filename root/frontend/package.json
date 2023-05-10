@@ -42,6 +42,7 @@
     "leaflet-draw": "^1.0.4",
     "leaflet-gpx": "^1.7.0",
     "leaflet-realtime": "^2.2.0",
+    "leaflet-toolbar": "^0.4.0-alpha.2",
     "node-fetch": "^3.3.0",
     "paho-mqtt": "^1.1.0",
     "react": "^18.2.0",

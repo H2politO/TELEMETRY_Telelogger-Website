@@ -82,9 +82,6 @@ export const Database = () => {
                 </div>
 
             </div>
-            <div>Upload the strategy file to the database with the data ordered: Long, Lat, Alt,
-                <CustomFileUploader></CustomFileUploader>
-            </div>
         </div >
 
     )

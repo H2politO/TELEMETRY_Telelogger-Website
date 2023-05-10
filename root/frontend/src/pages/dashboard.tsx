@@ -16,56 +16,60 @@ let cookie = new Cookies();
 type Props = {
     receivedComponent: ComponentsPage
     useMountEffect?: () => (void)
+    onResize?: (id: string, width: number, height: number) => void;
 };
 
 
 export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
 
-    
+
+    const [componentWidth, setComponentWidth] = useState(0);
+    const [componentHeight, setComponentHeight] = useState(0);
+
     const [components, setcompPageList] = useState([]);
     const [myLayout, setLayout] = useState([]);
 
     //Callback happens whenever the layout is changed; apply the new layout and save cookies of this layout for next accesses to the page
     const onLayoutChange = (newLayout) => {
         setLayout(newLayout);
-        cookie.set("layout", newLayout, {maxAge: 60*60*24*365});
-      }
+        cookie.set("layout", newLayout, { maxAge: 60 * 60 * 24 * 365 });
+    }
 
 
     //Function used to delete the passed components
     const deleteComponent = (cmpToDlt: ComponentsPage) => {
-        
+
         console.log('Deleting ');
         let ind = components.findIndex((cmp) => {
             return cmp === cmpToDlt;
         })
 
-        setcompPageList(components.filter((cmp) => cmp!=cmpToDlt));
+        setcompPageList(components.filter((cmp) => cmp != cmpToDlt));
     }
 
 
     //Useeffect called only when the page is loaded; if cookies are present load them; if they aren't, don't
     useEffect(() => {
         console.log("Dashboard useEffect called only on load")
-        if (cookie.get('compPage') != undefined){
+        if (cookie.get('compPage') != undefined) {
             console.log("Cookies not empty")
             setcompPageList(cookie.get('compPage'))
-        } else{
+        } else {
             console.log("Cookies empty")
         }
 
-        if(cookie.get('layout') != undefined){
+        if (cookie.get('layout') != undefined) {
             console.log("Layout has been loaded")
             setLayout(cookie.get('layout'))
         }
-            
+
     }, [])
 
 
     //Setting cookies every time components finishes the render 
     useEffect(() => {
         //Set age of the cookies to 1 year (60 seconds * 60 minutes * 24 hours * 365 days)
-        cookie.set('compPage', components, {maxAge: 60*60*24*365});
+        cookie.set('compPage', components, { maxAge: 60 * 60 * 24 * 365 });
     }, [components])
 
 
@@ -76,6 +80,24 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
             setcompPageList(components.concat(receivedComponent))
         }
     }, [receivedComponent])
+
+    function handleComponentResize(layout, oldItem, newItem) {
+        // Check if the resized item is the one we are interested in
+        //console.log(oldItem, newItem)
+
+        //component that has just been resized
+        const resizedComponent = components.filter(x => x.compID === newItem.i)[0];
+        // Call the onResize prop of the ComponentEncapsulator component
+        if (resizedComponent) {
+          const { compID, w, h } = resizedComponent;
+          const id = `component-${compID}`;
+          const width = w * newItem.w;
+          const height = h * newItem.h;
+          //console.log(resizedComponent)
+          //onResize(id, width, height);
+        }
+
+    }
 
 
     return (
@@ -90,11 +112,13 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
                 margin={[5, 5]}
                 layout={myLayout}
                 onLayoutChange={onLayoutChange}
+                onResize={handleComponentResize}
+
 
             >
                 {components.map((comp: ComponentsPage, index) => (
-                    <div key={comp.compID} data-grid={{w: comp.w, h: comp.h, x:0, y:0}}>
-                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} ></ComponentEncapsulator>
+                    <div key={comp.compID} data-grid={{ w: comp.w, h: comp.h, x: 0, y: 0 }}>
+                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} onResize={handleComponentResize}></ComponentEncapsulator>
                     </div>
                 ))}
             </ReactGridLayout >

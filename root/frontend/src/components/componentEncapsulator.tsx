@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import '../App.css';
 import '../index.css';
@@ -12,8 +12,9 @@ import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
 import Paho from 'paho-mqtt';
 import LiveGraph2 from "../components/LiveGraph2";
-import { MyFileUppy } from "./FileUploader/MyFileUppy";
-import { ResistiveForce } from "./ResistiveForce";
+
+
+import { v4 as uuidv4 } from 'uuid';
 
 import { LiveMap } from "./LiveMap";
 import { LapTimer } from "./LapTimer"
@@ -24,9 +25,8 @@ import { AVAILABLE_COMPONENTS } from "../models/constants";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
-import { type } from "os";
+import { UplotLive } from "./LiveGraph2/uplot_live";
+import { SensorList } from "./Sidebar/sensorsList";
 
 
 export enum ComponentType {
@@ -43,21 +43,41 @@ export enum ComponentType {
 interface Props {
     passedComp: ComponentsPage,
     onDelete: any
+    onResize: (id: string, width: number, height: number) => void;
 }
 
-export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete }) => {
+export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
 
     const style1 = { color: "red" };
     const style2 = { color: "black" };
 
     const [val, setVal] = useState<number[]>([]);
-    const [position, setPosition] = useState([undefined,undefined]);
+    const [position, setPosition] = useState([undefined, undefined]);
     const [isConnected, setConnected] = useState(false);
 
+    const parentRef = useRef(null);
+
     //Topic name uses all sensors of the object and the local time
-    let topicName = passedComp.sensorSelected.map(e => {return ' ' + String(e.sensorName)}).toString() + " " + new Date().getTime();
+    let topicName = passedComp.sensorSelected.map(e => { return ' ' + String(e.sensorName) }).toString() + " " + new Date().getTime();
     let arrayMessages: number[] = [];
     let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", topicName);
+
+
+    const { compID, typeComponent } = passedComp;
+    const [width, setWidth] = useState(0);
+    const [height, setHeight] = useState(0);
+
+    useEffect(() => {
+
+        console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
+        parentRef.current.style.height = document.getElementById('cas').offsetHeight 
+        parentRef.current.style.width = document.getElementById('cas').offsetWidth
+        console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
+        //console.log(document.getElementById('cas').offsetHeight);
+        onResize(`component-${compID}`, width, height);
+
+
+    }, [width, height, onResize, compID]);
 
     //Creation a client with a list of sensors
     const _init = () => {
@@ -107,26 +127,26 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
         //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
         passedComp.sensorSelected.forEach((sensor, index) => {
-            if(message.payloadString)
-            if (('H2polito/' + sensor.topicName) == message.destinationName) {
-                if (sensor.topicName == "Idra/Position") {
-                    //do stuff for the GNSS sensor
-                    let lat = parseFloat(message.payloadString.split(';') [0]);
-                    let lng = parseFloat(message.payloadString.split(';') [1]);
-                    console.log("position received", message.payloadString, lat, lng)
-                    setPosition([lat, lng])
-            
-                }
-                else{
-                    //added condition to protect crashes due to strings sent to the channels
-                    if(Number.isNaN(parseInt(message.payloadString))){
-                        console.error("Got a string on channel " + message.destinationName)        
-                    }else{
-                        arrayMessages[index] = JSON.parse(message.payloadString);
-                    }
-                }
+            if (message.payloadString)
+                if (('H2polito/' + sensor.topicName) == message.destinationName) {
+                    if (sensor.topicName == "Idra/Position") {
+                        //do stuff for the GNSS sensor
+                        let lat = parseFloat(message.payloadString.split(';')[0]);
+                        let lng = parseFloat(message.payloadString.split(';')[1]);
+                        console.log("position received", message.payloadString, lat, lng)
+                        setPosition([lat, lng])
 
-            }
+                    }
+                    else {
+                        //added condition to protect crashes due to strings sent to the channels
+                        if (Number.isNaN(parseInt(message.payloadString))) {
+                            console.error("Got a string on channel " + message.destinationName)
+                        } else {
+                            arrayMessages[index] = JSON.parse(message.payloadString);
+                        }
+                    }
+
+                }
         });
         setVal([...arrayMessages]);
     }
@@ -135,6 +155,18 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         console.error("Connection failed from " + topicName);
         setConnected(false);
     }
+
+    useEffect(() => {
+
+        const handleResize = () => {
+            if (parentRef.current) {
+                console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    }, [parentRef])
 
 
     //Called once when the component is mounted
@@ -145,18 +177,18 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
         return () => {
             passedComp.sensorSelected.map((s, index) => {
                 console.log('Unsubscribing ' + "H2polito/" + s.topicName);
-                try{
+                try {
                     console.log("Unsubscribe went well")
-                client.unsubscribe("H2polito/" + s.topicName, {});
-                } catch(InvalidState){
+                    client.unsubscribe("H2polito/" + s.topicName, {});
+                } catch (InvalidState) {
                     console.log("Error unsubscribing")
                 }
                 return
             })
-            try{
-            client.disconnect();
+            try {
+                client.disconnect();
             }
-            catch(InvalidState){
+            catch (InvalidState) {
                 console.log("Error disconnect")
             }
         }
@@ -165,7 +197,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
 
     return (
-        <div className="card dashboardElement">
+        <div className="card dashboardElement" id="cas">
             {window.location.pathname == "/" &&
                 <div className="card-header handle">
                     <span className="cards-title">{passedComp.sensorSelected[0].topicName.split('/')[0]} </span>
@@ -198,10 +230,10 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
 
                 </div>}
 
-            <div className="card-body">
+            <div className="card-body" ref={parentRef} >
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[0].ID &&
-                    <div className="">
-                        <SimpleLight value={val} comp={passedComp} />
+                    <div className="basis-full">
+                        <SimpleLight key={uuidv4()} value={val} comp={passedComp} />
                     </div>
 
                 }
@@ -215,7 +247,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                         <LinearGauge value={val} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                         <div>{val}</div>
                     </div>
-                    
+
                 }
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[3].ID &&
@@ -250,6 +282,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete })
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[6].ID &&
                     <div>
                         <MessageSender></MessageSender>
+                    </div>
+                }
+
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID &&
+                    <div >
+                        <UplotLive passedData={val} parentRef={parentRef} sensorList={passedComp.sensorSelected}></UplotLive>
                     </div>
                 }
 

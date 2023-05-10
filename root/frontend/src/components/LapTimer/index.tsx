@@ -24,9 +24,9 @@ export function LapTimer() {
 
         if (isActive && isPaused === false) {
             interval = setInterval(() => {
-                setTime((time) => time + 10);
-                setTotalTime((time) => time + 10);
-            }, 10);
+                setTime((time) => time + 100);
+                setTotalTime((time) => time + 100);
+            }, 100);
         } else {
             clearInterval(interval);
         }
