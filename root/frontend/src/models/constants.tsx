@@ -14,7 +14,8 @@ const IDRA_SENSORS = [
     { value: { ID: '13', topicName: 'Idra/Messaging', sensorName: 'Messaging client', minValue: 1, maxValue: 100 }, label: 'Messaging' },
     { value: { ID: '14', topicName: 'Idra/Position', sensorName: 'Position', minValue: 1, maxValue: 100 }, label: 'Position' },
     { value: { ID: '15', topicName: 'Idra/BARHeight', sensorName: 'Altimetry', minValue: 365, maxValue: 385 }, label: 'Altimetry' },
-    { value: { ID: '16', topicName: 'Idra/GPSSpeed', sensorName: 'Gps Speed', minValue: 0, maxValue: 60 }, label: 'Gps Speed' }
+    { value: { ID: '16', topicName: 'Idra/GPSSpeed', sensorName: 'Gps Speed', minValue: 0, maxValue: 60 }, label: 'Gps Speed' },
+    { value: { ID: '17', topicName: 'Idra/FanDuty', sensorName: 'Fan speed', minValue: 0, maxValue: 100 }, label: 'Fan speed' },
 ]
 
 const JUNO_SENSORS = [

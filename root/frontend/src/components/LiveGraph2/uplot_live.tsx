@@ -10,6 +10,15 @@ export const UplotLive = (passedData) => {
     const timestamp = useRef(0);
     const [data, setData] = useState([[0], [0]]);
     const [plotHeight, setPlotHeight] = useState(300);
+    const colors = [
+        "red",
+        "blue",
+        "lightblue",
+        "green",
+        "Orange",
+        "black",
+        "brown"
+    ]
 
     const maxDataLength = 50;
 
@@ -21,7 +30,7 @@ export const UplotLive = (passedData) => {
     }, [])
 
     useEffect(() => {
-        console.log(data)
+        //console.log(data)
         if (data != undefined) {
             plot.current.setData([[...data[0], timestamp.current], [...data[1], passedData.passedData[0]]])
         }
@@ -39,14 +48,18 @@ export const UplotLive = (passedData) => {
 
     useEffect(() => {
         //console.log(passedData);
-        plot.current.height = passedData.parentRef.current.offsetHeight;
-        plot.current.width = passedData.parentRef.current.offsetWidth;
-        console.log(plot.current.height, plot.current.width)
+        //plot.current.height = passedData.parentRef.current.offsetHeight - 100;
+        //plot.current.width = passedData.parentRef.current.offsetWidth - 100;
+        if (plot.current) {
+            plot.current.height = passedData.parentRef.current.offsetHeight - 100;
+            plot.current.width = passedData.parentRef.current.offsetWidth - 100;
+        }
+        //console.log("plot height/ width: " + plot.current.height + " " + plot.current.width + " parent height/ width " + passedData.parentRef.current.offsetHeight + " " + passedData.parentRef.current.offsetWidth)
         //console.log(`Parent height: ${height}, width: ${width}`);
         if (passedData.passedData[0] != undefined) {
             setData((prevData) => {
                 let date = new Date()
-                timestamp.current= timestamp.current+0.5
+                timestamp.current = timestamp.current + 0.5
 
                 //current_date = date.getMinutes() + "-" + (date.getSeconds())
                 const newData = [[...prevData[0], timestamp.current], [...prevData[1], passedData.passedData[0]]];
@@ -71,7 +84,7 @@ export const UplotLive = (passedData) => {
             },
             {
                 label: passedData.sensorList[0].sensorName,
-                stroke: "#" + Math.floor(Math.random() * 16777215).toString(16)
+                stroke: colors[Math.floor(Math.random() * colors.length)]
             },
         ],
 
@@ -90,6 +103,6 @@ export const UplotLive = (passedData) => {
     };
 
     return (
-        <div className="bg-gray-200" ref={plot} key={passedData.sensorList[0].ID}></div>
+        <div ref={plot} key={passedData.sensorList[0].ID}></div>
     )
 }

@@ -65,7 +65,8 @@ export class LiveMap extends Component<any, any> {
             0, 0
         ], 0);
 
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(this.map);
+       
     }
 
     componentDidUpdate() {

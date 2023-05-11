@@ -43,7 +43,7 @@ export enum ComponentType {
 interface Props {
     passedComp: ComponentsPage,
     onDelete: any
-    onResize: (id: string, width: number, height: number) => void;
+    onResize?: (id: string, width: number, height: number) => void;
 }
 
 export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
@@ -69,12 +69,10 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
 
     useEffect(() => {
 
-        console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
-        parentRef.current.style.height = document.getElementById('cas').offsetHeight 
-        parentRef.current.style.width = document.getElementById('cas').offsetWidth
-        console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
-        //console.log(document.getElementById('cas').offsetHeight);
-        onResize(`component-${compID}`, width, height);
+        //parentRef.current.style.height = window.innerHeight
+        //parentRef.current.style.width = window.innerWidth
+        //console.log(parentRef.current.style.height, parentRef.current.style.width );
+        console.log(document.getElementById('cas').offsetHeight, document.getElementById('cas').offsetWidth);
 
 
     }, [width, height, onResize, compID]);
@@ -160,7 +158,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
 
         const handleResize = () => {
             if (parentRef.current) {
-                console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
+                //console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
             }
         };
 

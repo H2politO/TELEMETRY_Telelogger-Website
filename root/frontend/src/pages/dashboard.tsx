@@ -32,6 +32,7 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
     //Callback happens whenever the layout is changed; apply the new layout and save cookies of this layout for next accesses to the page
     const onLayoutChange = (newLayout) => {
         setLayout(newLayout);
+        console.log("new layout")
         cookie.set("layout", newLayout, { maxAge: 60 * 60 * 24 * 365 });
     }
 
@@ -52,7 +53,7 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
     useEffect(() => {
         console.log("Dashboard useEffect called only on load")
         if (cookie.get('compPage') != undefined) {
-            console.log("Cookies not empty")
+            console.log(cookie.get('layout'))
             setcompPageList(cookie.get('compPage'))
         } else {
             console.log("Cookies empty")
@@ -118,7 +119,7 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
             >
                 {components.map((comp: ComponentsPage, index) => (
                     <div key={comp.compID} data-grid={{ w: comp.w, h: comp.h, x: 0, y: 0 }}>
-                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent} onResize={handleComponentResize}></ComponentEncapsulator>
+                        <ComponentEncapsulator passedComp={comp} onDelete={deleteComponent}></ComponentEncapsulator>
                     </div>
                 ))}
             </ReactGridLayout >

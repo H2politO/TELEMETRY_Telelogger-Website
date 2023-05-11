@@ -98,7 +98,7 @@ export const PostRun = (props) => {
             console.log('Creating map')
             const newMap = L.map('mapId').setView([centerLatitude, centerLongitude], 17);
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(newMap);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(newMap);
 
             console.log(trackPoints)
             L.polygon(trackPoints).addTo(newMap)
