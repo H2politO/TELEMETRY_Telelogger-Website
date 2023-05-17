@@ -131,9 +131,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
                         //do stuff for the GNSS sensor
                         let lat = parseFloat(message.payloadString.split(';')[0]);
                         let lng = parseFloat(message.payloadString.split(';')[1]);
-                        console.log("position received", message.payloadString, lat, lng)
                         setPosition([lat, lng])
-
+                    }else if (sensor.topicName == "Juno/Position") {
+                        //do stuff for the GNSS sensor
+                        let lat = parseFloat(message.payloadString.split(';')[0]);
+                        let lng = parseFloat(message.payloadString.split(';')[1]);
+                        setPosition([lat, lng])
                     }
                     else {
                         //added condition to protect crashes due to strings sent to the channels

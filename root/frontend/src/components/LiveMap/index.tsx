@@ -11,7 +11,7 @@ type Props = {
     position: Position
 }
 
-type Position= {
+type Position = {
     lng: number,
     lat: number
 }
@@ -20,7 +20,7 @@ type state = {
     selectedFile: undefined,
     isFilePicked: false
     altimetryPoints: number[]
-    carPosition: 0
+    carPosition: number
 }
 
 import { GeoJsonObject } from "geojson";
@@ -66,14 +66,14 @@ export class LiveMap extends Component<any, any> {
         ], 0);
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(this.map);
-       
+
     }
 
     componentDidUpdate() {
 
         //on props change (updating of lat and lng)
-        console.log("Update");
-        if(this.props.position[0] != undefined && this.props.position[1] !=undefined)
+        //console.log("Update");
+        if (this.props.position[0] != undefined && this.props.position[1] != undefined)
             this.playPosition(this.props.position[0], this.props.position[1])
 
         //console.log('comp update')
@@ -104,8 +104,8 @@ export class LiveMap extends Component<any, any> {
             this.marker = L.marker([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], { icon: this.carIcon });
             this.marker.addTo(this.map);
 
-            this.setState({ carPosition: this.i }, () => {
-            });
+
+            console.log(this.i)
 
             //Enable to follow car
             this.map.setView([tp[this.i % (tp.length - 1)][1], tp[this.i % (tp.length - 1)][0]], 17);
@@ -116,13 +116,33 @@ export class LiveMap extends Component<any, any> {
     //puts the marker on the latitude and longitude passed to the component; this function should be updated on the new props received
     playPosition(lat, lng) {
 
-        console.log("Playing car at ", lat, lng) 
+        //console.log("Playing car at ", lat, lng) 
         this.marker.remove();
         this.map.setView([lat, lng], 17);
         this.marker = L.marker([lat, lng], { icon: this.carIcon });
         this.marker.addTo(this.map);
+        //this.setState({carposition: this.computeClosest(lat, lng)})
     }
 
+    /*
+    computeClosest(lat, lng) {
+        if (this.trackPoints != undefined) {
+            let minVal = 1000000, savedY=1;
+            for (let y = 0; y < this.trackPoints.length; y++) {
+                if (Math.sqrt(Math.pow((lat - this.trackPoints[y][0]), 2) + Math.pow((lng - this.trackPoints[y][1]), 2)) < minVal) {
+                    minVal = Math.sqrt((lat * lat) + (lng * lng))
+                    savedY = y;
+                }
+            }
+
+            console.log(savedY)
+
+            return savedY;
+        }else{
+            return 0
+        }
+    }
+    */
 
     fileInsertion = (event) => {
         this.setState({ selectedFile: event.target.files[0] });

@@ -15,7 +15,6 @@ import logoTeam from './logoTeam.svg'
 export const Navbar = () => {
 
     const [idraOn, setIdra] = useState(false);
-    const [prov, setProv] = useState(false);
     let timeoutIdIdra = null; 
     let timeoutIdJuno = null; 
     const [junoOn, setJuno] = useState(false)
@@ -26,8 +25,8 @@ export const Navbar = () => {
         _init();
     }, [])
 
+    //connect the navbar to listen for idra and juno status 
     const _init = () => {
-
         navBarClient.onConnectionLost = onConnectionLost;
         navBarClient.onMessageArrived = onMessageArrived;
         navBarClient.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
