@@ -120,10 +120,17 @@ button {
 
 }
 
+#backgroundMap {
+  height: 85vh;
+  background-color: #001d3d;
+}
+
 .parentMap {
   height: 100%;
   width: 100%;
 }
+
+
 
 .led-box {
   height: 20px;
