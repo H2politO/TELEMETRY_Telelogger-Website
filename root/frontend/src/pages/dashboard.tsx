@@ -4,7 +4,7 @@ import '../index.css';
 import Cookies from "universal-cookie"
 import { ComponentEncapsulator } from '../components/componentEncapsulator';
 import { ComponentsPage } from '../models/componentsPage';
-
+import Paho from "paho-mqtt"
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
@@ -28,6 +28,8 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
 
     const [components, setcompPageList] = useState([]);
     const [myLayout, setLayout] = useState([]);
+
+    let mqttClient;
 
     //Callback happens whenever the layout is changed; apply the new layout and save cookies of this layout for next accesses to the page
     const onLayoutChange = (newLayout) => {
@@ -63,9 +65,17 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
             console.log("Layout has been loaded")
             setLayout(cookie.get('layout'))
         }
+        
+        console.log("Starting root mqtt client...");
+        mqttClient = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", "myClientId" + new Date().getTime());
+        mqttClient.connect({ onSuccess: onConnect });
 
     }, [])
 
+    //Called when mqtt client connects
+    function onConnect(){
+        console.log("Root MQTT Client connected");
+    }
 
     //Setting cookies every time components finishes the render 
     useEffect(() => {
