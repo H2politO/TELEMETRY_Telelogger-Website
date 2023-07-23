@@ -7,6 +7,8 @@ import 'leaflet-draw';
 import 'leaflet-realtime'
 import Cookies from 'universal-cookie';  
 import {rootStyle, xButtonStyle, mapPreviewStyle, titleStyle, statusStyle, centralColumnStyle, headerStyle, leftColumnStyle, buttonStyle, baseStyle, rightColumnStyle} from "./styles"  
+import { Coord } from "../types";
+
 
 
 import startRes from './start.png'
@@ -14,10 +16,6 @@ import stopRes from './stop.png'
 
 
 
-type Coord = {
-    lat:number,
-    lng:number,
-}
 
 declare const L: any
 
@@ -66,13 +64,17 @@ let map, startMark, stopMark, processedLine; //Map and helpers
 
 const cookies = new Cookies();
 
-export const MapCreator = ({setAct}) => {
+//setAct is used to reset action when closed
+//alertCb is used to send alerts to main page
+export const MapCreator = ({setAct, alertCb}) => {
     const didMount = useRef(false); //USed to avoid updates on first render
+
+    const [status, setStatus] = useState("");
+
 
     const [minDistance, setMinDistance] = useState(0);
     const [startTrim, setStartTrim] = useState(0);
     const [endTrim, setEndTrim] = useState(0);
-    const [status, setStatus] = useState("⚠️ No Data!");
     const [downloadUrl, setDownloadUrl] = useState("");
 
     const closeWindow = () =>{
@@ -82,7 +84,7 @@ export const MapCreator = ({setAct}) => {
     const loadData = (file:File) => {
         
         if(file == null){
-            setStatus("⚠️ No file selected!");
+            alertCb("No file selected", "error")
             return;
         }
             
@@ -91,17 +93,17 @@ export const MapCreator = ({setAct}) => {
         
         fileData.onloadend = (e) =>{
             if(e.target?.result?.toString() == undefined){
-                setStatus("⚠️ File empty!");
+                alertCb("File empty", "error")
                 return;
             }
                 
             let fileByLines = e.target.result.toString().split("\n");
 
-            for(let i=0; i<fileByLines.length; i++){
-                if(i != 0){
-                    let record = fileByLines[i].split(";");
-                    rawData.push({lat:parseFloat(record[1]), lng:-1*parseFloat(record[2])});
-                }
+            for(let i=1; i<fileByLines.length; i++){
+                
+                let record = fileByLines[i].split(";");
+                rawData.push({lat:parseFloat(record[1]), lng:parseFloat(record[2])});
+                
             }
 
             rawData = rawData.filter(pos => (pos.lat != 0 && pos.lng != 0));//Remove zeros
@@ -109,7 +111,8 @@ export const MapCreator = ({setAct}) => {
 
             updateMap();
 
-            setStatus("File Loaded");
+            alertCb("File loaded", "success")
+
             startMark.setLatLng(rawData[startTrim] as LatLng);
             stopMark.setLatLng(rawData[rawData.length-endTrim-1] as LatLng);
 
@@ -132,7 +135,8 @@ export const MapCreator = ({setAct}) => {
 
     const processData = () => {
         if(rawData.length == 0){
-            setStatus("⚠️ No points loaded!");
+            alertCb("No points loaded!", "error");
+            return;
         }
 
 
@@ -154,14 +158,16 @@ export const MapCreator = ({setAct}) => {
                 // NOTE: Also check for the change in index because otherwise we always find the point to be close enough
                 if(getGpsDistance(processedData[0], rawData[i]) <= minDistance && (i-startTrim) > 100){ 
                     lapOver = true;
-                    setStatus(`✅ Lap completed ${processedData.length} points`);
+                    setStatus(`Lap completed ${processedData.length} points`)
+                    alertCb(`Lap completed ${processedData.length} points`, "success");
                 } 
             }
             i ++;
         }
 
         if(!lapOver){
-            setStatus("⚠️ Lap not done!");
+            setStatus(``)
+            alertCb(" Lap not done!", "error");
         }
 
         if(processedLine != null){
@@ -174,10 +180,10 @@ export const MapCreator = ({setAct}) => {
     }
 
     const saveData = () =>{
-        let outString = "LATITUDE;LONGITUDE\n";
+        let outString = "ID;LATITUDE;LONGITUDE\n";
 
         for(let i=0; i<processedData.length; i++){
-            outString += `${processedData[i].lat};${processedData[i].lng}\n`
+            outString += `${i};${processedData[i].lat};${processedData[i].lng}\n`
         }
 
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
@@ -253,7 +259,7 @@ export const MapCreator = ({setAct}) => {
     return (
        <div style={rootStyle}>
 
-            <div id="header" style={headerStyle}>
+            <div className="dragHandle"  id="header" style={headerStyle}>
                 <h1 style={titleStyle}>Map Creation</h1>                
                 <Button style={xButtonStyle} onClick={closeWindow}> <Close/></Button>
                 <h1 style={statusStyle}>{status}</h1>
@@ -284,10 +290,12 @@ export const MapCreator = ({setAct}) => {
                     
                     <OutlinedInput
                         type="number"
+                        
                         id="maxPointDistanceSelector"
                         endAdornment={<InputAdornment position="end">m</InputAdornment>}
                         inputProps={{
                         'aria-label': 'distance',
+                        'min': 0,
                         }}
                         value={minDistance}
                         onChange={event => { setMinDistance(parseFloat(event.target.value)); cookies.set("minDistance", parseFloat(event.target.value))}} //Update the minimum distance

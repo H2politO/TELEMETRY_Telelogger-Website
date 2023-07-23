@@ -1,5 +1,5 @@
 import React, { CSSProperties, Component } from "react";
-import {Create, SendToMobile, Settings, Add, FileUpload, Save} from "@mui/icons-material"
+import {Create, SendToMobile, Settings, Add, FileUpload, Save, Construction} from "@mui/icons-material"
 import {  MenuItem, Divider } from "@mui/material";
 import Menu, { MenuProps } from '@mui/material/Menu';
 import { styled, alpha } from '@mui/material/styles';
@@ -63,7 +63,7 @@ const StyledMenu = styled((props: MenuProps) => (
 
 
 
-export const BottomMenu = ({setAct}) => {
+export const TopMenu = ({setAct, menuUp, setMenu}) => {
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -77,6 +77,7 @@ export const BottomMenu = ({setAct}) => {
     const handleButton = (event) =>{
         console.log(event.currentTarget.dataset.action);
         setAct(event.currentTarget.dataset.action as string);
+        setMenu(!menuUp); //Force update
         handleClose();
     }
 
@@ -93,7 +94,7 @@ export const BottomMenu = ({setAct}) => {
             disableElevation
             onClick={handleClick}
             >        
-            <Settings/> 
+            <Construction/> 
         </Button>
         <StyledMenu
             id="demo-customized-menu"
@@ -104,15 +105,27 @@ export const BottomMenu = ({setAct}) => {
             open={open}
             onClose={handleClose}
         >
-            <MenuItem onClick={handleButton} disableRipple data-action={"create"}>
-            <Add/>
-            Create Map 
+            <MenuItem onClick={handleButton} disableRipple data-action={"load"}>
+            <FileUpload/>
+            Load Map
             </MenuItem>
             <MenuItem onClick={handleButton} disableRipple data-action={"save"}>
             <Save/>
             Save Map
             </MenuItem>
-
+            <MenuItem onClick={handleButton} disableRipple data-action={"create"}>
+            <Add/>
+            Create Map 
+            </MenuItem>
+            <MenuItem onClick={handleButton} disableRipple data-action={"edit"}>
+            <Create/>
+            Edit Map
+            </MenuItem>
+            <Divider sx={{ my: 0.5 , bgcolor: "black"}} />
+            <MenuItem onClick={handleButton} disableRipple data-action={"setting"}>
+            <Settings/>
+            Settings
+            </MenuItem>
 
             
             </StyledMenu>
@@ -120,4 +133,4 @@ export const BottomMenu = ({setAct}) => {
     )
 }
 
-export default BottomMenu
+export default TopMenu

@@ -1,81 +1,87 @@
-import React, { CSSProperties, Component } from "react";
+import React, { CSSProperties, Component, useEffect } from "react";
 import 'leaflet';
 import 'leaflet-draw';
-import 'leaflet-realtime'
-import 'leaflet-gpx'
+import { LatLng } from "leaflet";
 import car from './carA.png'
-import { AltimetryMap } from './altimetryMap'
+import { Coord } from "../types";
 declare const L: any
 
 const divStyle:CSSProperties = {
     zIndex: "0",
     position: "relative",
-    pointerEvents: "none"
+    
 }
 
+const carIcon = L.icon({
+    iconUrl: car,
+    iconSize: [15, 15]
+})
 
-export class BgMap extends Component<any, any> {
+let map, marker, mainLine, tmpLine;
 
 
+//forwardRef needed to make internal hooks accesible from parent
+export const BgMap = React.forwardRef((props, ref) => {
 
-    carIcon = L.icon({
-        iconUrl: car,
-        iconSize: [15, 15]
-    })
 
-    map: any;
-    layer: any;
-    marker = L.marker([0, 0], { icon: this.carIcon });
-
-    componentDidMount() {
+    //Called on inital render
+    useEffect(()=>{
 
         // create map
-        this.map = L.map('backgroundMap',
-        ).setView([
+        map = L.map('backgroundMap');
+
+        map.setView([
             45, 7
         ], 4);
-
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(this.map);
-
-    }
-
-    componentDidUpdate() {
-
-        //on props change (updating of lat and lng)
-        //console.log("Update");
-        //if (this.props.position[0] != undefined && this.props.position[1] != undefined)
-        //    this.playPosition(this.props.position[0], this.props.position[1])
-
-        //console.log('comp update')
-        //console.log(this.props.position)
-        //if(this.props.position.latitude!=undefined)
-        //this.playPosition()
-    }
-
-
-    //puts the marker on the latitude and longitude passed to the component; this function should be updated on the new props received
-    playPosition(lat, lng) {
-
-        //console.log("Playing car at ", lat, lng) 
-        this.marker.remove();
-        this.map.setView([lat, lng], 17);
-        this.marker = L.marker([lat, lng], { icon: this.carIcon });
-        this.marker.addTo(this.map);
-        //this.setState({carposition: this.computeClosest(lat, lng)})
-    }
-
-
-    render() {
-
         
-        return (
-            <div style={divStyle}>
+        marker = L.marker([0, 0], { icon: carIcon });
 
-                <div className="bgMap" id="backgroundMap"></div>
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+        
+
+    }, []);
 
 
-            </div>
 
-        )
-    }
-}
+    //Used to make internal functions accesible from parent
+    React.useImperativeHandle(ref, () => ({
+        playPosition (pos) {
+            let lat = pos.lat, lng = pos.lng;
+
+            //console.log("Playing car at ", lat, lng) 
+            marker.remove();
+            //map.setView([lat, lng], 17);
+            marker = L.marker([lat, lng], { icon: carIcon });
+            marker.addTo(map);
+            //this.setState({carposition: this.computeClosest(lat, lng)})
+        },
+
+        updatePath (stratData) {
+            let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
+            mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
+            map.fitBounds(mainLine.getBounds());    
+        },
+
+        tmpPath (stratData) {
+            let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
+            if(tmpLine != undefined)
+                tmpLine.remove();
+            tmpLine = L.polyline( path as Array<LatLng>   , {color: "red"}).addTo(map);
+            map.fitBounds(tmpLine.getBounds());    
+        },
+
+        hideTmpPath() {
+            if(tmpLine == undefined)
+                return;
+            tmpLine.remove();
+        }
+
+    }));
+    
+    return (
+        <div style={divStyle}>
+            <div className="bgMap" id="backgroundMap"></div>
+        </div>
+
+    )
+});
