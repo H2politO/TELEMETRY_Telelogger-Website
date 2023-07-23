@@ -1,40 +1,42 @@
-const express = require('express');
-const mongoose = require('mongoose')
-require('dotenv').config()
-//all the routes are located inside routes/runs file
-const circuitRoutes = require('./routes/circuit')
-const circuitModel = require('./models/circuitModel')
+const express = require("express");
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
+const exp = require("constants");
 
-var bodyParser = require('body-parser')
-
-//express app
 const app = express();
-app.use(bodyParser.json())
 
-mongoose.connect(process.env.MONGOOSE_URI)
-    .then(() => {
-        //listen to port number 3000 ONLY afer the connection to the database
-        app.listen(process.env.PORT, () => {
-            console.log('Connected to database, listening for requests');
-        })
-    })
-    .catch((err) => {
-        console.error(err)
-    })
+app.use(cors());
 
-//Goes to circuitRoutes when the path is the one that matches the string inside
-app.use('/circuit' , circuitRoutes)
+app.get(["/"], (req, res) =>{
 
-//middleware to log all the requests and where they come from
-app.use((req, res, next) => {
-    console.log(req.method, req.path)
-    next()
-})
+});
 
 
-//the first paramether is to use the runRoutes only when the route /api/runs is invoked
-//app.use('/', circuit)
+//Setup post reception for text
+app.use(express.text());
+
+app.post(["/JunoFile"], (req, res) =>{
+    console.log("Recieved file")
+    fs.writeFile("./data/juno.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
+)});
+
+app.get(["/JunoFile"], (req, res) =>{
+    console.log("Recieved request")
+    if(fs.existsSync("./data/juno.csv")){
+        res.sendFile(path.join(__dirname, './data/', 'juno.csv'));
+    }
+});
+
+//Send assets
+app.use(express.static('../frontend/dist'))
 
 
+//Send to all get requests the main page
+app.get(['/', '/*'], (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+});
 
-
+app.listen(3000, () => {
+    console.log("Listen on the port 3000...");
+});

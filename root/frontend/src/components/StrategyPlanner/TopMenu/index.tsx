@@ -122,6 +122,10 @@ export const TopMenu = ({setAct, menuUp, setMenu}) => {
             Edit Map
             </MenuItem>
             <Divider sx={{ my: 0.5 , bgcolor: "black"}} />
+            <MenuItem onClick={handleButton} disableRipple data-action={"send"}>
+            <SendToMobile/>
+            Send to phone
+            </MenuItem>
             <MenuItem onClick={handleButton} disableRipple data-action={"setting"}>
             <Settings/>
             Settings

@@ -22,8 +22,6 @@ let mqttClient:Paho.Client;
 
 export const StrategyPlanner = () => {
     
-   
-
     let [stratMap, setStratmap] = useState<Array<StratRecord>>([]);
     const bgMapRef = useRef();
 
@@ -116,6 +114,9 @@ export const StrategyPlanner = () => {
         }
         if(currAction == "edit"){
             setMapConfigEn(true);
+        }
+        if(currAction == "send"){
+            sendData();
         }
     }, [currAction, menuUpdate]);
 
@@ -214,15 +215,42 @@ export const StrategyPlanner = () => {
             putAlert("Upload a file first", "error");
             return;
         }
-        let outString = "LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
+        let outString = "ID;LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
 
         for(let i=0; i<stratMap.length; i++){
-            outString += `${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].strategy};${stratMap[i].sector};\n`
+            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].strategy};${stratMap[i].sector};\n`
         }
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
         const url = URL.createObjectURL(blob);
         setDownloadUrl(url); //Create URL to the  blob
         
+    }
+
+    //Send data to phone
+    const sendData = () =>{
+        if(stratMap.length == 0){
+            putAlert("Upload a file first", "error");
+            return;
+        }
+        let outString = "ID;LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
+
+        for(let i=0; i<stratMap.length; i++){
+            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].strategy};${stratMap[i].sector};\n`
+        }
+        const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
+        const url = URL.createObjectURL(blob);
+        
+        fetch('http://192.168.0.28:3000/JunoFile', {  // Enter your IP address here
+
+            method: 'POST', 
+            mode: 'cors', 
+            body: outString
+        }).then((response) => { //When response received notify phone file is online
+            console.log("DONE")
+            let msg = new Paho.Message("ready")
+            msg.destinationName = "H2polito/Juno/Strategy"
+            mqttClient.send(msg)
+        });
     }
 
     const updateSelection = (startI, endI) =>{
@@ -270,6 +298,7 @@ export const StrategyPlanner = () => {
             {blkConfigEn &&
                 <BulkEditor updateSelection={updateSelection} setBlkConfigEn={setBlkConfigEn} mapData={stratMap} setMapData={setStratmap}></BulkEditor>
             }
+            
 
         </div>
     )
