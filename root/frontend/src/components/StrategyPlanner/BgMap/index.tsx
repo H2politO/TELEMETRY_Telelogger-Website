@@ -2,8 +2,10 @@ import React, { CSSProperties, Component, useEffect } from "react";
 import 'leaflet';
 import 'leaflet-draw';
 import { LatLng } from "leaflet";
-import car from './carA.png'
-import { Coord } from "../types";
+import redPoint from './redPoint.png'
+import greenCross from './greenCross.png'
+import { Coord, StratRecord } from "../types";
+import { getGpsDistance } from "../MapCreator";
 declare const L: any
 
 const divStyle:CSSProperties = {
@@ -12,13 +14,38 @@ const divStyle:CSSProperties = {
     
 }
 
-const carIcon = L.icon({
-    iconUrl: car,
+const redIcon = L.icon({
+    iconUrl: redPoint,
+    iconSize: [15, 15]
+})
+const greenIcon = L.icon({
+    iconUrl: greenCross,
     iconSize: [15, 15]
 })
 
 let map, marker, mainLine, tmpLine;
 
+/*
+@brief  Gets the closest point from map dat, returns the index of the point
+@note   If the point is not found returns -1
+*/
+function getClosestPoint(mapDat:StratRecord[], position:Coord){
+    let minDist = 5000;
+    let tmpIndex = -1;
+    let tmpDist:number;
+
+    
+    for(let i=0; i<mapDat.length; i++){
+        tmpDist = getGpsDistance(mapDat[i].pos, position);
+        if(tmpDist < minDist){
+            minDist = tmpDist;
+            tmpIndex = i;
+        }
+    }
+
+    return tmpIndex;
+
+}
 
 //forwardRef needed to make internal hooks accesible from parent
 export const BgMap = React.forwardRef((props, ref) => {
@@ -34,7 +61,7 @@ export const BgMap = React.forwardRef((props, ref) => {
             45, 7
         ], 4);
         
-        marker = L.marker([0, 0], { icon: carIcon });
+        marker = L.marker([0, 0], { icon: redIcon });
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
         
@@ -45,15 +72,25 @@ export const BgMap = React.forwardRef((props, ref) => {
 
     //Used to make internal functions accesible from parent
     React.useImperativeHandle(ref, () => ({
-        playPosition (pos) {
+        playPosition (pos:Coord, mapData?:StratRecord[]) {
+            let pointIndex = -1; //By default ignore map data
             let lat = pos.lat, lng = pos.lng;
+            
+            if(mapData != undefined){
+                pointIndex = getClosestPoint(mapData, pos);
+            }
 
-            //console.log("Playing car at ", lat, lng) 
             marker.remove();
-            //map.setView([lat, lng], 17);
-            marker = L.marker([lat, lng], { icon: carIcon });
+
+            if(pointIndex != -1){
+                marker = L.marker([mapData[pointIndex].pos.lat, mapData[pointIndex].pos.lng], { icon: greenIcon });    
+            }
+            else{
+                marker = L.marker([lat, lng], { icon: redIcon });
+            }
+                                   
             marker.addTo(map);
-            //this.setState({carposition: this.computeClosest(lat, lng)})
+            
         },
 
         updatePath (stratData) {
@@ -64,6 +101,8 @@ export const BgMap = React.forwardRef((props, ref) => {
 
         tmpPath (stratData) {
             let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
+            if (path.length == 0)
+                return;
             if(tmpLine != undefined)
                 tmpLine.remove();
             tmpLine = L.polyline( path as Array<LatLng>   , {color: "red"}).addTo(map);

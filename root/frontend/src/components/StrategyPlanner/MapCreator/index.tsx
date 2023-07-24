@@ -25,7 +25,7 @@ function degToRad(deg){
     return (deg * (Math.PI/180));
 }
 //Get the distance between two GPS points
-function getGpsDistance(A:Coord, B:Coord){
+export function getGpsDistance(A:Coord, B:Coord){
     let lonA = A.lng;
     let latA = A.lat;
     let lonB = B.lng;
@@ -98,11 +98,19 @@ export const MapCreator = ({setAct, alertCb}) => {
             }
                 
             let fileByLines = e.target.result.toString().split("\n");
+            
+            //Detect if the file contains all the data or not by taking how many elements are in header
+            //The file is complete only if there are more then 2 entries in the header
+            const fileHeader = fileByLines[0].split(";");
 
+                      
+            let latIndex = fileHeader.indexOf("LATITUDE");
+            let lngIndex = fileHeader.indexOf("LONGITUDE");
+            
             for(let i=1; i<fileByLines.length; i++){
                 
                 let record = fileByLines[i].split(";");
-                rawData.push({lat:parseFloat(record[1]), lng:parseFloat(record[2])});
+                rawData.push({lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])});
                 
             }
 
@@ -206,7 +214,7 @@ export const MapCreator = ({setAct, alertCb}) => {
     //Called on component load
     useEffect(()=>{
         map = L.map('mapPreview', {
-            center: [51.505, -0.09],
+            center: [45, 7],
             zoom: 13
         });
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);

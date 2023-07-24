@@ -100,7 +100,7 @@ export const StrategyPlanner = () => {
         //We don't care about the topic since there is no visible difference among the cars
         let record = message.payloadString.split(";");
         // @ts-ignore
-        bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])})
+        bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])}, stratMap)
     }   
 
     //Called when anything is pressed from menu and action updated
@@ -136,7 +136,7 @@ export const StrategyPlanner = () => {
         updateMqttSubs();
     }, [carSelect])
 
-    //Called when map config changes, detect when disappears and removes path from map
+    //Called when map config window changes, detect when disappears and removes path from map
     useEffect(()=>{
         if(!mapConfigEn)
             // @ts-ignore

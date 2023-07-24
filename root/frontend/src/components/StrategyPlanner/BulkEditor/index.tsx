@@ -61,10 +61,11 @@ export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection
             if(sector != -1)
                 tmpData[i].sector = sector;
         }
-        setMapData(tmpData);
-
-        setStartIndex(endIndex)
-        setEndIndex(endIndex+1)
+        
+        setMapData(tmpData)
+        setStartIndex(endIndex);
+        if(endIndex+1 < mapData.length)
+            setEndIndex(endIndex+1);
     }
     
 
@@ -107,16 +108,6 @@ export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection
             </div>
             <div id="rightColumn" style={Styles.rightColumnStyle}>
                 <h2>Select</h2>
-                <p>From Index</p>
-                <OutlinedInput
-                    type="number"
-                    id="startIdInput"
-                    inputProps={{
-                    'aria-label': 'Index',
-                    }}
-                    value={startIndex}
-                    onChange={(event) => {updateIndexes(event, false)}}
-                />
                 <p>To Index</p>
                 <OutlinedInput
                     type="number"
@@ -126,6 +117,16 @@ export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection
                     }}
                     value={endIndex}
                     onChange={(event) => {updateIndexes(event, true)}}
+                />
+                <p>From Index</p>
+                <OutlinedInput
+                    type="number"
+                    id="startIdInput"
+                    inputProps={{
+                    'aria-label': 'Index',
+                    }}
+                    value={startIndex}
+                    onChange={(event) => {updateIndexes(event, false)}}
                 />
             </div>
         </div>
