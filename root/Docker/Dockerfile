@@ -32,4 +32,4 @@ RUN npm install
 EXPOSE $PORT/tcp
 
 #Setup entrypoint
-CMD ["node","/WebRoot/WebsiteRoot/root/backend/server.js", $PORT]
+CMD node /WebRoot/TELEMETRY_Telelogger-Website/root/backend/server.js  $PORT

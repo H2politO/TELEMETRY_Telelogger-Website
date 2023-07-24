@@ -240,7 +240,7 @@ export const StrategyPlanner = () => {
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
         const url = URL.createObjectURL(blob);
         
-        fetch('http://192.168.0.28:3000/JunoFile', {  // Enter your IP address here
+        fetch('http://h2polito.duckdns.org/JunoFile', {  // Server IP address
 
             method: 'POST', 
             mode: 'cors', 
