@@ -3,7 +3,7 @@ ARG GIT_TOKEN=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
 #Branch to install
 ARG BRANCH=strategyPlanner
 
-FROM node:18
+FROM node:18-alpine
 
 #Access token for github
 ARG GIT_TOKEN=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
@@ -14,22 +14,22 @@ ARG BRANCH=strategyPlanner
 #Port used by the server
 ENV PORT=3000
 
-RUN apt install git
-
 WORKDIR /WebRoot
 
-RUN git clone -b $BRANCH https://$GIT_TOKEN:x-oauth-basic@github.com/H2politO/TELEMETRY_Telelogger-Website
+#Install git and clone the repo
+RUN apk add git && git clone -b $BRANCH https://$GIT_TOKEN:x-oauth-basic@github.com/H2politO/TELEMETRY_Telelogger-Website
 
 WORKDIR /WebRoot/TELEMETRY_Telelogger-Website/root/frontend/
 
-RUN npm install --force
-
-RUN npm run build
+#Remove node modules since they're not used after the build and take up a lot of space (needs to be done here because of docker)
+RUN npm install --force && npm run build && rm -rf /WebRoot/TELEMETRY_Telelogger-Website/root/frontend/node_modules
 
 WORKDIR /WebRoot/TELEMETRY_Telelogger-Website/root/backend/
 
+#Install the backend
 RUN npm install
 
 EXPOSE $PORT/tcp
 
-CMD ["node","/WebRoot/WebsiteRoot/root/backend/server.js"]
+#Setup entrypoint
+CMD ["node","/WebRoot/WebsiteRoot/root/backend/server.js", $PORT]
