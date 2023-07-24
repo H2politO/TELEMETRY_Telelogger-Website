@@ -1,5 +1,12 @@
 #Access token for github
 ARG GIT_TOKEN=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
+#Branch to install
+ARG BRANCH=strategyPlanner
+
+FROM node:18
+
+#Access token for github
+ARG GIT_TOKEN=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
 
 #Branch to install
 ARG BRANCH=strategyPlanner
