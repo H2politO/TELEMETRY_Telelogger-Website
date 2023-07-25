@@ -23,18 +23,20 @@ const columns: GridColDef[] = [
 const cookies = new Cookies();
 
 
-export const MapConfigurator = ({setBlkConfigEn, setMapConfigEn, mapData, setMapData}) => {
+export const MapConfigurator = ({putMarker, setBlkConfigEn, setMapConfigEn, mapData, setMapData}) => {
 
 
     const closeWindow = () =>{
-        setBlkConfigEn(false);
         setMapConfigEn(false);
     }
 
-    useEffect(()=>{
+/*     useEffect(()=>{
         console.log("mapDataChange",mapData )
-    }, [mapData])
+    }, [mapData]) */
 
+    const cellClick = (cellData) => {
+        putMarker(mapData[cellData.id].pos);
+    };
     
     return (
         <div style={Styles.rootStyle}>
@@ -51,7 +53,7 @@ export const MapConfigurator = ({setBlkConfigEn, setMapConfigEn, mapData, setMap
                 <DataGrid
                     rows={mapData}
                     columns={columns}
-
+                    onCellKeyDown={cellClick}
                     rowSelection={false}
 
                     processRowUpdate={(updatedRow, originalRow) =>{
@@ -67,7 +69,7 @@ export const MapConfigurator = ({setBlkConfigEn, setMapConfigEn, mapData, setMap
                             sortModel: [{ field: 'id', sort: 'asc' }],
                           },
                         pagination: {
-                            paginationModel: { page: 0, pageSize: 10 },
+                            paginationModel: { page: 0, pageSize: 100 },
                         },
                     }}
                     pageSizeOptions={[10,50,100]}
