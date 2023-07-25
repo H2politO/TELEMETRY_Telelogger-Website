@@ -1,16 +1,11 @@
 import {CSSProperties} from "react"
 
 export const rootStyle:CSSProperties = {
-    position: "absolute",
-    top: "10%",
-    right: "0",
-    bottom: "0",
-    left: "0",
-    margin: "auto",
+
 
     zIndex: "10",
-    width: "70%",
-    height: "80%",
+    width: "100%",
+    height: "100%",
     borderRadius: "20px",
     
     background: "solid",
@@ -27,13 +22,14 @@ export const baseStyle:CSSProperties = {
     height: "90%",
     width: "100%",
 
-    margin: "auto",
+    
     zIndex: "10",
     display: "flex"
 }
 
 export const headerStyle:CSSProperties = {
-    display: "block"
+    display: "block",
+    height: "10%"
 }
 
 export const mapPreviewStyle:CSSProperties = {

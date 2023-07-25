@@ -66,7 +66,7 @@ const cookies = new Cookies();
 
 //setAct is used to reset action when closed
 //alertCb is used to send alerts to main page
-export const MapCreator = ({setAct, alertCb}) => {
+export const MapCreator = ({setMapCreateEn, alertCb}) => {
     const didMount = useRef(false); //USed to avoid updates on first render
 
     const [status, setStatus] = useState("");
@@ -78,7 +78,7 @@ export const MapCreator = ({setAct, alertCb}) => {
     const [downloadUrl, setDownloadUrl] = useState("");
 
     const closeWindow = () =>{
-        setAct("");
+        setMapCreateEn(false);
     }
     
     const loadData = (file:File) => {
@@ -275,7 +275,7 @@ export const MapCreator = ({setAct, alertCb}) => {
 
             <Divider  sx={{ position: "relative", top: "-20px", bgcolor: "black", width:"100%", stroke:"1px" }} ></Divider>
 
-            <div id="baseContainer" style={baseStyle}>
+            <div id="baseContainer" style={baseStyle} className="resizeHandle">
                 
                 <div id="leftColumn" style={leftColumnStyle}>
                     <h2 id="mapHeader" style={{ textAlign:"center", width: "100%"}}> Map Preview </h2>

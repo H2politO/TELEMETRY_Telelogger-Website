@@ -72,7 +72,7 @@ export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection
 
     return (
         <div style={Styles.rootStyle}>
-        <div id="header" style={Styles.headerStyle}>
+        <div className="dragHandle" id="header" style={Styles.headerStyle}>
             <h1 style={Styles.titleStyle}>Bulk Edit</h1>                
             <Button style={Styles.xButtonStyle} onClick={closeWindow}> <Close/></Button>
         </div>

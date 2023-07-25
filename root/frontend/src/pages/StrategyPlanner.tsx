@@ -13,11 +13,19 @@ import { StratRecord, Coord } from '../components/StrategyPlanner/types';
 import MapConfigurator from '../components/StrategyPlanner/MapConfigurator';
 import BulkEditor from '../components/StrategyPlanner/BulkEditor';
 
+import RGL, { WidthProvider } from "react-grid-layout";
+
+const GridLayout = WidthProvider(RGL);
 
 let cookie = new Cookies();
 
 let mqttClient:Paho.Client;
 
+const layout = [
+    { i: "mapCreator", x: 4, y: 2, w: 10, h: 15 },
+    { i: "mapEditTable", x: 16, y: 2, w: 5, h: 15, minW: 5},
+    { i: "mapEditBulk", x: 0, y: 5, w: 4, h: 10 },
+];
 
 
 export const StrategyPlanner = () => {
@@ -27,8 +35,11 @@ export const StrategyPlanner = () => {
 
     const [carSelect, setCarSelect] = useState('1'); //Contains current selected car, 1= Juno 2= Idra
     const [currAction, setAction] = useState(""); //Contains the current menu selection
+
+    //What to show on screen
     const [mapConfigEn, setMapConfigEn] = useState(false); //Enables the map configurator view
     const [blkConfigEn, setBlkConfigEn] = useState(false); //Enables the bulk map configurator view
+    const [mapCreateEn, setMapCreateEn] = useState(false); //Enables the map configurator view
 
     //Alert snackbar handler
     //const alertRef = createRef<HTMLDivElement>();
@@ -105,19 +116,28 @@ export const StrategyPlanner = () => {
 
     //Called when anything is pressed from menu and action updated
     useEffect(() => {        
+        console.log("Menu action:", currAction)
         if(currAction == "load"){
             doFileUpload.current?.click();
         }
-
-        if(currAction == "save"){
+        else if(currAction == "save"){
             saveData();
         }
-        if(currAction == "edit"){
+        else if(currAction == "edit"){
             setMapConfigEn(true);
         }
-        if(currAction == "send"){
+        else if(currAction == "create"){
+            setMapCreateEn(true);
+        }
+        else if(currAction == "send"){
             sendData();
         }
+        else if(currAction == "home"){
+            //@ts-ignore
+            bgMapRef.current.updatePath(stratMap);
+        }
+
+
     }, [currAction, menuUpdate]);
 
     //Called when save data url created
@@ -258,7 +278,6 @@ export const StrategyPlanner = () => {
         bgMapRef.current.tmpPath(stratMap.slice(startI, endI+1));
     }
 
-
     return (
         <div  className="mb-auto mx-auto">
             
@@ -286,18 +305,47 @@ export const StrategyPlanner = () => {
             {/*menu on top right*/}
            <TopMenu setAct={setAction} menuUp={menuUpdate} setMenu={setMenuUpdate} ></TopMenu>
 
-            {/*show map creator conditionally*/}
-            {currAction=="create" && 
-                <MapCreator setAct={setAction} alertCb={putAlert}></MapCreator>
-            }
-            {/*show map configurator conditonally*/}
-            {mapConfigEn &&
-                <MapConfigurator setBlkConfigEn={setBlkConfigEn} setMapConfigEn={setMapConfigEn} mapData={stratMap} setMapData={setStratmap}></MapConfigurator>
-            }
-            {/*show map bulk configurator conditonally*/}
-            {blkConfigEn &&
-                <BulkEditor updateSelection={updateSelection} setBlkConfigEn={setBlkConfigEn} mapData={stratMap} setMapData={setStratmap}></BulkEditor>
-            }
+           <GridLayout
+                style={{position:"absolute",top:"19%",bottom:"0",left:"0",right:"0",margin:"auto",zIndex:"5",width:"100%",height:"100%"}}
+                className="layout"
+                layout={layout}
+                cols={18}
+                maxRows={20}
+                draggableHandle='.dragHandle'
+                resizeHandles = {["se"]}
+                rowHeight={30}
+                compactType={null   }
+                autoSize={true}
+
+            >
+                {/*show map creator conditionally*/}
+                {mapCreateEn && 
+                    /*NOTE: both key and data grid are required to avoid the component not appearing*/
+                    <div key="mapCreator" data-grid={{x: 4, y: 2, w: 10, h: 15}}>
+                        <MapCreator setMapCreateEn={setMapCreateEn} alertCb={putAlert}/>
+                    </div>
+                }        
+
+                {/*show map configurator conditonally*/}    
+                {mapConfigEn &&
+                    <div key="mapEditTable" data-grid={{x: 16, y: 2, w: 6, h: 15, minW: 5}}>
+                        <MapConfigurator setBlkConfigEn={setBlkConfigEn} setMapConfigEn={setMapConfigEn} mapData={stratMap} setMapData={setStratmap}></MapConfigurator>
+                    </div>
+                }       
+                
+                {/*show map bulk configurator conditonally*/}
+                {blkConfigEn &&
+                    <div key="mapEditBulk" data-grid={{ x: 0, y: 5, w: 4, h: 10}}>
+                        <BulkEditor updateSelection={updateSelection} setBlkConfigEn={setBlkConfigEn} mapData={stratMap} setMapData={setStratmap}></BulkEditor>
+                    </div>
+                }     
+                
+                
+            </GridLayout>
+                
+
+
+            
             
 
         </div>

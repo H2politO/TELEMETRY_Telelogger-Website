@@ -1,9 +1,12 @@
 import React, { CSSProperties, Component } from "react";
-import {Create, SendToMobile, Settings, Add, FileUpload, Save, Construction} from "@mui/icons-material"
+import {Create, SendToMobile, Settings, Add, FileUpload, Save, Home} from "@mui/icons-material"
+import MenuIcon from "@mui/icons-material/Menu";
+
 import {  MenuItem, Divider } from "@mui/material";
 import Menu, { MenuProps } from '@mui/material/Menu';
 import { styled, alpha } from '@mui/material/styles';
-import Button from '@mui/material/Button';
+import {Button, Tooltip} from '@mui/material/';
+
 
 const divStyle:CSSProperties = {
     position: "absolute",
@@ -75,27 +78,44 @@ export const TopMenu = ({setAct, menuUp, setMenu}) => {
     };
 
     const handleButton = (event) =>{
-        console.log(event.currentTarget.dataset.action);
+        //console.log(event.currentTarget.dataset.action);
         setAct(event.currentTarget.dataset.action as string);
         setMenu(!menuUp); //Force update
         handleClose();
     }
 
+    const btnHandle = (action:string) =>{
+      setAct(action);
+      setMenu(!menuUp); //Force update
+      handleClose();
+    }
 
     
     return (
         <div style={divStyle}>
-        <Button
-            id="demo-customized-button"
-            aria-controls={open ? 'demo-customized-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            variant="contained"
-            disableElevation
-            onClick={handleClick}
-            >        
-            <Construction/> 
-        </Button>
+        <Tooltip describeChild title="Main Menu">
+          <Button
+              id="demo-customized-button"
+              style={{margin:"10px"}}
+              aria-controls={open ? 'demo-customized-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              variant="contained"
+              disableElevation
+              onClick={handleClick}
+              >        
+              <MenuIcon/> 
+          </Button>
+        </Tooltip>
+        
+        <Tooltip describeChild title="Center map to path">
+          <Button onClick={()=>{ btnHandle("home")}} variant="contained" style={{margin:"10px"}}>
+              <Home/> 
+          </Button>
+        </Tooltip>
+
+
+
         <StyledMenu
             id="demo-customized-menu"
             MenuListProps={{
@@ -132,7 +152,7 @@ export const TopMenu = ({setAct, menuUp, setMenu}) => {
             </MenuItem>
 
             
-            </StyledMenu>
+        </StyledMenu>
         </div>
     )
 }

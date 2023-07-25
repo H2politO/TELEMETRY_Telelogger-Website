@@ -1,16 +1,11 @@
 import {CSSProperties} from "react"
 
 export const rootStyle:CSSProperties = {
-    position: "absolute",
-    top: "12%",
-    right: "0",
-    bottom: "0",
-    left: "70%",
-    margin: "auto",
+
 
     zIndex: "10",
-    width: "30%",
-    height: "60%",
+    width: "100%",
+    height: "100%",
     borderRadius: "20px",
     
     background: "solid",

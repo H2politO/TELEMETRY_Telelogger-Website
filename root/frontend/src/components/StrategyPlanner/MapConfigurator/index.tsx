@@ -39,7 +39,7 @@ export const MapConfigurator = ({setBlkConfigEn, setMapConfigEn, mapData, setMap
     return (
         <div style={Styles.rootStyle}>
 
-            <div id="header" style={Styles.headerStyle}>
+            <div className="dragHandle" id="header" style={Styles.headerStyle}>
                 <h1 style={Styles.titleStyle}>Map Setup</h1>                
                 <Button style={Styles.xButtonStyle} onClick={closeWindow}> <Close/></Button>
                 <Button style={Styles.leftButtonStyle} onClick={()=>setBlkConfigEn(true)}> <AutoAwesomeMotion/> Bulk Edit</Button>

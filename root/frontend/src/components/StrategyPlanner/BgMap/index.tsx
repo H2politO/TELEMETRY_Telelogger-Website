@@ -1,12 +1,16 @@
 import React, { CSSProperties, Component, useEffect } from "react";
-import 'leaflet';
-import 'leaflet-draw';
-import { LatLng } from "leaflet";
+
+import "leaflet"
+
+
+
 import redPoint from './redPoint.png'
 import greenCross from './greenCross.png'
 import { Coord, StratRecord } from "../types";
 import { getGpsDistance } from "../MapCreator";
-declare const L: any
+
+
+
 
 const divStyle:CSSProperties = {
     zIndex: "0",
@@ -68,10 +72,9 @@ export const BgMap = React.forwardRef((props, ref) => {
 
     }, []);
 
-
-
     //Used to make internal functions accesible from parent
     React.useImperativeHandle(ref, () => ({
+        //Put car marker at position (sticks to path if available)
         playPosition (pos:Coord, mapData?:StratRecord[]) {
             let pointIndex = -1; //By default ignore map data
             let lat = pos.lat, lng = pos.lng;
@@ -92,28 +95,34 @@ export const BgMap = React.forwardRef((props, ref) => {
             marker.addTo(map);
             
         },
+        //Update the main path (in yellow)
+        updatePath (stratData:StratRecord[]) {
+            if(stratData.length == 0)
+                return;
 
-        updatePath (stratData) {
-            let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
-            mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
+            console.log(L)
+            let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.strategy]}); //Convert to simple position tuples
+            //mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
+            mainLine = L.hotline(path).addTo(map);
             map.fitBounds(mainLine.getBounds());    
         },
-
+        //Update the selected path (in red)
         tmpPath (stratData) {
             let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
             if (path.length == 0)
                 return;
             if(tmpLine != undefined)
                 tmpLine.remove();
-            tmpLine = L.polyline( path as Array<LatLng>   , {color: "red"}).addTo(map);
+            tmpLine = L.polyline( path    , {color: "red"}).addTo(map);
             map.fitBounds(tmpLine.getBounds());    
         },
-
+        //Remove the red path
         hideTmpPath() {
             if(tmpLine == undefined)
                 return;
             tmpLine.remove();
-        }
+        },
+
 
     }));
     
