@@ -30,8 +30,8 @@ const layout = [
 
 export const StrategyPlanner = () => {
     
-    let [stratMap, setStratmap] = useState<Array<StratRecord>>([]);
-    const bgMapRef = useRef();
+    const [stratMap, setStratmap] = useState<Array<StratRecord>>([]);
+    const bgMapRef = useRef(null);
 
     const [carSelect, setCarSelect] = useState('1'); //Contains current selected car, 1= Juno 2= Idra
     const [currAction, setAction] = useState(""); //Contains the current menu selection
@@ -110,7 +110,6 @@ export const StrategyPlanner = () => {
     function mqttRxCallback(message){
         //We don't care about the topic since there is no visible difference among the cars
         let record = message.payloadString.split(";");
-        // @ts-ignore
         bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])}, stratMap)
     }   
 
@@ -133,7 +132,6 @@ export const StrategyPlanner = () => {
             sendData();
         }
         else if(currAction == "home"){
-            //@ts-ignore
             bgMapRef.current.updatePath(stratMap);
         }
 
@@ -159,9 +157,18 @@ export const StrategyPlanner = () => {
     //Called when map config window changes, detect when disappears and removes path from map
     useEffect(()=>{
         if(!mapConfigEn)
-            // @ts-ignore
-            bgMapRef.current.hideTmpPath();
+            bgMapRef.current. removeHighPath();
     }, [mapConfigEn])
+
+    //Called when strategy data is updated
+    useEffect(()=>{
+        if(stratMap == undefined)
+            return;
+        console.log("Updaing background map")
+        console.log(stratMap)
+        bgMapRef.current.updatePath(stratMap)
+        
+    }, [stratMap])
 
     //Loads the map data (called when file uploaded)
     const loadData = (file:File) => {
@@ -216,7 +223,6 @@ export const StrategyPlanner = () => {
             }
             
             if( bgMapRef.current != undefined)
-                // @ts-ignore
                 bgMapRef.current.updatePath(stratMap);
 
             setStratmap(stratMap);
@@ -274,8 +280,7 @@ export const StrategyPlanner = () => {
     }
 
     const updateSelection = (startI, endI) =>{
-        // @ts-ignore
-        bgMapRef.current.tmpPath(stratMap.slice(startI, endI+1));
+        bgMapRef.current.highlightedPath(stratMap.slice(startI, endI+1));
     }
 
     return (
@@ -329,7 +334,8 @@ export const StrategyPlanner = () => {
                 {/*show map configurator conditonally*/}    
                 {mapConfigEn &&
                     <div key="mapEditTable" data-grid={{x: 16, y: 2, w: 6, h: 15, minW: 5}}>
-                        <MapConfigurator setBlkConfigEn={setBlkConfigEn} setMapConfigEn={setMapConfigEn} mapData={stratMap} setMapData={setStratmap}></MapConfigurator>
+                        
+                        <MapConfigurator putMarker={bgMapRef.current.putMarker} setBlkConfigEn={setBlkConfigEn} setMapConfigEn={setMapConfigEn} mapData={stratMap} setMapData={setStratmap}></MapConfigurator>
                     </div>
                 }       
                 

@@ -1,13 +1,14 @@
 import React, { CSSProperties, Component, useEffect } from "react";
 
-import "leaflet"
-
-
+import L from "leaflet"
+import Hotline from "leaflet-hotline"
 
 import redPoint from './redPoint.png'
 import greenCross from './greenCross.png'
+import blackCross from './blackCross.png'
 import { Coord, StratRecord } from "../types";
 import { getGpsDistance } from "../MapCreator";
+
 
 
 
@@ -26,8 +27,12 @@ const greenIcon = L.icon({
     iconUrl: greenCross,
     iconSize: [15, 15]
 })
+const blackIcon = L.icon({
+    iconUrl: blackCross,
+    iconSize: [15, 15]
+})
 
-let map, marker, mainLine, tmpLine;
+let map, carMarker, markerTmp, mainLine, tmpLine;
 
 /*
 @brief  Gets the closest point from map dat, returns the index of the point
@@ -54,7 +59,7 @@ function getClosestPoint(mapDat:StratRecord[], position:Coord){
 //forwardRef needed to make internal hooks accesible from parent
 export const BgMap = React.forwardRef((props, ref) => {
 
-
+    Hotline(L); //Pass Leaflet to Hotline
     //Called on inital render
     useEffect(()=>{
 
@@ -65,7 +70,8 @@ export const BgMap = React.forwardRef((props, ref) => {
             45, 7
         ], 4);
         
-        marker = L.marker([0, 0], { icon: redIcon });
+        carMarker = L.marker([0, 0], { icon: redIcon });
+        markerTmp = L.marker([0, 0], { icon: blackIcon });
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
         
@@ -83,41 +89,58 @@ export const BgMap = React.forwardRef((props, ref) => {
                 pointIndex = getClosestPoint(mapData, pos);
             }
 
-            marker.remove();
+            carMarker.remove();
 
             if(pointIndex != -1){
-                marker = L.marker([mapData[pointIndex].pos.lat, mapData[pointIndex].pos.lng], { icon: greenIcon });    
+                carMarker = L.marker([mapData[pointIndex].pos.lat, mapData[pointIndex].pos.lng], { icon: greenIcon });    
             }
             else{
-                marker = L.marker([lat, lng], { icon: redIcon });
+                carMarker = L.marker([lat, lng], { icon: redIcon });
             }
                                    
-            marker.addTo(map);
+            carMarker.addTo(map);
+            
+        },
+        //Puts a marker at specified position
+        putMarker (pos:Coord) {
+            
+            let lat = pos.lat, lng = pos.lng;
+            
+            markerTmp.remove();
+
+            markerTmp = L.marker([lat, lng], { icon: blackIcon });
+                                   
+            markerTmp.addTo(map);
             
         },
         //Update the main path (in yellow)
         updatePath (stratData:StratRecord[]) {
             if(stratData.length == 0)
                 return;
+            
+            if(mainLine != undefined)
+                mainLine.remove();
 
-            console.log(L)
             let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.strategy]}); //Convert to simple position tuples
             //mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
-            mainLine = L.hotline(path).addTo(map);
+            mainLine = L.hotline(path, {outlineWidth:0,palette:{0:"red",0.01:"green",1:"green"}, min:0, max:0.01});
+            
+            mainLine.addTo(map);
+            
             map.fitBounds(mainLine.getBounds());    
         },
         //Update the selected path (in red)
-        tmpPath (stratData) {
+        highlightedPath (stratData) {
             let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
             if (path.length == 0)
                 return;
             if(tmpLine != undefined)
                 tmpLine.remove();
-            tmpLine = L.polyline( path    , {color: "red"}).addTo(map);
+            tmpLine = L.polyline( path    , {color: "yellow"}).addTo(map);
             map.fitBounds(tmpLine.getBounds());    
         },
         //Remove the red path
-        hideTmpPath() {
+        removeHighPath() {
             if(tmpLine == undefined)
                 return;
             tmpLine.remove();
