@@ -1,15 +1,9 @@
-#Access token for github
-ARG GIT_TOKEN=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
-#Branch to install
-ARG BRANCH=strategyPlanner
-
 FROM node:18-alpine
 
 #Access token for github
-ARG GIT_TOKEN=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
-
+ARG GIT_TOKEN='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'
 #Branch to install
-ARG BRANCH=strategyPlanner
+ARG BRANCH='strategyPlanner'
 
 #Port used by the server
 ENV PORT=3000
