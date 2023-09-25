@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import * as Styles from "./styles"
 
 
-export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection}) => {
+export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection, updateMap}) => {
     const [startIndex, setStartIndex] = useState(0); //Index where to start editing data
     const [endIndex, setEndIndex] = useState(0); //Index where to stop editing data
     const [strategy, setStrategy] = useState(-1); // Strategy to set to selected points
@@ -66,6 +66,7 @@ export const BulkEditor = ({setBlkConfigEn, mapData, setMapData, updateSelection
         setStartIndex(endIndex);
         if(endIndex+1 < mapData.length)
             setEndIndex(endIndex+1);
+        
     }
     
 

@@ -55,6 +55,7 @@ export const StrategyPlanner = () => {
        setOpenAlert(false)
     }
 
+    //Show alert in bottom right
     const putAlert = (data, severity) =>{
         setAlertSeverity(severity);
         setAlertStatus(data);
@@ -183,7 +184,7 @@ export const StrategyPlanner = () => {
         
         fileData.onloadend = (e) =>{
             if(e.target?.result?.toString() == undefined){
-   
+                putAlert("Error code 001", "warning");    
                 return;
             }
                 
@@ -193,16 +194,21 @@ export const StrategyPlanner = () => {
             //The file is complete only if there are more then 2 entries in the header
             const fileHeader = fileByLines[0].split(";");
 
-            let isMapComplete = (fileHeader.length > 3);
+            
             let idIndex = fileHeader.indexOf("ID");
             let latIndex = fileHeader.indexOf("LATITUDE");
             let lngIndex = fileHeader.indexOf("LONGITUDE");
-            let strategyIndex, sectorIndex;
             
-            if(isMapComplete){
-      
-                strategyIndex= fileHeader.indexOf("STRATEGY");
-                sectorIndex = fileHeader.indexOf("SECTOR");
+            let strategyIndex= fileHeader.indexOf("STRATEGY");
+            let sectorIndex = fileHeader.indexOf("SECTOR");
+            let speedIndex = fileHeader.indexOf("SPEED");
+            let altitudeIndex = fileHeader.indexOf("ALTITUDE");
+
+            let isMapComplete = (strategyIndex > 0 && sectorIndex > 0 && speedIndex > 0 && altitudeIndex > 0); //Check if all data is present
+
+
+            if(!isMapComplete){
+                putAlert("Map does not have full data", "warning");    
             }
            
             
@@ -213,10 +219,10 @@ export const StrategyPlanner = () => {
                 let record = fileByLines[i].split(";");
 
                 if(isMapComplete){
-                    stratMap.push( {id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, strategy:parseInt(record[strategyIndex]), sector:parseInt(record[sectorIndex]), note: ""});
+                    stratMap.push( {id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, altitude:parseFloat(record[altitudeIndex]), speed:parseFloat(record[speedIndex]), strategy:parseInt(record[strategyIndex]), sector:parseInt(record[sectorIndex]), note: ""});
                 }
                 else{
-                    stratMap.push({id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, strategy:-1, sector:-1, note: ""});
+                    stratMap.push({id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, speed:0, altitude:0, strategy:-1, sector:-1, note: ""});
                 }
 
                 
@@ -241,10 +247,10 @@ export const StrategyPlanner = () => {
             putAlert("Upload a file first", "error");
             return;
         }
-        let outString = "ID;LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
+        let outString = "ID;LATITUDE;LONGITUDE;ALTITUDE;SPEED;STRATEGY;SECTOR;NOTE\n";
 
         for(let i=0; i<stratMap.length; i++){
-            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].strategy};${stratMap[i].sector};\n`
+            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].altitude};${stratMap[i].speed};${stratMap[i].strategy};${stratMap[i].sector};\n`
         }
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
         const url = URL.createObjectURL(blob);
@@ -342,7 +348,7 @@ export const StrategyPlanner = () => {
                 {/*show map bulk configurator conditonally*/}
                 {blkConfigEn &&
                     <div key="mapEditBulk" data-grid={{ x: 0, y: 5, w: 4, h: 10}}>
-                        <BulkEditor updateSelection={updateSelection} setBlkConfigEn={setBlkConfigEn} mapData={stratMap} setMapData={setStratmap}></BulkEditor>
+                        <BulkEditor updateSelection={updateSelection} updateMap={bgMapRef.current.updatePath(stratMap)} setBlkConfigEn={setBlkConfigEn} mapData={stratMap} setMapData={setStratmap}></BulkEditor>
                     </div>
                 }     
                 

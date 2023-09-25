@@ -1,21 +1,19 @@
 import React, { useRef, createRef, useEffect, useState } from "react";
 import {Close} from "@mui/icons-material"
-import { Divider, OutlinedInput, InputAdornment } from "@mui/material";
+import { Divider, Switch, OutlinedInput, InputAdornment } from "@mui/material";
 import { Button } from "@mui/base";
+import FormControlLabel from '@mui/material/FormControlLabel';
 import {LatLng, icon} from'leaflet';
 import 'leaflet-draw';
 import 'leaflet-realtime'
 import Cookies from 'universal-cookie';  
 import {rootStyle, xButtonStyle, mapPreviewStyle, titleStyle, statusStyle, centralColumnStyle, headerStyle, leftColumnStyle, buttonStyle, baseStyle, rightColumnStyle} from "./styles"  
-import { Coord } from "../types";
+import { Coord, RawData } from "../types";
 
 
 
 import startRes from './start.png'
 import stopRes from './stop.png'
-
-
-
 
 declare const L: any
 
@@ -45,7 +43,7 @@ export function getGpsDistance(A:Coord, B:Coord){
     return eRad * c;
 }
 
-let rawData:Coord[] = [];
+let rawData:RawData[] = [];
 
 let startIcon = L.icon({
     iconUrl: startRes,
@@ -59,8 +57,8 @@ let stopIcon = L.icon({
 const dofileDownload = createRef<HTMLAnchorElement>()
 const doFileUpload = createRef<HTMLInputElement>();
 
-let processedData:Coord[] = [];
-let map, startMark, stopMark, processedLine; //Map and helpers
+let goodIndexs:number[] = [];
+let map, startMark, stopMark, processedLine, baseLine; //Map and helpers
 
 const cookies = new Cookies();
 
@@ -71,6 +69,9 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
 
     const [status, setStatus] = useState("");
 
+    const [invertLat, setInvertLat] = useState(false);
+    const [invertLng, setInvertLng] = useState(false);
+    const [swapLatLng, setSwapLatLng] = useState(false);
 
     const [minDistance, setMinDistance] = useState(0);
     const [startTrim, setStartTrim] = useState(0);
@@ -83,6 +84,11 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
     
     const loadData = (file:File) => {
         
+        rawData = [];
+        setStartTrim(0);
+        setEndTrim(0);
+        setMinDistance(1);
+
         if(file == null){
             alertCb("No file selected", "error")
             return;
@@ -106,23 +112,30 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
                       
             let latIndex = fileHeader.indexOf("LATITUDE");
             let lngIndex = fileHeader.indexOf("LONGITUDE");
+            let altitudeIndex = fileHeader.indexOf("ALTITUDE");
+            let speedIndex = fileHeader.indexOf("GPS_SPEED");
             
+            if(altitudeIndex == -1)
+                alertCb("No altitude data", "warning");
+            if(speedIndex == -1)
+                alertCb("No speed data", "warning");
+
             for(let i=1; i<fileByLines.length; i++){
                 
                 let record = fileByLines[i].split(";");
-                rawData.push({lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])});
+                rawData.push({pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, altitude:parseFloat(record[altitudeIndex]), speed:parseFloat(record[speedIndex])});
                 
             }
 
-            rawData = rawData.filter(pos => (pos.lat != 0 && pos.lng != 0));//Remove zeros
+            rawData = rawData.filter(item => (item.pos.lat != 0 && item.pos.lng != 0));//Remove zeros
             rawData.splice(rawData.length-1,1)
-
+            
             updateMap();
 
             alertCb("File loaded", "success")
 
-            startMark.setLatLng(rawData[startTrim] as LatLng);
-            stopMark.setLatLng(rawData[rawData.length-endTrim-1] as LatLng);
+            startMark.setLatLng(rawData[startTrim].pos as LatLng);
+            stopMark.setLatLng(rawData[rawData.length-endTrim-1].pos as LatLng);
 
         }
 
@@ -130,12 +143,20 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
     }
     
     const updateMap = () =>{
-        //Load points on map    
 
-        let polyLine = L.polyline( rawData as Array<LatLng>   , {color: "yellow"}).addTo(map);
-        map.fitBounds(polyLine.getBounds());
-        startMark = L.marker(rawData[0] as LatLng,  {icon: startIcon});
-        stopMark = L.marker(rawData[rawData.length-1] as LatLng,  {icon: stopIcon});
+        //Clean map
+        if(baseLine != undefined)
+            baseLine.remove();
+        if(stopMark != undefined)
+            stopMark.remove();
+        if(startMark != undefined)
+            startMark.remove();
+
+        //Load points on map    
+        baseLine = L.polyline( rawData.map(function(item){return [item.pos.lat, item.pos.lng]})   , {color: "yellow"}).addTo(map);
+        map.fitBounds(baseLine.getBounds());
+        startMark = L.marker(rawData[0].pos as LatLng,  {icon: startIcon});
+        stopMark = L.marker(rawData[rawData.length-1].pos as LatLng,  {icon: stopIcon});
 
         startMark.addTo(map);
         stopMark.addTo(map);
@@ -148,26 +169,31 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
         }
 
 
-        //Average results
-        let averagedData:Coord[] = [];
+        //Store temporarely coordinates for displaying data
+        let processedLatLngs:Coord[] = [];
 
-        //Keep only points above a min distance in next section
-        processedData = []; //Clean array
-        processedData.push(rawData[startTrim]); //Add first point
+        //Keep only points above a min distance in next section (stores the indexes of the points to get)
+        goodIndexs = []; //Clean array
+        goodIndexs.push(startTrim); //Add first point
+        processedLatLngs.push(rawData[startTrim].pos); //Add first position
 
         let i = startTrim, lapOver = false;
+        
 
         while(i < (rawData.length-endTrim) && !lapOver ){
-            let lastElement = processedData[processedData.length - 1]; //Get the last element in the processed data
+            let lastIndex = goodIndexs[goodIndexs.length - 1];
+            let lastElement = rawData[lastIndex]; //Get the last element in the processed data
             
-            if(getGpsDistance(lastElement, rawData[i]) >= minDistance){ //Only take points further than distance
-                processedData.push(rawData[i]);
+            if(getGpsDistance(lastElement.pos, rawData[i].pos) >= minDistance){ //Only take points further than distance
+                goodIndexs.push(i);
+                processedLatLngs.push(rawData[i].pos);
+
                 //If the distance from the start point is less then minimum distance the lap is over
                 // NOTE: Also check for the change in index because otherwise we always find the point to be close enough
-                if(getGpsDistance(processedData[0], rawData[i]) <= minDistance && (i-startTrim) > 100){ 
+                if(getGpsDistance(rawData[goodIndexs[0]].pos, rawData[i].pos) <= minDistance && (i-startTrim) > 100){ 
                     lapOver = true;
-                    setStatus(`Lap completed ${processedData.length} points`)
-                    alertCb(`Lap completed ${processedData.length} points`, "success");
+                    setStatus(`Lap completed ${goodIndexs.length} points`)
+                    alertCb(`Lap completed ${goodIndexs.length} points`, "success");
                 } 
             }
             i ++;
@@ -181,17 +207,19 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
         if(processedLine != null){
             processedLine.remove();
         }
-        processedLine = L.polyline( processedData as Array<LatLng>   , {color: "red"});
-        processedLine.addTo(map);
-
+        
+    
+        processedLine =L.polyline(processedLatLngs, {color: "red"}).addTo(map);
 
     }
 
     const saveData = () =>{
-        let outString = "ID;LATITUDE;LONGITUDE\n";
+        let outString = "ID;LATITUDE;LONGITUDE;ALTITUDE;SPEED;STRATEGY;SECTOR\n";
+        
+        console.log(goodIndexs);
 
-        for(let i=0; i<processedData.length; i++){
-            outString += `${i};${processedData[i].lat};${processedData[i].lng}\n`
+        for(let i=0; i<goodIndexs.length; i++){
+            outString += `${i};${rawData[goodIndexs[i]].pos.lat};${rawData[goodIndexs[i]].pos.lng};${rawData[goodIndexs[i]].altitude};${rawData[goodIndexs[i]].speed};-1;-1\n`
         }
 
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
@@ -200,6 +228,36 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
         
     }
 
+
+    const invertLatPressed = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setInvertLat(event.target.checked);
+        let i, tmp;
+        //NOTE: this gets swapped every time the button is pressed (avoids using if to do *-1 everywhere it is used)
+        for(i=0;i<rawData.length;i++){
+            rawData[i].pos.lat = -1*rawData[i].pos.lat;
+        }
+        updateMap();
+    };
+    const invertLngPressed = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setInvertLng(event.target.checked);
+        let i, tmp;
+        for(i=0;i<rawData.length;i++){
+            rawData[i].pos.lng = -1*rawData[i].pos.lng;
+        }
+        updateMap();
+    };
+    const swapLatLngPressed = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSwapLatLng(event.target.checked);
+        let i, tmp;
+        for(i=0;i<rawData.length;i++){
+                tmp = rawData[i].pos.lat;
+                rawData[i].pos.lat = rawData[i].pos.lng;
+                rawData[i].pos.lng = tmp;
+        }
+        updateMap();
+    };
+
+    
     //Called when download url is set
     useEffect(()=>{
         if ( !didMount.current ){ //Prevent running this when it's the first rendering
@@ -254,12 +312,12 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
         if(isEnd){
             setEndTrim(tmp);
             cookies.set("stopTrim", tmp);
-            stopMark.setLatLng(rawData[rawData.length-endTrim-1] as LatLng);
+            stopMark.setLatLng(rawData[rawData.length-endTrim-1].pos as LatLng);
         }
         else{
             setStartTrim(tmp);
             cookies.set("startTrim", tmp);
-            startMark.setLatLng(rawData[startTrim] as LatLng);
+            startMark.setLatLng(rawData[startTrim].pos as LatLng);
         }
         
     }
@@ -291,6 +349,10 @@ export const MapCreator = ({setMapCreateEn, alertCb}) => {
                     <input type="file" accept=".txt" onChange={e =>loadData(e.target.files[0])} id="fileUpButton" ref={doFileUpload} hidden/>
                     <Button id="procDataBtn" style={buttonStyle} onClick={processData} >Process raw data</Button>
                     <Button id="saveDataBtn" style={buttonStyle} onClick={saveData} >Save Processed data</Button>
+                    <FormControlLabel checked={invertLat} onChange={invertLatPressed} style={{display:"block"}} control={<Switch />} label="Invert Latitude" />
+                    <FormControlLabel checked={invertLng} onChange={invertLngPressed} style={{display:"block"}} control={<Switch />} label="Invert Longitude" />
+                    <FormControlLabel checked={swapLatLng} onChange={swapLatLngPressed} style={{display:"block"}} control={<Switch />} label="Swap Lat\Lng" />
+
                 </div>                
 
                 <div id="rightColumn" style={rightColumnStyle}>

@@ -8,5 +8,13 @@ export type StratRecord = {
     pos:Coord,
     strategy:number,
     sector:number,
+    speed: number,
+    altitude: number,
     note:string
+}
+
+export type RawData = {
+    pos: Coord,
+    altitude: number,
+    speed: number,
 }

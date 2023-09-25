@@ -16,7 +16,8 @@ declare const L: any
 const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', description: 'Point ID', sortable: true, type: 'number',   },
     { field: 'strategy', headerName: 'Strategy', description: 'Strategy for point', sortable: false, editable: true, type: 'number',  },
-    { field: 'sector', headerName: 'Sector', description: 'Sector for point', sortable: false, editable: true, type: 'number', }
+    { field: 'sector', headerName: 'Sector', description: 'Sector for point', sortable: false, editable: true, type: 'number', },
+    { field: 'speed', headerName: 'Speed', description: 'Speed for point', sortable: false, editable: false, type: 'number', }
   ];
 
 

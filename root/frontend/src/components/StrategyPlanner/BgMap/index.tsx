@@ -3,6 +3,7 @@ import React, { CSSProperties, Component, useEffect } from "react";
 import L from "leaflet"
 import Hotline from "leaflet-hotline"
 
+
 import redPoint from './redPoint.png'
 import greenCross from './greenCross.png'
 import blackCross from './blackCross.png'
@@ -121,9 +122,10 @@ export const BgMap = React.forwardRef((props, ref) => {
             if(mainLine != undefined)
                 mainLine.remove();
 
-            let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.strategy]}); //Convert to simple position tuples
+            console.log(stratData)
+            let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.speed]}); //Convert to simple position tuples
             //mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
-            mainLine = L.hotline(path, {outlineWidth:0,palette:{0:"red",0.01:"green",1:"green"}, min:0, max:0.01});
+            mainLine = L.hotline(path, {outlineWidth:1,palette:{0:"green",0.5:"yellow",1:"red"}, min:0, max:50});
             
             mainLine.addTo(map);
             
@@ -136,7 +138,7 @@ export const BgMap = React.forwardRef((props, ref) => {
                 return;
             if(tmpLine != undefined)
                 tmpLine.remove();
-            tmpLine = L.polyline( path    , {color: "yellow"}).addTo(map);
+            tmpLine = L.polyline( path    , {color: "red"}).addTo(map);
             map.fitBounds(tmpLine.getBounds());    
         },
         //Remove the red path
