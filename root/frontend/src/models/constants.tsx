@@ -16,6 +16,10 @@ const IDRA_SENSORS = [
     { value: { ID: '15', topicName: 'Idra/BARHeight', sensorName: 'Altimetry', minValue: 365, maxValue: 385 }, label: 'Altimetry' },
     { value: { ID: '16', topicName: 'Idra/GPSSpeed', sensorName: 'Gps Speed', minValue: 0, maxValue: 60 }, label: 'Gps Speed' },
     { value: { ID: '17', topicName: 'Idra/FanDuty', sensorName: 'Fan speed', minValue: 0, maxValue: 100 }, label: 'Fan speed' },
+    { value: { ID: '18', topicName: 'Idra/boostVolt', sensorName: 'DcDc Input voltage', minValue: 0, maxValue: 50 }, label: 'DcDc Input voltage' },
+    { value: { ID: '19', topicName: 'Idra/dcdcScVolt', sensorName: 'DcDc Output voltage', minValue: 0, maxValue: 40 }, label: 'DcDc Output voltage' },
+    { value: { ID: '20', topicName: 'Idra/dcdcInCurr', sensorName: 'DcDc Input current', minValue: 0, maxValue: 7 }, label: 'DcDc Input current' },
+    { value: { ID: '21', topicName: 'Idra/dcdcOutCurr', sensorName: 'DcDc Output current', minValue: 0, maxValue: 7 }, label: 'DcDc Output current' },
 ]
 
 const JUNO_SENSORS = [
