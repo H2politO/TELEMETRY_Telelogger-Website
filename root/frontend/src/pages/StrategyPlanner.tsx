@@ -281,7 +281,7 @@ export const StrategyPlanner = () => {
             }).then((response) => { //When response received notify phone file is online
                 console.log("DONE")
                 let msg = new Paho.Message("ready")
-                msg.destinationName = "H2polito/Juno/Strategy"
+                msg.destinationName = "H2polito/Juno/StrategySend"
                 mqttClient.send(msg)
             });
         }
@@ -294,7 +294,7 @@ export const StrategyPlanner = () => {
             }).then((response) => { //When response received notify phone file is online
                 console.log("DONE")
                 let msg = new Paho.Message("ready")
-                msg.destinationName = "H2polito/Idra/Strategy"
+                msg.destinationName = "H2polito/Idra/StrategySend"
                 mqttClient.send(msg)
             });
         }
