@@ -272,17 +272,32 @@ export const StrategyPlanner = () => {
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
         const url = URL.createObjectURL(blob);
         
-        fetch('http://h2polito.duckdns.org/JunoFile', {  // Server IP address
+        if(carSelect == "1"){
+            fetch('http://h2polito.duckdns.org/JunoFile', {  // Server IP address
 
-            method: 'POST', 
-            mode: 'cors', 
-            body: outString
-        }).then((response) => { //When response received notify phone file is online
-            console.log("DONE")
-            let msg = new Paho.Message("ready")
-            msg.destinationName = "H2polito/Juno/Strategy"
-            mqttClient.send(msg)
-        });
+                method: 'POST', 
+                mode: 'cors', 
+                body: outString
+            }).then((response) => { //When response received notify phone file is online
+                console.log("DONE")
+                let msg = new Paho.Message("ready")
+                msg.destinationName = "H2polito/Juno/Strategy"
+                mqttClient.send(msg)
+            });
+        }
+        else{
+            fetch('http://h2polito.duckdns.org/IdraFile', {  // Server IP address
+
+                method: 'POST', 
+                mode: 'cors', 
+                body: outString
+            }).then((response) => { //When response received notify phone file is online
+                console.log("DONE")
+                let msg = new Paho.Message("ready")
+                msg.destinationName = "H2polito/Idra/Strategy"
+                mqttClient.send(msg)
+            });
+        }
     }
 
     const updateSelection = (startI, endI) =>{
