@@ -34,6 +34,20 @@ app.get(["/JunoFile"], (req, res) =>{
     }
 });
 
+//Load the idra file
+app.post(["/IdraFile"], (req, res) =>{
+    console.log("Recieved file")
+    fs.writeFile("./data/idra.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
+)});
+
+//Send the idra file
+app.get(["/IdraFile"], (req, res) =>{
+    console.log("Recieved request")
+    if(fs.existsSync("./data/idra.csv")){
+        res.sendFile(path.join(__dirname, './data/', 'idra.csv'));
+    }
+});
+
 //Send assets
 app.use(express.static('../frontend/dist'))
 
