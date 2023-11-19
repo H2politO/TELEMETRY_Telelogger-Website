@@ -93,6 +93,9 @@ export const Navbar = () => {
                     <ul className="navbar-nav">
 
                         <li className="nav-item">
+                            <a className="nav-link active" href="/StrategyPlanner"><p>Strategy setup</p></a>
+                        </li>
+                        <li className="nav-item">
                             <a className="nav-link active" href="/demo"><p>Demo</p></a>
                         </li>
                         <li className="nav-item">

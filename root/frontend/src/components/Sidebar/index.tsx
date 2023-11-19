@@ -96,10 +96,10 @@ export class Sidebar extends React.Component<any, any> {
 
                     <Formik
                         initialValues={{
-                            nameComponent: '',
+                            nameComponent: 'sideInput',
                             typeComponent: 1,
-                            cmpMinRange: null,
-                            cmpMaxRange: null,
+                            cmpMinRange: 0,
+                            cmpMaxRange: 0,
                             sensorSelected: new Array<Sensor>(),
                             prescaler: 1,
                             value: 0,

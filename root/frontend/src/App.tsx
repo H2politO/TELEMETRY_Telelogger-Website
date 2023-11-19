@@ -8,6 +8,7 @@ import { Database } from './pages/database';
 import { Sidebar } from './components/Sidebar'
 import { PostRun } from './pages/postRun';
 import { Navbar } from './components/NavBar';
+import { StrategyPlanner } from './pages/StrategyPlanner';
 import { Sensor } from './models/sensor';
 import { ComponentsPage } from './models/componentsPage';
 import Cookies from 'universal-cookie';
@@ -49,6 +50,7 @@ export class App extends React.Component {
             <Route path="/demo" element={<Demo />} />
             <Route path="/database" element={<Database/>} />
             <Route path="/postRun" element={<PostRun/>} />
+            <Route path="/StrategyPlanner" element={<StrategyPlanner/>} />
           </Routes>
           <div className="text-gray-400 fixed bottom-0 left-0">
             <p>Made with &hearts; by Informatics (and Electronics) division</p>

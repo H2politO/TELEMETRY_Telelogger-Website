@@ -1,40 +1,62 @@
-const express = require('express');
-const mongoose = require('mongoose')
-require('dotenv').config()
-//all the routes are located inside routes/runs file
-const circuitRoutes = require('./routes/circuit')
-const circuitModel = require('./models/circuitModel')
+const express = require("express");
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
+const exp = require("constants");
+const process = require('process');
 
-var bodyParser = require('body-parser')
+let PORT = 3000;
 
-//express app
-const app = express();
-app.use(bodyParser.json())
+//Dynamic port with command line first argument
+if(process.argv[2] != undefined){
+    PORT = parseInt(process.argv[2]);
+}
 
-mongoose.connect(process.env.MONGOOSE_URI)
-    .then(() => {
-        //listen to port number 3000 ONLY afer the connection to the database
-        app.listen(process.env.PORT, () => {
-            console.log('Connected to database, listening for requests');
-        })
-    })
-    .catch((err) => {
-        console.error(err)
-    })
+//Setup express
+const app = express(); 
+//Allow cross origin reference (to remove in production version)
+app.use(cors());
 
-//Goes to circuitRoutes when the path is the one that matches the string inside
-app.use('/circuit' , circuitRoutes)
+//Setup post reception for text
+app.use(express.text());
 
-//middleware to log all the requests and where they come from
-app.use((req, res, next) => {
-    console.log(req.method, req.path)
-    next()
-})
+//Load the juno file
+app.post(["/JunoFile"], (req, res) =>{
+    console.log("Recieved file")
+    fs.writeFile("./data/juno.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
+)});
 
+//Send the juno file
+app.get(["/JunoFile"], (req, res) =>{
+    console.log("Recieved request")
+    if(fs.existsSync("./data/juno.csv")){
+        res.sendFile(path.join(__dirname, './data/', 'juno.csv'));
+    }
+});
 
-//the first paramether is to use the runRoutes only when the route /api/runs is invoked
-//app.use('/', circuit)
+//Load the idra file
+app.post(["/IdraFile"], (req, res) =>{
+    console.log("Recieved file")
+    fs.writeFile("./data/idra.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
+)});
 
+//Send the idra file
+app.get(["/IdraFile"], (req, res) =>{
+    console.log("Recieved request")
+    if(fs.existsSync("./data/idra.csv")){
+        res.sendFile(path.join(__dirname, './data/', 'idra.csv'));
+    }
+});
 
+//Send assets
+app.use(express.static('../frontend/dist'))
 
+//Send to all get requests the main page
+app.get(['/', '/*'], (req, res) => {
+    
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+});
 
+app.listen(PORT, () => {
+    console.log("Listen on the port " + PORT);
+});
