@@ -14,17 +14,22 @@ import MapConfigurator from '../components/StrategyPlanner/MapConfigurator';
 import BulkEditor from '../components/StrategyPlanner/BulkEditor';
 
 import RGL, { WidthProvider } from "react-grid-layout";
+import Settings from '../components/StrategyPlanner/Settings';
+import { Topic } from '@mui/icons-material';
 
 const GridLayout = WidthProvider(RGL);
 
 let cookie = new Cookies();
 
 let mqttClient:Paho.Client;
+let  lastDispTopic:string; //also used in the mqtt Call back
+let  carIndex //Contains the car position 
 
 const layout = [
     { i: "mapCreator", x: 4, y: 2, w: 10, h: 15 },
     { i: "mapEditTable", x: 16, y: 2, w: 5, h: 15, minW: 5},
     { i: "mapEditBulk", x: 0, y: 5, w: 4, h: 10 },
+    { i: "settings", x: 4, y: 2, w: 10, h: 15},
 ];
 
 
@@ -32,14 +37,19 @@ export const StrategyPlanner = () => {
     
     const [stratMap, setStratmap] = useState<Array<StratRecord>>([]);
     const bgMapRef = useRef(null);
+   
 
     const [carSelect, setCarSelect] = useState('1'); //Contains current selected car, 1= Juno 2= Idra
     const [currAction, setAction] = useState(""); //Contains the current menu selection
+    const [displayTopic, setDisplayTopic] = useState(""); //Contains the sensors topic displayed on screen
+    const [dispDataEn,setDispDataEn] = useState(false); //Enable real time data display 
 
     //What to show on screen
     const [mapConfigEn, setMapConfigEn] = useState(false); //Enables the map configurator view
     const [blkConfigEn, setBlkConfigEn] = useState(false); //Enables the bulk map configurator view
     const [mapCreateEn, setMapCreateEn] = useState(false); //Enables the map configurator view
+    const  [settingsEn, setSettingsEn]  = useState(false); //Enables the settings window   
+
 
     //Alert snackbar handler
     //const alertRef = createRef<HTMLDivElement>();
@@ -109,9 +119,32 @@ export const StrategyPlanner = () => {
     }
 
     function mqttRxCallback(message){
-        //We don't care about the topic since there is no visible difference among the cars
-        let record = message.payloadString.split(";");
-        bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])}, stratMap)
+        //console.log(message.topic)
+
+             if (message.topic==lastDispTopic){
+               // console.log(message.payloadString)
+
+                //in case carIndex is negative or is greater than the length of stratMap or message is not a number
+                if (carIndex<0 || carIndex>stratMap.length || isNaN(message.payloadString)){
+                    putAlert("Invalid message", "error");
+   
+
+                 } else{
+                    //Insert dataToDisplay to stratMap 
+                    stratMap[carIndex].dataToDisplay=message.payloadString
+                 } 
+
+
+             } else{
+               let record = message.payloadString.split(";");
+               //playPosition return the car index 
+               //console.log(stratMap)
+               carIndex=bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])}, stratMap)
+            }
+
+            
+        
+        
     }   
 
     //Called when anything is pressed from menu and action updated
@@ -134,6 +167,10 @@ export const StrategyPlanner = () => {
         }
         else if(currAction == "home"){
             bgMapRef.current.updatePath(stratMap);
+        }
+        else if(currAction == "setting"){
+            
+            setSettingsEn(true)
         }
 
 
@@ -171,6 +208,21 @@ export const StrategyPlanner = () => {
         
     }, [stratMap])
 
+    //Called when display topic is updated
+    useEffect(()=>{
+        if (lastDispTopic != undefined ){
+           // console.log("Unsubscribed from:", lastDispTopic)
+            mqttClient.unsubscribe(lastDispTopic);
+        }
+        if (displayTopic != ""){
+           // console.log("Subscribed to:", displayTopic)
+            mqttClient.subscribe(displayTopic)
+            lastDispTopic=displayTopic
+
+        }
+
+    },[displayTopic])
+
     //Loads the map data (called when file uploaded)
     const loadData = (file:File) => {
         
@@ -201,10 +253,10 @@ export const StrategyPlanner = () => {
             
             let strategyIndex= fileHeader.indexOf("STRATEGY");
             let sectorIndex = fileHeader.indexOf("SECTOR");
-            let speedIndex = fileHeader.indexOf("SPEED");
+            let dataToDisplayIndex = fileHeader.indexOf("DATATODISPLAY");
             let altitudeIndex = fileHeader.indexOf("ALTITUDE");
 
-            let isMapComplete = (strategyIndex > 0 && sectorIndex > 0 && speedIndex > 0 && altitudeIndex > 0); //Check if all data is present
+            let isMapComplete = (strategyIndex > 0 && sectorIndex > 0 && dataToDisplayIndex > 0 && altitudeIndex > 0); //Check if all data is present
 
 
             if(!isMapComplete){
@@ -219,10 +271,10 @@ export const StrategyPlanner = () => {
                 let record = fileByLines[i].split(";");
 
                 if(isMapComplete){
-                    stratMap.push( {id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, altitude:parseFloat(record[altitudeIndex]), speed:parseFloat(record[speedIndex]), strategy:parseInt(record[strategyIndex]), sector:parseInt(record[sectorIndex]), note: ""});
+                    stratMap.push( {id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, altitude:parseFloat(record[altitudeIndex]), dataToDisplay:parseFloat(record[dataToDisplayIndex]), strategy:parseInt(record[strategyIndex]), sector:parseInt(record[sectorIndex]), note: ""});
                 }
                 else{
-                    stratMap.push({id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, speed:0, altitude:0, strategy:-1, sector:-1, note: ""});
+                    stratMap.push({id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, dataToDisplay:0, altitude:0, strategy:-1, sector:-1, note: ""});
                 }
 
                 
@@ -250,7 +302,7 @@ export const StrategyPlanner = () => {
         let outString = "ID;LATITUDE;LONGITUDE;ALTITUDE;SPEED;STRATEGY;SECTOR;NOTE\n";
 
         for(let i=0; i<stratMap.length; i++){
-            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].altitude};${stratMap[i].speed};${stratMap[i].strategy};${stratMap[i].sector};\n`
+            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].altitude};${stratMap[i].dataToDisplay};${stratMap[i].strategy};${stratMap[i].sector};\n`
         }
         const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
         const url = URL.createObjectURL(blob);
@@ -289,6 +341,9 @@ export const StrategyPlanner = () => {
         bgMapRef.current.highlightedPath(stratMap.slice(startI, endI+1));
     }
 
+    //Car position 
+    
+
     return (
         <div  className="mb-auto mx-auto">
             
@@ -308,7 +363,7 @@ export const StrategyPlanner = () => {
             <input type="file" accept=".csv" onChange={e =>loadData(e.target.files[0])} id="fileUpButton" ref={doFileUpload} hidden/>
 
             {/*background map*/}
-           <BgMap ref={bgMapRef}></BgMap>
+           <BgMap ref={bgMapRef} ></BgMap>
 
 
             {/*carPicker on top right*/}
@@ -350,7 +405,15 @@ export const StrategyPlanner = () => {
                     <div key="mapEditBulk" data-grid={{ x: 0, y: 5, w: 4, h: 10}}>
                         <BulkEditor updateSelection={updateSelection} updateMap={bgMapRef.current.updatePath(stratMap)} setBlkConfigEn={setBlkConfigEn} mapData={stratMap} setMapData={setStratmap}></BulkEditor>
                     </div>
-                }     
+                }
+
+                {/*show the settings window*/}  
+                {settingsEn &&
+                   <div key="settings" data-grid={{x: 1, y: 2, w: 5, h: 9}}>
+                       <Settings setSettings={setSettingsEn} carSelect={carSelect} dispDataEn={dispDataEn} setDispDataEn={setDispDataEn} setDisplayTopic={setDisplayTopic} ></Settings>
+                   </div>
+
+                }   
                 
                 
             </GridLayout>
