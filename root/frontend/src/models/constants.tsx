@@ -26,6 +26,8 @@ const IDRA_SENSORS = [
     { value: { ID: '25', topicName: 'Idra/GyrX', sensorName: 'X Gyroscope', minValue: -20, maxValue: 20 }, label: 'X Gyroscope' },
     { value: { ID: '26', topicName: 'Idra/GyrY', sensorName: 'Y Gyroscope', minValue: -20, maxValue: 20 }, label: 'Y Gyroscope' },
     { value: { ID: '27', topicName: 'Idra/GyrZ', sensorName: 'Z Gyroscope', minValue: -20, maxValue: 20 }, label: 'Z Gyroscope' },
+    { value: { ID: '28', topicName: 'Idra/cockTemp', sensorName: 'Cockpit Temperature', minValue: -5, maxValue: 70 }, label: 'Cockpit temperature' },
+    { value: { ID: '29', topicName: 'Idra/boardVoltage', sensorName: 'Telemetry supply voltage', minValue: 0, maxValue: 16 }, label: 'Telemetry supply voltage' },
 ]
 
 const JUNO_SENSORS = [
