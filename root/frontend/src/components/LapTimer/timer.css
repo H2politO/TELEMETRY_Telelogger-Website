@@ -1,33 +1,32 @@
-
-.stop-watch{
-    height: 85vh;
-    width: 23vw;
-    background-color: #0d0c1b;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+.stop-watch {
+  height: 85vh;
+  width: 23vw;
+  background-color: #0d0c1b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.timer{
-    font-size: 150%;
-    color: rgb(7, 174, 252);
+.timer {
+  font-size: 150%;
+  color: rgb(7, 174, 252);
 }
 
-.mainTimer{
-    text-align: center;
-    font-size: 150%;
+.mainTimer {
+  text-align: center;
+  font-size: 150%;
 }
 
-.secondaryTimer{
-    text-align: center;
-    font-size: 120%;
+.secondaryTimer {
+  text-align: center;
+  font-size: 120%;
 }
 
-.list{
-    text-align: center;
+.list {
+  text-align: center;
 }
 
-.timerms{
-    font-size: 80%;
+.timerms {
+  font-size: 80%;
 }
