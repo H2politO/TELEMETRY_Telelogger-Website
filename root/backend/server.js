@@ -23,10 +23,10 @@ app.use(express.text());
 //Load the juno file
 app.post(["/JunoFile"], (req, res) =>{
     console.log("Recieved file")
-    fs.writeFile("./data/juno.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
+    fs.writeFile("./data/juno.csv", req.body, "utf8", ()=>{ res.send("Ok") } //Write the file, then send response
 )});
 
-//Send the juno file
+//Send the juno strategy  file
 app.get(["/JunoFile"], (req, res) =>{
     console.log("Recieved request")
     if(fs.existsSync("./data/juno.csv")){
@@ -37,16 +37,39 @@ app.get(["/JunoFile"], (req, res) =>{
 //Load the idra file
 app.post(["/IdraFile"], (req, res) =>{
     console.log("Recieved file")
-    fs.writeFile("./data/idra.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
+    fs.writeFile("./data/idra.csv", req.body, "utf8", ()=>{ res.send("Ok") } //Write the file, then send response
 )});
 
-//Send the idra file
+//Send the idra strategy file
 app.get(["/IdraFile"], (req, res) =>{
     console.log("Recieved request")
     if(fs.existsSync("./data/idra.csv")){
         res.sendFile(path.join(__dirname, './data/', 'idra.csv'));
     }
 });
+
+//Handle Idra uploading and sending a file for Idra
+app.post(["/IdraData/*"], (req, res) =>{
+    
+    let title = req.params[0];
+
+    console.log("POST Idra Data file", req)
+
+    fs.writeFile("./data/IdraRunData/" + title + ".csv", req.body, "utf8", ()=>{ res.send("Ok") } );
+});
+
+app.get(["/IdraData/*"], (req, res) =>{
+    
+    let title = req.params[0];
+
+    console.log("GET Idra Data file")
+
+    if(fs.existsSync("./data/IdraRunData/" + title + ".csv")){
+        res.sendFile(path.join(__dirname, "./data/IdraRunData/", title + ".csv"));
+    }
+});
+
+
 
 //Send assets
 app.use(express.static('../frontend/dist'))
