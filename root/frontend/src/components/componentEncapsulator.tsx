@@ -27,6 +27,7 @@ import 'react-resizable/css/styles.css';
 
 import { UplotLive } from "./LiveGraph2/uplot_live";
 import { SensorList } from "./Sidebar/sensorsList";
+import { ResistiveForce } from "./ResistiveForce";
 
 
 export enum ComponentType {
@@ -308,7 +309,7 @@ interface Props {
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID &&
                     <div>
-                        <ResistiveForce velocity={singleVal} car={"Idra/Speed"}></ResistiveForce>
+                        <ResistiveForce velocity={val[0]} car={topic}></ResistiveForce>
                     </div>
                 }
 
