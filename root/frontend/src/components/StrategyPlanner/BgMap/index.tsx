@@ -100,6 +100,7 @@ export const BgMap = React.forwardRef((props, ref) => {
             }
                                    
             carMarker.addTo(map);
+            return pointIndex;
             
         },
         //Puts a marker at specified position
@@ -115,7 +116,7 @@ export const BgMap = React.forwardRef((props, ref) => {
             
         },
         //Update the main path (in yellow)
-        updatePath (stratData:StratRecord[]) {
+        updatePath (stratData:StratRecord[], maxValue, minValue) {
             if(stratData.length == 0)
                 return;
             
@@ -123,9 +124,10 @@ export const BgMap = React.forwardRef((props, ref) => {
                 mainLine.remove();
 
             console.log(stratData)
-            let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.speed]}); //Convert to simple position tuples
+            console.log(minValue, maxValue)
+            let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.dataToDisplay]}); //Convert to simple position tuples
             //mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
-            mainLine = L.hotline(path, {outlineWidth:1,palette:{0:"green",0.5:"yellow",1:"red"}, min:0, max:50});
+            mainLine = L.hotline(path, {outlineWidth:1,palette:{0:"green",0.5:"yellow",1:"red"}, min:minValue, max:maxValue});
             
             mainLine.addTo(map);
             

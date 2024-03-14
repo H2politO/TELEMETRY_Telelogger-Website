@@ -3,12 +3,13 @@ import Paho from 'paho-mqtt';
 import { useEffect } from "react";
 
 
-export const MessageSender = () => {
+export const MessageSender= ({locCar}) => {
 
     const [times, setTimes] = useState([]);
     const [message, setMessage] = useState('');
     const [msgList, setMessageList] = useState<String[]>(['']);
     const [client, setClient] = useState<Paho.Client>();
+    
 
     useEffect(() => {
         _init();
@@ -41,19 +42,31 @@ export const MessageSender = () => {
         //msg2 = String(msg2)
     }
 
-    const internalSendData = (e) => {
+    const internalSendData = (e ) => {
+        
         e.preventDefault()
         sendData(message);
         setTimes((t) => [...t, new Date().toLocaleTimeString()])
         setMessageList((mexList) => [...mexList, message])
-        console.log(message);
+        //console.log(message);
     }
 
     const sendData = (msg) => {
 
         console.log('Sending the following message: ' + msg);
         const pahomessage = new Paho.Message(msg);
+        
+
+        console.log( locCar )
+        if( locCar == "Idra/Messaging"){
         pahomessage.destinationName = 'H2polito/Idra/Messaging';
+        
+       
+        }else if ( locCar == "Juno/Messaging"){
+        pahomessage.destinationName = 'H2polito/Juno/Messaging';
+        }
+        
+        console.log(pahomessage.destinationName)
         client.send(pahomessage);
 
     }
@@ -72,9 +85,12 @@ export const MessageSender = () => {
 
             {msgList.map((msg, i) => {
                 return (
+
                     <div>
-                        <span>{msg}</span>
-                        <div>{msg} {times[i]}</div>
+                     
+                         <span> {msg} </span> 
+                         <div> {times[i]} </div>
+                   
                     </div>
                 )
             })}

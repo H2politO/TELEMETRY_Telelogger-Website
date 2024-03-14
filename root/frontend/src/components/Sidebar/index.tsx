@@ -75,6 +75,7 @@ export class Sidebar extends React.Component<any, any> {
             (document.getElementById("cmpMaxRange") as HTMLInputElement).value = this.sensors.at(-1).value.maxValue;
         }
 
+
     };
 
     //need a function that calls the database and retrieves all the available sensors 
@@ -119,12 +120,18 @@ export class Sidebar extends React.Component<any, any> {
                             prov = values;
                             prov.compID = uuidv4();
                             prov.sensorSelected = new Array<Sensor>();
+                            console.log(this.sensors);
+                            
+                            if (this.sensors != undefined) {
+
                             prov.sensorSelected = this.sensors.map((sens: any) => sens.value);
+                           
+
                             prov.w = AVAILABLE_COMPONENTS[prov.typeComponent - 1].w
                             prov.h = AVAILABLE_COMPONENTS[prov.typeComponent - 1].h
                             prov.cmpMinRange = values.cmpMinRange || prov.sensorSelected[0].minValue
                             prov.cmpMaxRange = values.cmpMaxRange || prov.sensorSelected[0].maxValue
-                            this.onCreationOfComponent(prov);
+                            this.onCreationOfComponent(prov);}
 
                             //reset
                             action.resetForm();

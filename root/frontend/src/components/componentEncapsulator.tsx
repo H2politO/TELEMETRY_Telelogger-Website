@@ -36,7 +36,8 @@ export enum ComponentType {
     plot,
     circuitMap,
     lapTimer,
-    messageSender
+    messageSender,
+    carPicker
 }
 
 
@@ -46,19 +47,23 @@ interface Props {
     onResize?: (id: string, width: number, height: number) => void;
 }
 
-export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
 
+    export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
+    
+    const [carSelected, setCarSelected]= useState("");
     const style1 = { color: "red" };
     const style2 = { color: "black" };
 
     const [val, setVal] = useState<number[]>([]);
     const [position, setPosition] = useState([undefined, undefined]);
     const [isConnected, setConnected] = useState(false);
+    const [topic, setTopic] = useState("")
 
     const parentRef = useRef(null);
 
     //Topic name uses all sensors of the object and the local time
     let topicName = passedComp.sensorSelected.map(e => { return ' ' + String(e.sensorName) }).toString() + " " + new Date().getTime();
+    console.log(topicName)
     let arrayMessages: number[] = [];
     let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", topicName);
 
@@ -66,6 +71,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
     const { compID, typeComponent } = passedComp;
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
+
+ 
 
     useEffect(() => {
 
@@ -99,6 +106,11 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
             arrayMessages.push(0);
             console.log('%c Connecting to the topic: ' + "H2polito/" + s.topicName, 'color: orange');
             client.subscribe("H2polito/" + s.topicName, {});
+            
+            setTopic(s.topicName)
+            console.log(topic)
+            
+            //console.log(carSelected)
         });
 
         console.groupEnd()
@@ -124,6 +136,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
         console.log('Message arrived on destination: ' + message.destinationName + ' ' + message.payloadString);
 
         //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
+        
         passedComp.sensorSelected.forEach((sensor, index) => {
             if (message.payloadString)
                 if (('H2polito/' + sensor.topicName) == message.destinationName) {
@@ -132,7 +145,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
                         let lat = parseFloat(message.payloadString.split(';')[0]);
                         let lng = parseFloat(message.payloadString.split(';')[1]);
                         setPosition([lat, lng])
-                    }else if (sensor.topicName == "Juno/Position") {
+                        console.log(sensor.topicName)
+                    }else if (sensor.topicName == "Idra/Messaging") {
                         //do stuff for the GNSS sensor
                         let lat = parseFloat(message.payloadString.split(';')[0]);
                         let lng = parseFloat(message.payloadString.split(';')[1]);
@@ -180,7 +194,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
                 console.log('Unsubscribing ' + "H2polito/" + s.topicName);
                 try {
                     console.log("Unsubscribe went well")
-                    client.unsubscribe("H2polito/" + s.topicName, {});
+                    client.unsubscribe("H2polito/" + s.topicName, {}); 
                 } catch (InvalidState) {
                     console.log("Error unsubscribing")
                 }
@@ -282,7 +296,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[6].ID &&
                     <div>
-                        <MessageSender></MessageSender>
+                        <MessageSender locCar={topic} ></MessageSender>
                     </div>
                 }
 

@@ -43,6 +43,8 @@ export const StrategyPlanner = () => {
     const [currAction, setAction] = useState(""); //Contains the current menu selection
     const [displayTopic, setDisplayTopic] = useState(""); //Contains the sensors topic displayed on screen
     const [dispDataEn,setDispDataEn] = useState(false); //Enable real time data display 
+    const [maxValue, setMaxValue]=useState(100); //Use to take the sensor min value
+    const [minValue, setMinValue]=useState(0); //Use to take the sensor max value
 
     //What to show on screen
     const [mapConfigEn, setMapConfigEn] = useState(false); //Enables the map configurator view
@@ -92,7 +94,7 @@ export const StrategyPlanner = () => {
 
     //Called when mqtt client connects
     function onConnect(){
-        console.log("Root MQTT Client connected");
+        console.log("Root MQTT Client connected"); 
         mqttClient.onMessageArrived = mqttRxCallback;
         updateMqttSubs();    
 
@@ -119,32 +121,38 @@ export const StrategyPlanner = () => {
     }
 
     function mqttRxCallback(message){
-        //console.log(message.topic)
+        console.log(message.payloadString)
 
              if (message.topic==lastDispTopic){
-               // console.log(message.payloadString)
+                console.log(message.payloadString)
 
                 //in case carIndex is negative or is greater than the length of stratMap or message is not a number
                 if (carIndex<0 || carIndex>stratMap.length || isNaN(message.payloadString)){
                     putAlert("Invalid message", "error");
+                    
+                
    
 
                  } else{
                     //Insert dataToDisplay to stratMap 
-                    stratMap[carIndex].dataToDisplay=message.payloadString
+                    let editArray=[...stratMap]; //create a copy of stratMap
+                    editArray[carIndex].dataToDisplay = Number(message.payloadString);
+                    setStratmap(editArray);
                  } 
 
 
              } else{
                let record = message.payloadString.split(";");
+               
                //playPosition return the car index 
-               //console.log(stratMap)
-               carIndex=bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])}, stratMap)
+               console.log(stratMap)
+
+               carIndex=bgMapRef.current.playPosition({lat:parseFloat(record[0]), lng:parseFloat(record[1])}, stratMap);
+               
+               
             }
 
             
-        
-        
     }   
 
     //Called when anything is pressed from menu and action updated
@@ -166,7 +174,7 @@ export const StrategyPlanner = () => {
             sendData();
         }
         else if(currAction == "home"){
-            bgMapRef.current.updatePath(stratMap);
+            bgMapRef.current.updatePath(stratMap, maxValue, minValue);
         }
         else if(currAction == "setting"){
             
@@ -200,11 +208,12 @@ export const StrategyPlanner = () => {
 
     //Called when strategy data is updated
     useEffect(()=>{
+        console.log(1)
         if(stratMap == undefined)
             return;
-        console.log("Updaing background map")
-        console.log(stratMap)
-        bgMapRef.current.updatePath(stratMap)
+        console.log("Updating background map")
+        
+        bgMapRef.current.updatePath(stratMap, maxValue, minValue)
         
     }, [stratMap])
 
@@ -215,7 +224,7 @@ export const StrategyPlanner = () => {
             mqttClient.unsubscribe(lastDispTopic);
         }
         if (displayTopic != ""){
-           // console.log("Subscribed to:", displayTopic)
+            console.log("Subscribed to:", displayTopic)
             mqttClient.subscribe(displayTopic)
             lastDispTopic=displayTopic
 
@@ -245,6 +254,7 @@ export const StrategyPlanner = () => {
             //Detect if the file contains all the data or not by taking how many elements are in header
             //The file is complete only if there are more then 2 entries in the header
             const fileHeader = fileByLines[0].split(";");
+            console.log(fileHeader);
 
             
             let idIndex = fileHeader.indexOf("ID");
@@ -256,7 +266,7 @@ export const StrategyPlanner = () => {
             let dataToDisplayIndex = fileHeader.indexOf("DATATODISPLAY");
             let altitudeIndex = fileHeader.indexOf("ALTITUDE");
 
-            let isMapComplete = (strategyIndex > 0 && sectorIndex > 0 && dataToDisplayIndex > 0 && altitudeIndex > 0); //Check if all data is present
+            let isMapComplete = (strategyIndex > 0 && sectorIndex > 0 && altitudeIndex > 0); //Check if all data is present
 
 
             if(!isMapComplete){
@@ -271,17 +281,23 @@ export const StrategyPlanner = () => {
                 let record = fileByLines[i].split(";");
 
                 if(isMapComplete){
-                    stratMap.push( {id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, altitude:parseFloat(record[altitudeIndex]), dataToDisplay:parseFloat(record[dataToDisplayIndex]), strategy:parseInt(record[strategyIndex]), sector:parseInt(record[sectorIndex]), note: ""});
+                    stratMap.push( {
+                        id: parseInt(record[idIndex]), pos: { lat: parseFloat(record[latIndex]), lng: parseFloat(record[lngIndex]) }, altitude: parseFloat(record[altitudeIndex]), dataToDisplay: 0, strategy: parseInt(record[strategyIndex]), sector: parseInt(record[sectorIndex]), note: "",
+                        speed: 0
+                    });
                 }
                 else{
-                    stratMap.push({id:parseInt(record[idIndex]), pos:{lat:parseFloat(record[latIndex]), lng:parseFloat(record[lngIndex])}, dataToDisplay:0, altitude:0, strategy:-1, sector:-1, note: ""});
+                    stratMap.push({
+                        id: parseInt(record[idIndex]), pos: { lat: parseFloat(record[latIndex]), lng: parseFloat(record[lngIndex]) }, dataToDisplay: 0, altitude: 0, strategy: -1, sector: 1, note: "",
+                        speed: 0
+                    });
                 }
 
                 
             }
             
             if( bgMapRef.current != undefined)
-                bgMapRef.current.updatePath(stratMap);
+                bgMapRef.current.updatePath(stratMap, maxValue, minValue);
 
             setStratmap(stratMap);
             setMapConfigEn(true);
@@ -425,7 +441,7 @@ export const StrategyPlanner = () => {
                 {/*show the settings window*/}  
                 {settingsEn &&
                    <div key="settings" data-grid={{x: 1, y: 2, w: 5, h: 9}}>
-                       <Settings setSettings={setSettingsEn} carSelect={carSelect} dispDataEn={dispDataEn} setDispDataEn={setDispDataEn} setDisplayTopic={setDisplayTopic} ></Settings>
+                       <Settings setSettings={setSettingsEn} carSelect={carSelect} dispDataEn={dispDataEn} setDispDataEn={setDispDataEn} setDisplayTopic={setDisplayTopic} setMinValue={setMinValue} setMaxValue={setMaxValue} ></Settings>
                    </div>
 
                 }   
