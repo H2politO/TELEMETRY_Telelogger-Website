@@ -2,8 +2,9 @@ import { useState } from "react"
 import Paho from 'paho-mqtt';
 import { useEffect } from "react";
 
+export const MessageSender = ({ car }:{ car: string }) => {
 
-export const MessageSender = () => {
+    let locCar = car;
 
     const [times, setTimes] = useState([]);
     const [message, setMessage] = useState('');
@@ -42,18 +43,30 @@ export const MessageSender = () => {
     }
 
     const internalSendData = (e) => {
+        
         e.preventDefault()
         sendData(message);
         setTimes((t) => [...t, new Date().toLocaleTimeString()])
         setMessageList((mexList) => [...mexList, message])
-        console.log(message);
+        //console.log(message);
     }
 
     const sendData = (msg) => {
 
         console.log('Sending the following message: ' + msg);
         const pahomessage = new Paho.Message(msg);
+        
+
+        console.log(locCar)
+        if(locCar === "Idra/Messaging"){
         pahomessage.destinationName = 'H2polito/Idra/Messaging';
+        
+       
+        }else if (locCar === "Juno/Messaging"){
+        pahomessage.destinationName = 'H2polito/Juno/Messaging';
+        }
+        
+        console.log(pahomessage.destinationName)
         client.send(pahomessage);
 
     }
@@ -72,9 +85,12 @@ export const MessageSender = () => {
 
             {msgList.map((msg, i) => {
                 return (
+
                     <div>
-                        <span>{msg}</span>
-                        <div>{msg} {times[i]}</div>
+                     
+                         <span> {msg} </span> 
+                         <div> {times[i]} </div>
+                   
                     </div>
                 )
             })}

@@ -4,6 +4,7 @@ export  type Coord = {
 }
 
 export type StratRecord = {
+    dataToDisplay: any
     id: number,
     pos:Coord,
     strategy:number,
