@@ -64,6 +64,7 @@ export const AltimetryMap = (passedData) => {
     //Useeffect called on file change
     useEffect(() => {
         console.log("Altimetry update")
+        console.log(passedData)
 
         setSeries([{
             name: "Desktops",
@@ -74,6 +75,7 @@ export const AltimetryMap = (passedData) => {
 
     //UseEffect called on car position update
     useEffect(() => {
+        console.log(passedData.data[1])
         setChartOptions({
             annotations: {
                 points:
@@ -86,7 +88,7 @@ export const AltimetryMap = (passedData) => {
                             },
                             label: {
                                 borderColor: '#FF4560',
-                                text: 'IDRA'
+                                text: 'Car'
                             }
                         }
                     ]

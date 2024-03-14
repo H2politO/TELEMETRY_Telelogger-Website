@@ -1,5 +1,5 @@
 type Props = {
-    speed : number;
+    speed: number;
     minSpeed: number;
     maxSpeed: number;
     height: string;
@@ -19,35 +19,38 @@ import { RadialGaugeScaleOversweepShape } from 'igniteui-react-gauges';
 
 IgrRadialGaugeModule.register();
 
-export default class Tachometer extends React.Component <any,any>{
-    
-    constructor(props : Props){
+export default class Tachometer extends React.Component<any, any>{
+
+    constructor(props: Props) {
         super(props);
 
-        this.state = {componentVisible: true};
+        this.state = { componentVisible: true };
     }
 
     public render(): JSX.Element {
-        return(
-            <div className="bg-stone-100">              
-                <IgrRadialGauge
-                    value={this.props.value}
-                    isNeedleDraggingEnabled={true}
-                    isNeedleDraggingConstrained={true}
-                    needleShape="NeedleWithBulb"
-                    needleBrush="#ff1230"
-                    needleOutline="#9f9f9f"
-                    needleEndExtent={0.475}
-                    needleStrokeThickness={1}
-                    needlePivotShape="CircleOverlay"
-                    needlePivotBrush="#9f9f9f"
-                    needlePivotOutline="#9f9f9f"
-                    needlePivotWidthRatio={0.2}
-                    needlePivotStrokeThickness={1}
-                    height={this.props.height} width="300px"
-                    minimumValue={this.props.minSpeed}
-                    maximumValue={this.props.maxSpeed} interval={1000} 
-                />
+        return (
+            <div>
+                <div className="bg-stone-100">
+                    <IgrRadialGauge
+                        value={this.props.value}
+                        isNeedleDraggingEnabled={true}
+                        isNeedleDraggingConstrained={true}
+                        needleShape="NeedleWithBulb"
+                        needleBrush="#ff1230"
+                        needleOutline="#9f9f9f"
+                        needleEndExtent={0.475}
+                        needleStrokeThickness={1}
+                        needlePivotShape="CircleOverlay"
+                        needlePivotBrush="#9f9f9f"
+                        needlePivotOutline="#9f9f9f"
+                        needlePivotWidthRatio={0.2}
+                        needlePivotStrokeThickness={1}
+                        height={this.props.height} width="300px"
+                        minimumValue={this.props.minSpeed}
+                        maximumValue={this.props.maxSpeed} interval={1000}
+                    />
+
+                </div>
             </div>
 
         );

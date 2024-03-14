@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { LiveMap } from "../components/LiveMap";
 import { Formik } from "formik";
-import { MyFileUppy } from "../components/FileUploader/MyFileUppy";
+import { CustomFileUploader } from "../components/FileUploader/CustomFileUploader";
 
 export const Database = () => {
 
@@ -81,9 +81,6 @@ export const Database = () => {
                     })}
                 </div>
 
-            </div>
-            <div>Upload the strategy file to the database with the data ordered: Long, Lat, Alt,
-                <MyFileUppy></MyFileUppy>
             </div>
         </div >
 

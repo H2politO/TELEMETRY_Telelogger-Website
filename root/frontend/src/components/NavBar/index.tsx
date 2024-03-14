@@ -15,7 +15,6 @@ import logoTeam from './logoTeam.svg'
 export const Navbar = () => {
 
     const [idraOn, setIdra] = useState(false);
-    const [prov, setProv] = useState(false);
     let timeoutIdIdra = null; 
     let timeoutIdJuno = null; 
     const [junoOn, setJuno] = useState(false)
@@ -26,8 +25,8 @@ export const Navbar = () => {
         _init();
     }, [])
 
+    //connect the navbar to listen for idra and juno status 
     const _init = () => {
-
         navBarClient.onConnectionLost = onConnectionLost;
         navBarClient.onMessageArrived = onMessageArrived;
         navBarClient.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
@@ -90,11 +89,14 @@ export const Navbar = () => {
                 <img src={logoTeam} alt="Logo" height={80} width={80} />
                 <a className="navbar-brand" href="/">H2politO telemetry</a>
 
-                <div className="collapse navbar-collapse" id="navbarNav">
+                <div className="navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
 
                         <li className="nav-item">
-                            <a className="nav-link active" aria-current="page" href="/demo"><p>Demo</p></a>
+                            <a className="nav-link active" href="/StrategyPlanner"><p>Strategy setup</p></a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link active" href="/demo"><p>Demo</p></a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link active" aria-current="page" href="/"><p>My dashboard</p></a>
@@ -107,6 +109,10 @@ export const Navbar = () => {
                         </li>
                         <li className="nav-item">
                             <a className="nav-link active" href="/database">Database </a>
+                        </li>
+
+                        <li className="nav-item">
+                            <a className="nav-link active" aria-current="page" href="/postRun"><p>Post-run data viewer</p></a>
                         </li>
 
                         <li className="nav-item">

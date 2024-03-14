@@ -1,5 +1,6 @@
 declare module '...'
-declare module 'leaflet-realtime' {
-    
+
+// easy-button.d.ts
+declare namespace L {
+    function hotline(any, any);
 }
-declare module '*'

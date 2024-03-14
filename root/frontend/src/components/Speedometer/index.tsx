@@ -32,9 +32,9 @@ export default class Speedometer extends React.Component<any, any>{
 
 
         return (
-            <div>
+            <div className='relative'>
                 <IgrRadialGauge
-                    value={this.props.value}
+                    value={this.props.value[0]}
                     isNeedleDraggingEnabled={false}
                     isNeedleDraggingConstrained={true}
                     scaleStartExtent={0.50}
@@ -73,6 +73,7 @@ export default class Speedometer extends React.Component<any, any>{
                         innerStartExtent={0.50} innerEndExtent={0.50}
                         outerStartExtent={0.57} outerEndExtent={0.57} />
                 </IgrRadialGauge>
+
 
             </div>
 
