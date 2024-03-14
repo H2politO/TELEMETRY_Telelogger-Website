@@ -49,16 +49,17 @@ interface Props {
 
 
     export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
-
+    
+    const [carSelected, setCarSelected]= useState("");
     const style1 = { color: "red" };
     const style2 = { color: "black" };
 
     const [val, setVal] = useState<number[]>([]);
     const [position, setPosition] = useState([undefined, undefined]);
     const [isConnected, setConnected] = useState(false);
+    const [topic, setTopic] = useState("")
 
     const parentRef = useRef(null);
-    let carSelected
 
     //Topic name uses all sensors of the object and the local time
     let topicName = passedComp.sensorSelected.map(e => { return ' ' + String(e.sensorName) }).toString() + " " + new Date().getTime();
@@ -105,9 +106,9 @@ interface Props {
             arrayMessages.push(0);
             console.log('%c Connecting to the topic: ' + "H2polito/" + s.topicName, 'color: orange');
             client.subscribe("H2polito/" + s.topicName, {});
-            if (topicName == "Messaging"){
-                carSelected = s.topicName;
-            }
+            
+            setTopic(s.topicName)
+            console.log(topic)
             
             //console.log(carSelected)
         });
@@ -295,7 +296,7 @@ interface Props {
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[6].ID &&
                     <div>
-                        <MessageSender car={carSelected}></MessageSender>
+                        <MessageSender locCar={topic} ></MessageSender>
                     </div>
                 }
 
