@@ -21,7 +21,7 @@ type Option = {
 
 const cookie= new Cookies();
 let lastSelection 
-export const Settings = ({setSettings, carSelect, dispDataEn, setDispDataEn, setDisplayTopic}) => {
+export const Settings = ({setSettings, carSelect, dispDataEn, setDispDataEn, setDisplayTopic, setMinValue, setMaxValue}) => {
     
     const [status, setStatus] = useState("");
     
@@ -40,10 +40,12 @@ export const Settings = ({setSettings, carSelect, dispDataEn, setDispDataEn, set
     
     useEffect(()=>{
        //use to save and upload data
-       lastSelection = cookie.get("lastSelection")
+       
+       //lastSelection = cookie.get("lastSelection")
        if (lastSelection!=null){
             console.log("cookie",lastSelection)
             setDisplayTopic("H2polito/" + lastSelection.value.topic )
+            //console.log(lastSelection.value.topic)
             setSelectedOption(lastSelection)
         }
     },[])
@@ -60,6 +62,10 @@ export const Settings = ({setSettings, carSelect, dispDataEn, setDispDataEn, set
     const handleChange = (newValue: OnChangeValue<Option, false>, actionMeta: ActionMeta<Option>) => {
        console.log(newValue)
        setDisplayTopic("H2polito/" + newValue.value.topicName);
+       
+       setMinValue(Number(newValue.value.minValue));
+       setMaxValue(Number(newValue.value.maxValue));
+       
        setSelectedOption(newValue)
        cookie.set("lastSelection",newValue)
     };
