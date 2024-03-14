@@ -292,6 +292,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, o
                     </div>
                 }
 
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID &&
+                    <div>
+                        <ResistiveForce velocity={singleVal} car={"Idra/Speed"}></ResistiveForce>
+                    </div>
+                }
+
             </div>
 
         </div >
