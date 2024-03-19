@@ -51,100 +51,105 @@ function getClosestPoint(mapDat: StratRecord[], position: Coord) {
 
 //forwardRef needed to make internal hooks accesible from parent
 export const BgMap = React.forwardRef((props, ref) => {
-  Hotline(L); //Pass Leaflet to Hotline
-  //Called on inital render
-  useEffect(() => {
-    // create map
-    map = L.map("backgroundMap");
 
-    map.setView([45, 7], 4);
+    Hotline(L); //Pass Leaflet to Hotline
+    //Called on inital render
+    useEffect(()=>{
 
-    carMarker = L.marker([0, 0], { icon: redIcon });
-    markerTmp = L.marker([0, 0], { icon: blackIcon });
+        // create map
+        map = L.map('backgroundMap');
 
-    L.tileLayer(
-      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-    ).addTo(map);
-  }, []);
+        map.setView([
+            45, 7
+        ], 4);
+        
+        carMarker = L.marker([0, 0], { icon: redIcon });
+        markerTmp = L.marker([0, 0], { icon: blackIcon });
 
-  //Used to make internal functions accesible from parent
-  React.useImperativeHandle(ref, () => ({
-    //Put car marker at position (sticks to path if available)
-    playPosition(pos: Coord, mapData?: StratRecord[]) {
-      let pointIndex = -1; //By default ignore map data
-      let lat = pos.lat,
-        lng = pos.lng;
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
+        
 
-      if (mapData != undefined) {
-        pointIndex = getClosestPoint(mapData, pos);
-      }
+    }, []);
 
-      carMarker.remove();
+    //Used to make internal functions accesible from parent
+    React.useImperativeHandle(ref, () => ({
+        //Put car marker at position (sticks to path if available)
+        playPosition (pos:Coord, mapData?:StratRecord[]) {
+            let pointIndex = -1; //By default ignore map data
+            let lat = pos.lat, lng = pos.lng;
+            
+            if(mapData != undefined){
+                pointIndex = getClosestPoint(mapData, pos);
+            }
 
-      if (pointIndex != -1) {
-        carMarker = L.marker(
-          [mapData[pointIndex].pos.lat, mapData[pointIndex].pos.lng],
-          { icon: greenIcon }
-        );
-      } else {
-        carMarker = L.marker([lat, lng], { icon: redIcon });
-      }
+            carMarker.remove();
 
-      carMarker.addTo(map);
-    },
-    //Puts a marker at specified position
-    putMarker(pos: Coord) {
-      let lat = pos.lat,
-        lng = pos.lng;
+            if(pointIndex != -1){
+                carMarker = L.marker([mapData[pointIndex].pos.lat, mapData[pointIndex].pos.lng], { icon: greenIcon });    
+            }
+            else{
+                carMarker = L.marker([lat, lng], { icon: redIcon });
+            }
+                                   
+            carMarker.addTo(map);
+            return pointIndex;
+            
+        },
+        //Puts a marker at specified position
+        putMarker (pos:Coord) {
+            
+            let lat = pos.lat, lng = pos.lng;
+            
+            markerTmp.remove();
 
-      markerTmp.remove();
+            markerTmp = L.marker([lat, lng], { icon: blackIcon });
+                                   
+            markerTmp.addTo(map);
+            
+        },
+        //Update the main path (in yellow)
+        updatePath (stratData:StratRecord[], maxValue, minValue) {
+            if(stratData.length == 0)
+                return;
+            
+            if(mainLine != undefined)
+                mainLine.remove();
 
-      markerTmp = L.marker([lat, lng], { icon: blackIcon });
+            console.log(stratData)
+            console.log(minValue, maxValue)
+            let path = stratData.map(function(item){return [item.pos.lat, item.pos.lng, item.dataToDisplay]}); //Convert to simple position tuples
+            //mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
+            mainLine = L.hotline(path, {outlineWidth:1,palette:{0:"green",0.5:"yellow",1:"red"}, min:minValue, max:maxValue});
+            
+            mainLine.addTo(map);
+            
+            map.fitBounds(mainLine.getBounds());    
+        },
+        //Update the selected path (in red)
+        highlightedPath (stratData) {
+            let path = stratData.map(function(item){return item.pos}); //Convert to simple position tuples
+            if (path.length == 0)
+                return;
+            if(tmpLine != undefined)
+                tmpLine.remove();
+            tmpLine = L.polyline( path    , {color: "red"}).addTo(map);
+            map.fitBounds(tmpLine.getBounds());    
+        },
+        //Remove the red path
+        removeHighPath() {
+            if(tmpLine == undefined)
+                return;
+            tmpLine.remove();
+        },
 
-      markerTmp.addTo(map);
-    },
-    //Update the main path (in yellow)
-    updatePath(stratData: StratRecord[]) {
-      if (stratData.length == 0) return;
 
-      if (mainLine != undefined) mainLine.remove();
+    }));
+    
+    return (
+        <div style={divStyle}>
+            <div className="bgMap" id="backgroundMap"></div>
+        </div>
 
-      //console.log(stratData)
-      let path = stratData.map(function (item) {
-        return [item.pos.lat, item.pos.lng, item.speed];
-      }); //Convert to simple position tuples
-      //mainLine = L.polyline( path as Array<LatLng>   , {color: "yellow"}).addTo(map);
-      mainLine = L.hotline(path, {
-        outlineWidth: 1,
-        palette: { 0: "green", 0.5: "yellow", 1: "red" },
-        min: 0,
-        max: 50,
-      });
-
-      mainLine.addTo(map);
-
-      map.fitBounds(mainLine.getBounds());
-    },
-    //Update the selected path (in red)
-    highlightedPath(stratData) {
-      let path = stratData.map(function (item) {
-        return item.pos;
-      }); //Convert to simple position tuples
-      if (path.length == 0) return;
-      if (tmpLine != undefined) tmpLine.remove();
-      tmpLine = L.polyline(path, { color: "red" }).addTo(map);
-      map.fitBounds(tmpLine.getBounds());
-    },
-    //Remove the red path
-    removeHighPath() {
-      if (tmpLine == undefined) return;
-      tmpLine.remove();
-    },
-  }));
-
-  return (
-    <div style={divStyle}>
-      <div className="bgMap" id="backgroundMap"></div>
-    </div>
-  );
+    )
 });
+

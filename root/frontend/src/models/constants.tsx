@@ -20,6 +20,14 @@ const IDRA_SENSORS = [
     { value: { ID: '19', topicName: 'Idra/dcdcScVolt', sensorName: 'DcDc Output voltage', minValue: 0, maxValue: 40 }, label: 'DcDc Output voltage' },
     { value: { ID: '20', topicName: 'Idra/dcdcInCurr', sensorName: 'DcDc Input current', minValue: 0, maxValue: 7 }, label: 'DcDc Input current' },
     { value: { ID: '21', topicName: 'Idra/dcdcOutCurr', sensorName: 'DcDc Output current', minValue: 0, maxValue: 7 }, label: 'DcDc Output current' },
+    { value: { ID: '22', topicName: 'Idra/AccX', sensorName: 'X Acceleration', minValue: -20, maxValue: 20 }, label: 'X Accelleration' },
+    { value: { ID: '23', topicName: 'Idra/AccY', sensorName: 'Y Acceleration', minValue: -20, maxValue: 20 }, label: 'Y Accelleration' },
+    { value: { ID: '24', topicName: 'Idra/AccZ', sensorName: 'Z Acceleration', minValue: -20, maxValue: 20 }, label: 'Z Accelleration' },
+    { value: { ID: '25', topicName: 'Idra/GyrX', sensorName: 'X Gyroscope', minValue: -20, maxValue: 20 }, label: 'X Gyroscope' },
+    { value: { ID: '26', topicName: 'Idra/GyrY', sensorName: 'Y Gyroscope', minValue: -20, maxValue: 20 }, label: 'Y Gyroscope' },
+    { value: { ID: '27', topicName: 'Idra/GyrZ', sensorName: 'Z Gyroscope', minValue: -20, maxValue: 20 }, label: 'Z Gyroscope' },
+    { value: { ID: '28', topicName: 'Idra/cockTemp', sensorName: 'Cockpit Temperature', minValue: -5, maxValue: 70 }, label: 'Cockpit temperature' },
+    { value: { ID: '29', topicName: 'Idra/boardVoltage', sensorName: 'Telemetry supply voltage', minValue: 0, maxValue: 16 }, label: 'Telemetry supply voltage' },
 ]
 
 const JUNO_SENSORS = [
@@ -33,6 +41,12 @@ const JUNO_SENSORS = [
     { value: { ID: '8', topicName: 'Juno/TPS', sensorName: 'TPS', minValue: 1, maxValue: 100 }, label: 'TPS' },
     { value: { ID: '9', topicName: 'Juno/Lambda', sensorName: 'Lambda', minValue: 1, maxValue: 100 }, label: 'Lambda' },
     { value: { ID: '10', topicName: 'Juno/VoltageBattery', sensorName: 'Vbat', minValue: 6, maxValue: 15 }, label: 'Voltage battery' },
+    { value: { ID: '11', topicName: 'Juno/AccX', sensorName: 'X Acceleration', minValue: -20, maxValue: 20 }, label: 'X Accelleration' },
+    { value: { ID: '12', topicName: 'Juno/AccY', sensorName: 'Y Acceleration', minValue: -20, maxValue: 20 }, label: 'Y Accelleration' },
+    { value: { ID: '13', topicName: 'Juno/AccZ', sensorName: 'Z Acceleration', minValue: -20, maxValue: 20 }, label: 'Z Accelleration' },
+    { value: { ID: '14', topicName: 'Juno/GyrX', sensorName: 'X Gyroscope', minValue: -20, maxValue: 20 }, label: 'X Gyroscope' },
+    { value: { ID: '15', topicName: 'Juno/GyrY', sensorName: 'Y Gyroscope', minValue: -20, maxValue: 20 }, label: 'Y Gyroscope' },
+    { value: { ID: '16', topicName: 'Juno/GyrZ', sensorName: 'Z Gyroscope', minValue: -20, maxValue: 20 }, label: 'Z Gyroscope' },
 
 ]
 

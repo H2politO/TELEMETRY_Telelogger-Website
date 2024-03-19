@@ -25,17 +25,23 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
 import { UplotLive } from "./LiveGraph2/uplot_live";
+import { SensorList } from "./Sidebar/sensorsList";
+import { ResistiveForce } from "./ResistiveForce";
+
 
 import { SensorList } from "./Sidebar/sensorsList";
 
 export enum ComponentType {
-  check = 1,
-  radialGauge,
-  linearGauge,
-  plot,
-  circuitMap,
-  lapTimer,
-  messageSender,
+
+    check = 1,
+    radialGauge,
+    linearGauge,
+    plot,
+    circuitMap,
+    lapTimer,
+    messageSender,
+    carPicker
+
 }
 
 interface Props {
@@ -44,127 +50,164 @@ interface Props {
   onResize?: (id: string, width: number, height: number) => void;
 }
 
-export const ComponentEncapsulator: React.FC<Props> = ({
-  passedComp,
-  onDelete,
-  onResize,
-}) => {
-  const style1 = { color: "red" };
-  const style2 = { color: "black" };
+    export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
+    
+    const [carSelected, setCarSelected]= useState("");
+    const style1 = { color: "red" };
+    const style2 = { color: "black" };
 
-  const [val, setVal] = useState<number[]>([]);
-  const [position, setPosition] = useState([undefined, undefined]);
-  const [isConnected, setConnected] = useState(false);
+    const [val, setVal] = useState<number[]>([]);
+    const [position, setPosition] = useState([undefined, undefined]);
+    const [isConnected, setConnected] = useState(false);
+    const [topic, setTopic] = useState("")
 
-  const parentRef = useRef(null);
+    const parentRef = useRef(null);
 
-  //Topic name uses all sensors of the object and the local time
-  let topicName =
-    passedComp.sensorSelected
-      .map((e) => {
-        return " " + String(e.sensorName);
-      })
-      .toString() +
-    " " +
-    new Date().getTime();
-  let arrayMessages: number[] = [];
-  let client = new Paho.Client(
-    "broker.mqttdashboard.com",
-    Number(8000),
-    "/mqtt",
-    topicName
-  );
+    //Topic name uses all sensors of the object and the local time
+    let topicName = passedComp.sensorSelected.map(e => { return ' ' + String(e.sensorName) }).toString() + " " + new Date().getTime();
+    console.log(topicName)
+    let arrayMessages: number[] = [];
+    let client = new Paho.Client("broker.mqttdashboard.com", Number(8000), "/mqtt", topicName);
 
-  const { compID, typeComponent } = passedComp;
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
 
-  useEffect(() => {
-    //parentRef.current.style.height = window.innerHeight
-    //parentRef.current.style.width = window.innerWidth
-    //console.log(parentRef.current.style.height, parentRef.current.style.width );
-    console.log(
-      "test",
-      document.getElementById("cas").offsetHeight,
-      document.getElementById("cas").offsetWidth
-    );
-  }, [width, height, onResize, compID]);
+    const { compID, typeComponent } = passedComp;
+    const [width, setWidth] = useState(0);
+    const [height, setHeight] = useState(0);
 
-  //Creation a client with a list of sensors
-  const _init = () => {
-    client.onConnectionLost = onConnectionLost;
-    client.onMessageArrived = onMessageArrived;
-    client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
-  };
+ 
 
-  // Function called when the client manages to connect to the topic
-  function onConnect() {
-    console.group(
-      "%c Creating a client for the following sensors: " + topicName,
-      "color: lightblue; font-weight: bold; font-size: 15px"
-    );
+    useEffect(() => {
 
-    if (client == undefined) {
-      console.log("Client undefined");
+        //parentRef.current.style.height = window.innerHeight
+        //parentRef.current.style.width = window.innerWidth
+        //console.log(parentRef.current.style.height, parentRef.current.style.width );
+        console.log(document.getElementById('cas').offsetHeight, document.getElementById('cas').offsetWidth);
+
+
+    }, [width, height, onResize, compID]);
+
+    //Creation a client with a list of sensors
+    const _init = () => {
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+        client.connect({ onSuccess: onConnect, onFailure: onFailureConnect });
     }
 
-    //Connect each sensor to the topic
-    passedComp.sensorSelected.forEach((s, index) => {
-      arrayMessages.push(0);
-      console.log(
-        "%c Connecting to the topic: " + "H2polito/" + s.topicName,
-        "color: orange"
-      );
-      client.subscribe("H2polito/" + s.topicName, {});
-    });
 
-    console.groupEnd();
-    setVal(arrayMessages);
+    // Function called when the client manages to connect to the topic
+    function onConnect() {
 
-    setConnected(true);
-  }
+        console.group('%c Creating a client for the following sensors: ' + topicName, 'color: lightblue; font-weight: bold; font-size: 15px');
 
-  // Function called when the connection has been lost
-  function onConnectionLost(responseObject: any) {
-    if (responseObject.errorCode !== 0) {
-      console.error("onConnectionLost:" + responseObject.errorMessage);
+        if (client == undefined) {
+            console.log('Client undefined');
+        }
+
+        //Connect each sensor to the topic
+        passedComp.sensorSelected.forEach((s, index) => {
+            arrayMessages.push(0);
+            console.log('%c Connecting to the topic: ' + "H2polito/" + s.topicName, 'color: orange');
+            client.subscribe("H2polito/" + s.topicName, {});
+            
+            setTopic(s.topicName)
+            console.log(topic)
+            
+            //console.log(carSelected)
+        });
+
+        console.groupEnd()
+        setVal(arrayMessages);
+
+        setConnected(true);
     }
 
-    console.groupEnd();
-    setConnected(false);
-  }
 
-  // Function called when a message arrives at destination
-  function onMessageArrived(message: any) {
-    console.log(
-      "Message arrived on destination: " +
-        message.destinationName +
-        " " +
-        message.payloadString
-    );
+    // Function called when the connection has been lost
+    function onConnectionLost(responseObject: any) {
+        if (responseObject.errorCode !== 0) {
+            console.error("onConnectionLost:" + responseObject.errorMessage);
+        }
 
-    //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
-    passedComp.sensorSelected.forEach((sensor, index) => {
-      if (message.payloadString)
-        if ("H2polito/" + sensor.topicName == message.destinationName) {
-          if (sensor.topicName == "Idra/Position") {
-            //do stuff for the GNSS sensor
-            let lat = parseFloat(message.payloadString.split(";")[0]);
-            let lng = parseFloat(message.payloadString.split(";")[1]);
-            setPosition([lat, lng]);
-          } else if (sensor.topicName == "Juno/Position") {
-            //do stuff for the GNSS sensor
-            let lat = parseFloat(message.payloadString.split(";")[0]);
-            let lng = parseFloat(message.payloadString.split(";")[1]);
-            setPosition([lat, lng]);
-          } else {
-            //added condition to protect crashes due to strings sent to the channels
-            if (Number.isNaN(parseInt(message.payloadString))) {
-              console.error(
-                "Got a string on channel " + message.destinationName
-              );
-            } else {
-              arrayMessages[index] = JSON.parse(message.payloadString);
+        console.groupEnd()
+        setConnected(false);
+    }
+
+    // Function called when a message arrives at destination
+    function onMessageArrived(message: any) {
+
+        console.log('Message arrived on destination: ' + message.destinationName + ' ' + message.payloadString);
+
+        //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
+        
+        passedComp.sensorSelected.forEach((sensor, index) => {
+            if (message.payloadString)
+                if (('H2polito/' + sensor.topicName) == message.destinationName) {
+                    if (sensor.topicName == "Idra/Position") {
+                        //do stuff for the GNSS sensor
+                        let lat = parseFloat(message.payloadString.split(';')[0]);
+                        let lng = parseFloat(message.payloadString.split(';')[1]);
+                        setPosition([lat, lng])
+                        console.log(sensor.topicName)
+                    }else if (sensor.topicName == "Idra/Messaging") {
+                        //do stuff for the GNSS sensor
+                        let lat = parseFloat(message.payloadString.split(';')[0]);
+                        let lng = parseFloat(message.payloadString.split(';')[1]);
+                        setPosition([lat, lng])
+                    }
+                    else {
+                        //added condition to protect crashes due to strings sent to the channels
+                        if (Number.isNaN(parseInt(message.payloadString))) {
+                            console.error("Got a string on channel " + message.destinationName)
+                        } else {
+                            arrayMessages[index] = JSON.parse(message.payloadString);
+                        }
+                    }
+
+                }
+        });
+        setVal([...arrayMessages]);
+    }
+
+    function onFailureConnect() {
+        console.error("Connection failed from " + topicName);
+        setConnected(false);
+    }
+
+    useEffect(() => {
+
+        const handleResize = () => {
+            if (parentRef.current) {
+                //console.log(parentRef.current.offsetHeight, parentRef.current.offsetWidth);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    }, [parentRef])
+
+
+    //Called once when the component is mounted
+    useEffect(() => {
+        _init();
+
+        //Return called when the component will unmount
+        return () => {
+            passedComp.sensorSelected.map((s, index) => {
+                console.log('Unsubscribing ' + "H2polito/" + s.topicName);
+                try {
+                    console.log("Unsubscribe went well")
+                    client.unsubscribe("H2polito/" + s.topicName, {}); 
+                } catch (InvalidState) {
+                    console.log("Error unsubscribing")
+                }
+                return
+            })
+            try {
+                client.disconnect();
+            }
+            catch (InvalidState) {
+                console.log("Error disconnect")
+
             }
           }
         }
@@ -305,34 +348,43 @@ export const ComponentEncapsulator: React.FC<Props> = ({
                     </div>
             */}
 
-        {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID && (
-          <div className="basis-full" style={{ height: "100%" }}>
-            <LiveMap position={[position[0], position[1]]}></LiveMap>
-          </div>
-        )}
 
-        {passedComp.typeComponent == AVAILABLE_COMPONENTS[5].ID && (
-          <div className="basis-full" style={{ height: "100%" }}>
-            <LapTimer></LapTimer>
-          </div>
-        )}
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
+                    <div className="basis-full" style={{ height: "100%" }}>
+                        <LiveMap position={[position[0], position[1]]}></LiveMap>
+                    </div>
 
-        {passedComp.typeComponent == AVAILABLE_COMPONENTS[6].ID && (
-          <div>
-            <MessageSender></MessageSender>
-          </div>
-        )}
+                }
 
-        {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID && (
-          <div>
-            <UplotLive
-              passedData={val}
-              parentRef={parentRef}
-              sensorList={passedComp.sensorSelected}
-            ></UplotLive>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[5].ID &&
+                    <div className="basis-full" style={{ height: "100%" }}>
+                        <LapTimer></LapTimer>
+                    </div>
+                }
+
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[6].ID &&
+                    <div>
+                        <MessageSender locCar={topic} ></MessageSender>
+                    </div>
+                }
+
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[7].ID &&
+                    <div >
+                        <UplotLive passedData={val} parentRef={parentRef} sensorList={passedComp.sensorSelected}></UplotLive>
+                    </div>
+                }
+
+                {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID &&
+                    <div>
+                        <ResistiveForce velocity={val[0]} car={topic}></ResistiveForce>
+                    </div>
+                }
+
+            </div>
+
+        </div >
+
+
+
+    )
+}
