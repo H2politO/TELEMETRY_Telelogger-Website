@@ -1,37 +1,31 @@
 import React, { CSSProperties, Component, useEffect } from "react";
 
-import L from "leaflet"
-import Hotline from "leaflet-hotline"
+import L from "leaflet";
+import Hotline from "leaflet-hotline";
 
-
-import redPoint from './redPoint.png'
-import greenCross from './greenCross.png'
-import blackCross from './blackCross.png'
+import redPoint from "./redPoint.png";
+import greenCross from "./greenCross.png";
+import blackCross from "./blackCross.png";
 import { Coord, StratRecord } from "../types";
 import { getGpsDistance } from "../MapCreator";
 
-
-
-
-
-const divStyle:CSSProperties = {
-    zIndex: "0",
-    position: "relative",
-    
-}
+const divStyle: CSSProperties = {
+  zIndex: "0",
+  position: "relative",
+};
 
 const redIcon = L.icon({
-    iconUrl: redPoint,
-    iconSize: [15, 15]
-})
+  iconUrl: redPoint,
+  iconSize: [15, 15],
+});
 const greenIcon = L.icon({
-    iconUrl: greenCross,
-    iconSize: [15, 15]
-})
+  iconUrl: greenCross,
+  iconSize: [15, 15],
+});
 const blackIcon = L.icon({
-    iconUrl: blackCross,
-    iconSize: [15, 15]
-})
+  iconUrl: blackCross,
+  iconSize: [15, 15],
+});
 
 let map, carMarker, markerTmp, mainLine, tmpLine;
 
@@ -39,22 +33,20 @@ let map, carMarker, markerTmp, mainLine, tmpLine;
 @brief  Gets the closest point from map dat, returns the index of the point
 @note   If the point is not found returns -1
 */
-function getClosestPoint(mapDat:StratRecord[], position:Coord){
-    let minDist = 5000;
-    let tmpIndex = -1;
-    let tmpDist:number;
+function getClosestPoint(mapDat: StratRecord[], position: Coord) {
+  let minDist = 5000;
+  let tmpIndex = -1;
+  let tmpDist: number;
 
-    
-    for(let i=0; i<mapDat.length; i++){
-        tmpDist = getGpsDistance(mapDat[i].pos, position);
-        if(tmpDist < minDist){
-            minDist = tmpDist;
-            tmpIndex = i;
-        }
+  for (let i = 0; i < mapDat.length; i++) {
+    tmpDist = getGpsDistance(mapDat[i].pos, position);
+    if (tmpDist < minDist) {
+      minDist = tmpDist;
+      tmpIndex = i;
     }
+  }
 
-    return tmpIndex;
-
+  return tmpIndex;
 }
 
 //forwardRef needed to make internal hooks accesible from parent
@@ -160,3 +152,4 @@ export const BgMap = React.forwardRef((props, ref) => {
 
     )
 });
+

@@ -1,21 +1,30 @@
-import React, { useState, useEffect, Component, createRef, useRef } from 'react';
-import '../App.css';
-import '../index.css';
-import Cookies from "universal-cookie"
-import {  Snackbar, Alert, AlertColor } from "@mui/material";
+import React, {
+  useState,
+  useEffect,
+  Component,
+  createRef,
+  useRef,
+} from "react";
+import "../App.css";
+import "../index.css";
+import Cookies from "universal-cookie";
+import { Snackbar, Alert, AlertColor } from "@mui/material";
 
-import Paho from "paho-mqtt"
-import {CarPicker} from "../components/StrategyPlanner/CarPicker"
-import { BgMap } from '../components/StrategyPlanner/BgMap';
-import TopMenu from '../components/StrategyPlanner/TopMenu';
-import MapCreator from '../components/StrategyPlanner/MapCreator';
-import { StratRecord, Coord } from '../components/StrategyPlanner/types';
-import MapConfigurator from '../components/StrategyPlanner/MapConfigurator';
-import BulkEditor from '../components/StrategyPlanner/BulkEditor';
+import Paho from "paho-mqtt";
+import { CarPicker } from "../components/StrategyPlanner/CarPicker";
+import { BgMap } from "../components/StrategyPlanner/BgMap";
+import TopMenu from "../components/StrategyPlanner/TopMenu";
+import MapCreator from "../components/StrategyPlanner/MapCreator";
+import { StratRecord, Coord } from "../components/StrategyPlanner/types";
+import MapConfigurator from "../components/StrategyPlanner/MapConfigurator";
+import BulkEditor from "../components/StrategyPlanner/BulkEditor";
+import { SectorTimer } from "../components/StrategyPlanner/SectorTimer";
 
 import RGL, { WidthProvider } from "react-grid-layout";
 import Settings from '../components/StrategyPlanner/Settings';
 import { Topic } from '@mui/icons-material';
+import { latLng } from "leaflet";
+
 
 const GridLayout = WidthProvider(RGL);
 
@@ -30,10 +39,13 @@ const layout = [
     { i: "mapEditTable", x: 16, y: 2, w: 5, h: 15, minW: 5},
     { i: "mapEditBulk", x: 0, y: 5, w: 4, h: 10 },
     { i: "settings", x: 4, y: 2, w: 10, h: 15},
+    { i: "mapEditSecTim", x: 0, y: 5, w: 4, h: 10 },
+        
+let mqttClient: Paho.Client;
 ];
 
-
 export const StrategyPlanner = () => {
+
     
     const [stratMap, setStratmap] = useState<Array<StratRecord>>([]);
     const bgMapRef = useRef(null);
@@ -63,15 +75,58 @@ export const StrategyPlanner = () => {
     const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
           return;
-       }
-       setOpenAlert(false)
     }
+    setOpenAlert(false);
+  };
 
-    //Show alert in bottom right
-    const putAlert = (data, severity) =>{
-        setAlertSeverity(severity);
-        setAlertStatus(data);
-        setOpenAlert(true);
+  //Show alert in bottom right
+  const putAlert = (data, severity) => {
+    setAlertSeverity(severity);
+    setAlertStatus(data);
+    setOpenAlert(true);
+  };
+
+  //Downlaoad helpers
+  const dofileDownload = createRef<HTMLAnchorElement>();
+  const doFileUpload = createRef<HTMLInputElement>();
+  const [menuUpdate, setMenuUpdate] = useState(false); //USed to force updates when menu pressed
+  const [downloadUrl, setDownloadUrl] = useState("");
+  const didMount = useRef(false); //USed to avoid updates on first render
+
+  //Useeffect called only when the page is loaded; if cookies are present load them; if they aren't, don't
+  useEffect(() => {
+    console.log("Starting root mqtt client...");
+    mqttClient = new Paho.Client(
+      "broker.mqttdashboard.com",
+      Number(8000),
+      "/mqtt",
+      "myClientId" + new Date().getTime()
+    );
+    mqttClient.connect({ onSuccess: onConnect });
+  }, []);
+
+  //Called when mqtt client connects
+  function onConnect() {
+    console.log("Root MQTT Client connected");
+    mqttClient.onMessageArrived = mqttRxCallback;
+    updateMqttSubs();
+  }
+
+  function updateMqttSubs() {
+    if (mqttClient == undefined) return;
+
+    if (!mqttClient.isConnected())
+      //IF not connected return early
+      return;
+
+    if (carSelect == "1") {
+      mqttClient.unsubscribe("H2polito/Idra/Position");
+      mqttClient.subscribe("H2polito/Juno/Position");
+      putAlert("Connected to Juno", "success");
+    } else if (carSelect == "2") {
+      mqttClient.unsubscribe("H2polito/Juno/Position");
+      mqttClient.subscribe("H2polito/Idra/Position");
+      putAlert("Connected to Idra", "success");
     }
 
     //Downlaoad helpers
@@ -100,24 +155,33 @@ export const StrategyPlanner = () => {
 
     }
 
-    function updateMqttSubs(){
+    dofileDownload.current.click(); //start the download by emulating the user click on a hidden ancor element
+    URL.revokeObjectURL(downloadUrl); //Remove the linked URL
+  }, [downloadUrl]);
 
-        if(mqttClient == undefined)
-            return;
-            
-        if(!mqttClient.isConnected()) //IF not connected return early
-            return;
+  //Called when carselect changes
+  useEffect(() => {
+    updateMqttSubs();
+  }, [carSelect]);
 
-        if(carSelect == "1"){
-            mqttClient.unsubscribe("H2polito/Idra/Position")
-            mqttClient.subscribe("H2polito/Juno/Position")
-            putAlert("Connected to Juno", "success");
-        }
-        else if(carSelect == "2"){
-            mqttClient.unsubscribe("H2polito/Juno/Position")
-            mqttClient.subscribe("H2polito/Idra/Position")
-            putAlert("Connected to Idra", "success");
-        }
+  //Called when map config window changes, detect when disappears and removes path from map
+  useEffect(() => {
+    if (!mapConfigEn) bgMapRef.current.removeHighPath();
+  }, [mapConfigEn]);
+
+  //Called when strategy data is updated
+  useEffect(() => {
+    if (stratMap == undefined) return;
+    console.log("Updaing background map");
+    console.log(stratMap);
+    bgMapRef.current.updatePath(stratMap);
+  }, [stratMap]);
+
+  //Loads the map data (called when file uploaded)
+  const loadData = (file: File) => {
+    if (file == null) {
+      //setStatus("⚠️ No file selected!");
+      return;
     }
 
     function mqttRxCallback(message){
@@ -180,9 +244,14 @@ export const StrategyPlanner = () => {
             
             setSettingsEn(true)
         }
+      }
 
+      if (bgMapRef.current != undefined) bgMapRef.current.updatePath(stratMap);
 
-    }, [currAction, menuUpdate]);
+      setStratmap(stratMap);
+      setMapConfigEn(true);
+      //setStatus("File Loaded");
+    };
 
     //Called when save data url created
     useEffect(()=>{
@@ -324,53 +393,26 @@ export const StrategyPlanner = () => {
         const url = URL.createObjectURL(blob);
         setDownloadUrl(url); //Create URL to the  blob
         
+
     }
+    let outString =
+      "ID;LATITUDE;LONGITUDE;ALTITUDE;SPEED;STRATEGY;SECTOR;NOTE\n";
 
-    //Send data to phone
-    const sendData = () =>{
-        if(stratMap.length == 0){
-            putAlert("Upload a file first", "error");
-            return;
-        }
-        let outString = "ID;LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
-
-        for(let i=0; i<stratMap.length; i++){
-            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].strategy};${stratMap[i].sector};\n`
-        }
-        const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
-        const url = URL.createObjectURL(blob);
-        
-        if(carSelect == "1"){
-            fetch('http://h2polito.duckdns.org/JunoFile', {  // Server IP address
-
-                method: 'POST', 
-                mode: 'cors', 
-                body: outString
-            }).then((response) => { //When response received notify phone file is online
-                console.log("DONE")
-                let msg = new Paho.Message("ready")
-                msg.destinationName = "H2polito/Juno/StrategySend"
-                mqttClient.send(msg)
-            });
-        }
-        else{
-            fetch('http://h2polito.duckdns.org/IdraFile', {  // Server IP address
-
-                method: 'POST', 
-                mode: 'cors', 
-                body: outString
-            }).then((response) => { //When response received notify phone file is online
-                console.log("DONE")
-                let msg = new Paho.Message("ready")
-                msg.destinationName = "H2polito/Idra/StrategySend"
-                mqttClient.send(msg)
-            });
-        }
+    for (let i = 0; i < stratMap.length; i++) {
+      outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].altitude};${stratMap[i].speed};${stratMap[i].strategy};${stratMap[i].sector};\n`;
     }
+    const blob = new Blob([outString], { type: "application/text" }); //Create blob object
+    const url = URL.createObjectURL(blob);
+    setDownloadUrl(url); //Create URL to the  blob
+  };
 
-    const updateSelection = (startI, endI) =>{
-        bgMapRef.current.highlightedPath(stratMap.slice(startI, endI+1));
+  //Send data to phone
+  const sendData = () => {
+    if (stratMap.length == 0) {
+      putAlert("Upload a file first", "error");
+      return;
     }
+    let outString = "ID;LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
 
     //Car position 
     

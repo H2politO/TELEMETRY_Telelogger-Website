@@ -1,36 +1,38 @@
 import React, { useEffect, useRef } from "react";
 import { useState } from "react";
-import '../App.css';
-import '../index.css';
+import "../App.css";
+import "../index.css";
 import Speedometer from "../components/Speedometer";
-import Tachometer from '../components/Tachometer';
+import Tachometer from "../components/Tachometer";
 import LinearGauge from "../components/LinearGauge";
 import ThrottlePressure from "../components/ThrottlePressure";
 import SimpleLight from "../components/SimpleLight";
-import { ComponentsPage } from '../models/componentsPage'
+import { ComponentsPage } from "../models/componentsPage";
 import { Sensor } from "../models/sensor";
 import { IoReload, IoClose } from "react-icons/io5";
-import Paho from 'paho-mqtt';
+import Paho from "paho-mqtt";
 import LiveGraph2 from "../components/LiveGraph2";
 
-
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 import { LiveMap } from "./LiveMap";
-import { LapTimer } from "./LapTimer"
+import { LapTimer } from "./LapTimer";
 import { MessageSender } from "./messageSender";
 
 import { AVAILABLE_COMPONENTS } from "../models/constants";
 
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 
 import { UplotLive } from "./LiveGraph2/uplot_live";
 import { SensorList } from "./Sidebar/sensorsList";
 import { ResistiveForce } from "./ResistiveForce";
 
 
+import { SensorList } from "./Sidebar/sensorsList";
+
 export enum ComponentType {
+
     check = 1,
     radialGauge,
     linearGauge,
@@ -39,15 +41,14 @@ export enum ComponentType {
     lapTimer,
     messageSender,
     carPicker
-}
 
+}
 
 interface Props {
-    passedComp: ComponentsPage,
-    onDelete: any
-    onResize?: (id: string, width: number, height: number) => void;
+  passedComp: ComponentsPage;
+  onDelete: any;
+  onResize?: (id: string, width: number, height: number) => void;
 }
-
 
     export const ComponentEncapsulator: React.FC<Props> = ({ passedComp, onDelete, onResize }) => {
     
@@ -206,80 +207,146 @@ interface Props {
             }
             catch (InvalidState) {
                 console.log("Error disconnect")
+
             }
+          }
         }
-    }, []);
+    });
+    setVal([...arrayMessages]);
+  }
 
+  function onFailureConnect() {
+    console.error("Connection failed from " + topicName);
+    setConnected(false);
+  }
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (parentRef.current) {
+        console.log(
+          parentRef.current.offsetHeight,
+          parentRef.current.offsetWidth
+        );
+      }
+    };
 
-    return (
-        <div className="card dashboardElement" id="cas">
-            {window.location.pathname == "/" &&
-                <div className="card-header handle">
-                    <span className="cards-title">{passedComp.sensorSelected[0].topicName.split('/')[0]} </span>
-                    {isConnected == false &&
-                        <span className="text-red-500">
-                            {passedComp.sensorSelected.map((s: Sensor, index) => (
-                                <span key={index}>{s.sensorName} </span>
-                            )
-                            )}
+    window.addEventListener("resize", handleResize);
+    handleResize();
+  }, [parentRef]);
 
-                        </span>
-                    }
-                    {isConnected == true &&
+  //Called once when the component is mounted
+  useEffect(() => {
+    _init();
 
-                        <span className=" text-green-500">
-                            {passedComp.sensorSelected.map((s: Sensor, index) => (
-                                <span key={index}>{s.sensorName} {val[index]} | </span>
-                            )
-                            )}
-                        </span>
-                    }
+    //Return called when the component will unmount
+    return () => {
+      passedComp.sensorSelected.map((s, index) => {
+        console.log("Unsubscribing " + "H2polito/" + s.topicName);
+        try {
+          console.log("Unsubscribe went well");
+          client.unsubscribe("H2polito/" + s.topicName, {});
+        } catch (InvalidState) {
+          console.log("Error unsubscribing");
+        }
+        return;
+      });
+      try {
+        client.disconnect();
+      } catch (InvalidState) {
+        console.log("Error disconnect");
+      }
+    };
+  }, []);
 
-                    <span>
+  return (
+    <div className="card dashboardElement" id="cas">
+      {window.location.pathname == "/" && (
+        <div className="card-header handle">
+          <span className="cards-title">
+            {passedComp.sensorSelected[0].topicName.split("/")[0]}{" "}
+          </span>
+          {isConnected == false && (
+            <span className="text-red-500">
+              {passedComp.sensorSelected.map((s: Sensor, index) => (
+                <span key={index}>{s.sensorName} </span>
+              ))}
+            </span>
+          )}
+          {isConnected == true && (
+            <span className=" text-green-500">
+              {passedComp.sensorSelected.map((s: Sensor, index) => (
+                <span key={index}>
+                  {s.sensorName} {val[index]} |{" "}
+                </span>
+              ))}
+            </span>
+          )}
 
-                        <button type="button" className="float-right" aria-label="Close" onClick={() => onDelete(passedComp)}><IoClose size={20} style={style1} /></button>
-                        <button type="button" className="float-right" onClick={() => _init()}><IoReload size={18} style={style2} /></button>
-                    </span>
+          <span>
+            <button
+              type="button"
+              className="float-right"
+              aria-label="Close"
+              onClick={() => onDelete(passedComp)}
+            >
+              <IoClose size={20} style={style1} />
+            </button>
+            <button
+              type="button"
+              className="float-right"
+              onClick={() => _init()}
+            >
+              <IoReload size={18} style={style2} />
+            </button>
+          </span>
+        </div>
+      )}
 
+      <div className="card-body" ref={parentRef}>
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[0].ID && (
+          <div className="basis-full">
+            <SimpleLight key={uuidv4()} value={val} comp={passedComp} />
+          </div>
+        )}
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[1].ID && (
+          <div className="basis-1/3">
+            <Speedometer
+              value={val}
+              minSpeed={passedComp.cmpMinRange}
+              maxSpeed={passedComp.cmpMaxRange}
+            />
+          </div>
+        )}
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[2].ID && (
+          <div className="basis-full">
+            <LinearGauge
+              value={val}
+              minVal={passedComp.cmpMinRange}
+              maxVal={passedComp.cmpMaxRange}
+            />
+            <div>{val}</div>
+          </div>
+        )}
 
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[3].ID && (
+          <div className="basis-full">
+            <LiveGraph2
+              passedData={val}
+              minVal={passedComp.cmpMinRange}
+              sensorList={passedComp.sensorSelected}
+              id={passedComp.compID}
+              maxVal={passedComp.cmpMaxRange}
+            />
+          </div>
+        )}
 
-                </div>}
-
-            <div className="card-body" ref={parentRef} >
-                {passedComp.typeComponent == AVAILABLE_COMPONENTS[0].ID &&
-                    <div className="basis-full">
-                        <SimpleLight key={uuidv4()} value={val} comp={passedComp} />
-                    </div>
-
-                }
-                {passedComp.typeComponent == AVAILABLE_COMPONENTS[1].ID &&
-                    <div className="basis-1/3">
-                        <Speedometer value={val} minSpeed={passedComp.cmpMinRange} maxSpeed={passedComp.cmpMaxRange} />
-                    </div>
-                }
-                {passedComp.typeComponent == AVAILABLE_COMPONENTS[2].ID &&
-                    <div className="basis-full">
-                        <LinearGauge value={val} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
-                        <div>{val}</div>
-                    </div>
-
-                }
-
-                {passedComp.typeComponent == AVAILABLE_COMPONENTS[3].ID &&
-                    <div className="basis-full" >
-                        <LiveGraph2 passedData={val} minVal={passedComp.cmpMinRange} sensorList={passedComp.sensorSelected} id={passedComp.compID} maxVal={passedComp.cmpMaxRange} />
-                    </div>
-                }
-
-                {/*passedComp.typeComponent == ComponentType.throttlePressure &&
+        {/*passedComp.typeComponent == ComponentType.throttlePressure &&
                     <div className="basis-full">
                         {passedComp.cmpMinRange}
                         {passedComp.cmpMaxRange}
                         <ThrottlePressure value={singleVal} minVal={passedComp.cmpMinRange} maxVal={passedComp.cmpMaxRange} />
                     </div>
             */}
-
 
 
                 {passedComp.typeComponent == AVAILABLE_COMPONENTS[4].ID &&
