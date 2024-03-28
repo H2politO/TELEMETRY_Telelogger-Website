@@ -26,6 +26,7 @@ export const baseStyle: CSSProperties = {
 
 export const headerStyle: CSSProperties = {
   display: "block",
+  color: "black",
 };
 
 export const titleStyle: CSSProperties = {
