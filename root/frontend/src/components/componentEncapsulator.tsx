@@ -23,12 +23,10 @@ import { AVAILABLE_COMPONENTS } from "../models/constants";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-
-import { UplotLive } from "./LiveGraph2/uplot_live";
-
 import { ResistiveForce } from "./ResistiveForce";
-
+import { UplotLive } from "./LiveGraph2/uplot_live";
 import { SensorList } from "./Sidebar/sensorsList";
+import AverageData from "../components/AverageData";
 
 export enum ComponentType {
   check = 1,
@@ -38,7 +36,7 @@ export enum ComponentType {
   circuitMap,
   lapTimer,
   messageSender,
-  carPicker,
+  averageData,
 }
 
 interface Props {
@@ -52,7 +50,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({
   onDelete,
   onResize,
 }) => {
-  const [carSelected, setCarSelected] = useState("");
   const style1 = { color: "red" };
   const style2 = { color: "black" };
 
@@ -60,7 +57,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({
   const [position, setPosition] = useState([undefined, undefined]);
   const [isConnected, setConnected] = useState(false);
   const [topic, setTopic] = useState("");
-
   const parentRef = useRef(null);
 
   //Topic name uses all sensors of the object and the local time
@@ -72,7 +68,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({
       .toString() +
     " " +
     new Date().getTime();
-  console.log(topicName);
   let arrayMessages: number[] = [];
   let client = new Paho.Client(
     "broker.mqttdashboard.com",
@@ -121,11 +116,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({
         "color: orange"
       );
       client.subscribe("H2polito/" + s.topicName, {});
-
       setTopic(s.topicName);
-      console.log(topic);
-
-      //console.log(carSelected)
     });
 
     console.groupEnd();
@@ -154,7 +145,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({
     );
 
     //Finds the matching payload that with the string "H2polito/Vehicle" + sensor name
-
     passedComp.sensorSelected.forEach((sensor, index) => {
       if (message.payloadString)
         if ("H2polito/" + sensor.topicName == message.destinationName) {
@@ -163,8 +153,7 @@ export const ComponentEncapsulator: React.FC<Props> = ({
             let lat = parseFloat(message.payloadString.split(";")[0]);
             let lng = parseFloat(message.payloadString.split(";")[1]);
             setPosition([lat, lng]);
-            console.log(sensor.topicName);
-          } else if (sensor.topicName == "Idra/Messaging") {
+          } else if (sensor.topicName == "Juno/Position") {
             //do stuff for the GNSS sensor
             let lat = parseFloat(message.payloadString.split(";")[0]);
             let lng = parseFloat(message.payloadString.split(";")[1]);
@@ -199,50 +188,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({
     window.addEventListener("resize", handleResize);
     handleResize();
   }, [parentRef]);
-
-  //Called once when the component is mounted
-  useEffect(() => {
-    _init();
-
-    //Return called when the component will unmount
-    return () => {
-      passedComp.sensorSelected.map((s, index) => {
-        console.log("Unsubscribing " + "H2polito/" + s.topicName);
-        try {
-          console.log("Unsubscribe went well");
-          client.unsubscribe("H2polito/" + s.topicName, {});
-        } catch (InvalidState) {
-          console.log("Error unsubscribing");
-        }
-        return;
-      });
-      try {
-        client.disconnect();
-      } catch (InvalidState) {
-        console.log("Error disconnect");
-      }
-    }; //burda olabilir
-  });
-  setVal([...arrayMessages]);
-
-  // function onFailureConnect() {
-  //   console.error("Connection failed from " + topicName);
-  //   setConnected(false);
-  // }
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (parentRef.current) {
-  //       console.log(
-  //         parentRef.current.offsetHeight,
-  //         parentRef.current.offsetWidth
-  //       );
-  //     }
-  //   };
-
-  //   window.addEventListener("resize", handleResize);
-  //   handleResize();
-  // }, [parentRef]);
 
   //Called once when the component is mounted
   useEffect(() => {
@@ -385,10 +330,13 @@ export const ComponentEncapsulator: React.FC<Props> = ({
             ></UplotLive>
           </div>
         )}
-
-        {passedComp.typeComponent == AVAILABLE_COMPONENTS[8].ID && (
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[9].ID && (
           <div>
-            <ResistiveForce velocity={val[0]} car={topic}></ResistiveForce>
+            <AverageData
+              value={val}
+              minVal={passedComp.cmpMinRange}
+              maxVal={passedComp.cmpMaxRange}
+            />
           </div>
         )}
       </div>
