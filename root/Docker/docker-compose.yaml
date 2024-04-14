@@ -1,0 +1,23 @@
+services:
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns-h2
+    network_mode: host #optional
+    environment:
+      - SUBDOMAINS=h2polito
+      - TOKEN=6ecf5c24-8bd7-4dfb-a7f3-d149a7165fc4
+      - UPDATE_IP=ipv6 #optional
+    restart: unless-stopped
+    
+  websiteHosting:
+    image: h2politoweb:latest
+    container_name: hosting-h2
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana-h2
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
