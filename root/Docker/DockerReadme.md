@@ -9,6 +9,7 @@
 
     `sudo docker build . -t h2politowebsite --build-arg GIT_TOKEN=yourtoken --build-arg BRANCH=branch`
 6. The image will be built
+7. Use docker compose file to create the stack, do this after the image has been built on the host
 
 ## Environment variables
 
