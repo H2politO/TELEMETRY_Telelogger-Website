@@ -15,7 +15,8 @@ import BulkEditor from '../components/StrategyPlanner/BulkEditor';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 import Settings from '../components/StrategyPlanner/Settings';
-import { Topic } from '@mui/icons-material';
+import LoadFile from '../components/StrategyPlanner/LoadFiles';
+
 
 const GridLayout = WidthProvider(RGL);
 
@@ -35,8 +36,9 @@ const layout = [
 
 export const StrategyPlanner = () => {
     
-    const [stratMap, setStratmap] = useState<Array<StratRecord>>([]);
+    const [stratMap, setStratmap] = useState([]);
     const bgMapRef = useRef(null);
+    const [selectedFiles, setSelectedFiles] = useState([]);
    
 
     const [carSelect, setCarSelect] = useState('1'); //Contains current selected car, 1= Juno 2= Idra
@@ -50,7 +52,8 @@ export const StrategyPlanner = () => {
     const [mapConfigEn, setMapConfigEn] = useState(false); //Enables the map configurator view
     const [blkConfigEn, setBlkConfigEn] = useState(false); //Enables the bulk map configurator view
     const [mapCreateEn, setMapCreateEn] = useState(false); //Enables the map configurator view
-    const  [settingsEn, setSettingsEn]  = useState(false); //Enables the settings window   
+    const  [settingsEn, setSettingsEn]  = useState(false); //Enables the settings window  
+    const [loadFileEn, setLoadFileEn]   = useState(false)  //Enables the load files window
 
 
     //Alert snackbar handler
@@ -80,6 +83,7 @@ export const StrategyPlanner = () => {
     const [menuUpdate, setMenuUpdate] = useState(false); //USed to force updates when menu pressed
     const [downloadUrl, setDownloadUrl] = useState("");
     const didMount = useRef(false); //USed to avoid updates on first render
+    
 
 
 
@@ -159,7 +163,8 @@ export const StrategyPlanner = () => {
     useEffect(() => {        
         console.log("Menu action:", currAction)
         if(currAction == "load"){
-            doFileUpload.current?.click();
+            setLoadFileEn(true)
+            //doFileUpload.current?.click();
         }
         else if(currAction == "save"){
             saveData();
@@ -167,11 +172,11 @@ export const StrategyPlanner = () => {
         else if(currAction == "edit"){
             setMapConfigEn(true);
         }
-        else if(currAction == "create"){
+        else if(currAction == "create" && selectedFiles!=null){
             setMapCreateEn(true);
         }
         else if(currAction == "send"){
-            sendData();
+            sendAllData();
         }
         else if(currAction == "home"){
             bgMapRef.current.updatePath(stratMap, maxValue, minValue);
@@ -327,47 +332,54 @@ export const StrategyPlanner = () => {
     }
 
     //Send data to phone
-    const sendData = () =>{
-        if(stratMap.length == 0){
+    const sendAllData = () =>{
+        //console.log(files)
+        if(selectedFiles.length == 0){
             putAlert("Upload a file first", "error");
             return;
         }
-        let outString = "ID;LATITUDE;LONGITUDE;STRATEGY;SECTOR;NOTE\n";
-
-        for(let i=0; i<stratMap.length; i++){
-            outString += `${i};${stratMap[i].pos.lat};${stratMap[i].pos.lng};${stratMap[i].strategy};${stratMap[i].sector};\n`
+       
+        for(let i=0; i<selectedFiles.length; i++){
+            sendSingleData(selectedFiles[i], i);
         }
-        const blob = new Blob([outString], { type: 'application/text' }); //Create blob object
-        const url = URL.createObjectURL(blob);
-        
-        if(carSelect == "1"){
-            fetch('http://h2polito.duckdns.org/JunoFile', {  // Server IP address
-
-                method: 'POST', 
-                mode: 'cors', 
-                body: outString
-            }).then((response) => { //When response received notify phone file is online
-                console.log("DONE")
-                let msg = new Paho.Message("ready")
-                msg.destinationName = "H2polito/Juno/StrategySend"
-                mqttClient.send(msg)
-            });
-        }
-        else{
-            fetch('http://h2polito.duckdns.org/IdraFile', {  // Server IP address
-
-                method: 'POST', 
-                mode: 'cors', 
-                body: outString
-            }).then((response) => { //When response received notify phone file is online
-                console.log("DONE")
-                let msg = new Paho.Message("ready")
-                msg.destinationName = "H2polito/Idra/StrategySend"
-                mqttClient.send(msg)
-            });
-        }
+       
     }
 
+    const sendSingleData = (file, index) =>{
+       
+        let car
+        let fileString = file.toString()
+    
+
+        const blob = new Blob([fileString], { type: 'application/text' }); //Create blob object 
+        const url = URL.createObjectURL(blob);
+        
+        if (carSelect == "1"){
+            car = "Juno";
+        }
+        else{
+            car = "Idra";
+        }
+        
+        let fileName = index + "_" + car + "_" + "Strat";
+        fetch('http://localhost:3000/'+ car + 'File/'+ fileName, {  // Server IP address
+
+            method: 'POST', 
+            mode: 'cors', 
+            body: fileString
+        }).then((response) => { //When response received notify phone file is online
+            console.log("DONE");
+            let msg = new Paho.Message("ready");
+            msg.destinationName = "H2polito/" + car + "/StrategySend";
+            mqttClient.send(msg);
+        });
+    
+        index++;
+
+    }
+
+    
+    
     const updateSelection = (startI, endI) =>{
         bgMapRef.current.highlightedPath(stratMap.slice(startI, endI+1));
     }
@@ -391,7 +403,7 @@ export const StrategyPlanner = () => {
 
             {/*Downlaod/Upload hidden anchors*/}
             <a hidden download="mapDl.csv" href={downloadUrl} ref={dofileDownload} ></a> 
-            <input type="file" accept=".csv" onChange={e =>loadData(e.target.files[0])} id="fileUpButton" ref={doFileUpload} hidden/>
+            <input type="file" accept=".csv" onChange={e =>loadData(e.target.files[0])} id="fileUpButton" ref={doFileUpload} hidden />
 
             {/*background map*/}
            <BgMap ref={bgMapRef} ></BgMap>
@@ -443,10 +455,16 @@ export const StrategyPlanner = () => {
                    <div key="settings" data-grid={{x: 1, y: 2, w: 5, h: 9}}>
                        <Settings setSettings={setSettingsEn} carSelect={carSelect} dispDataEn={dispDataEn} setDispDataEn={setDispDataEn} setDisplayTopic={setDisplayTopic} setMinValue={setMinValue} setMaxValue={setMaxValue} ></Settings>
                    </div>
+                }  
 
-                }   
-                
-                
+                {/*show the files to select window*/}
+                { loadFileEn &&
+                   <div key="loadFile" data-grid={{x: 5, y: 2, w:5, h:9 }}>
+                        <LoadFile setLoadFile={setLoadFileEn} selectedFiles={selectedFiles} setSelectedFiles={setSelectedFiles}></LoadFile>
+                   </div>
+                    
+                }
+
             </GridLayout>
                 
 

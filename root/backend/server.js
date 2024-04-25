@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const exp = require("constants");
 const process = require('process');
+const multer = require('multer')
 
 let PORT = 3000;
 
@@ -14,15 +15,18 @@ if(process.argv[2] != undefined){
 
 //Setup express
 const app = express(); 
+const upload = multer({ dest: 'http://localhost:3000/'});
+
 //Allow cross origin reference (to remove in production version)
 app.use(cors());
 
 //Setup post reception for text
-app.use(express.text());
+
 
 //Load the juno file
-app.post(["/JunoFile"], (req, res) =>{
-    console.log("Recieved file")
+app.post(["/JunoFile/:fileName"], (req, res) =>{
+    
+    console.log("Recieved file, name : " + req.params.fileName)
     fs.writeFile("./data/juno.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
 )});
 
@@ -35,8 +39,8 @@ app.get(["/JunoFile"], (req, res) =>{
 });
 
 //Load the idra file
-app.post(["/IdraFile"], (req, res) =>{
-    console.log("Recieved file")
+app.post(["/IdraFile/:fileName"], (req, res) =>{
+    console.log("Recieved file, name : " + req.params.fileName)
     fs.writeFile("./data/idra.csv", req.body, "utf8", ()=>{ res.send("") } //Write the file, then send response
 )});
 
