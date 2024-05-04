@@ -452,6 +452,16 @@ const JUNO_SENSORS = [
     },
     label: "Z Gyroscope",
   },
+  {
+    value: {
+      ID: "17",
+      topicName: "Juno/GPSSpeed",
+      sensorName: "GPS Speed",
+      minValue: 0,
+      maxValue: 60,
+    },
+    label: "GPS Speed",
+  },
 ];
 
 const AVAILABLE_COMPONENTS = [
