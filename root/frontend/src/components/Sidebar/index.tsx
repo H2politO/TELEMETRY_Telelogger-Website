@@ -141,7 +141,7 @@ export class Sidebar extends React.Component<any, any> {
               setTimeout(() => {}, 500);
             }}
           >
-            <Form>
+            <Form placeholder={"hello"}>
               <div className="myFormGroup">
                 <label>Select component</label>
                 <Field
