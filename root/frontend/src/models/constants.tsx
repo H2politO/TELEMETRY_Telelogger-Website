@@ -462,6 +462,36 @@ const JUNO_SENSORS = [
     },
     label: "GPS Speed",
   },
+  {
+    value: {
+      ID: "18",
+      topicName: "Juno/EngineMap",
+      sensorName: "Engine Map / CAL_Select",
+      minValue: 0,
+      maxValue: 12,
+    },
+    label: "CAL_Select",
+  },  
+  {
+    value: {
+      ID: "19",
+      topicName: "Juno/JM_Amps",
+      sensorName: "Joule Meter Current",
+      minValue: 0,
+      maxValue: 150,
+    },
+    label: "JM_Amps",
+  },
+  {
+    value: {
+      ID: "20",
+      topicName: "Juno/JM_Volts",
+      sensorName: "Joule Meter Voltage",
+      minValue: 0,
+      maxValue: 20,
+    },
+    label: "JM_Volts",
+  },
 ];
 
 const AVAILABLE_COMPONENTS = [
