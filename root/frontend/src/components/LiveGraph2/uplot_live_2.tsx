@@ -6,25 +6,18 @@ import { useLayoutEffect } from "react";
 import uPlot from "uplot";
 import { Height } from "@mui/icons-material";
 import { height } from "@mui/system";
-import { Button } from "@mui/material";
 
 //test vars for resizing
+
 let testHeight;
 let testWidth;
 
-export const UplotLive = (passedData) => {
+export const UplotLive2 = (passedData) => {
   const timestamp = useRef(0);
-  const [data, setData] = useState([[0], [0]]);
+  const [data, setData] = useState([[0], [0], [0]]);
 
-  const colors = [
-    "red",
-    "blue",
-    "lightblue",
-    "green",
-    "Orange",
-    "black",
-    "brown",
-  ];
+  const colors = ["red", "blue", "lightblue", "green", "Orange", "black"];
+  const colors2 = ["darkred", "darkgreen", "purple", "brown"];
 
   const maxDataLength = 50;
 
@@ -36,23 +29,15 @@ export const UplotLive = (passedData) => {
   }, []);
 
   useEffect(() => {
-    //console.log(data)
-
+    // console.log(passedData.passedData[1]);
     if (data != undefined) {
       plot.current.setData([
         [...data[0], timestamp.current],
         [...data[1], passedData.passedData[0]],
+        [...data[2], passedData.passedData[1]],
       ]);
     }
   }, [data]);
-
-  // if (passedData.passedData[1] == undefined) {
-  //   plot.current.addSeries({
-  //     label: passedData.sensorList[1].sensorName,
-  //     stroke: "orange",
-  //     fill: "rgba(255,165,0,0.1)",
-  //   });
-  // }
 
   useEffect(() => {
     if (plot.current) {
@@ -81,10 +66,12 @@ export const UplotLive = (passedData) => {
         const newData = [
           [...prevData[0], timestamp.current],
           [...prevData[1], passedData.passedData[0]],
+          [...prevData[2], passedData.passedData[1]],
         ];
         if (newData[0].length > maxDataLength) {
           newData[0] = newData[0].slice(-maxDataLength);
           newData[1] = newData[1].slice(-maxDataLength);
+          newData[2] = newData[2].slice(-maxDataLength);
         }
         return newData;
       });
@@ -97,13 +84,15 @@ export const UplotLive = (passedData) => {
 
   const opts = {
     id: Math.random(),
-
     series: [
       {},
       {
         label: passedData.sensorList[0].sensorName,
-
         stroke: colors[Math.floor(Math.random() * colors.length)],
+      },
+      {
+        label: passedData.sensorList[1].sensorName,
+        stroke: colors2[Math.floor(Math.random() * colors2.length)],
       },
     ],
 
@@ -115,8 +104,14 @@ export const UplotLive = (passedData) => {
       y: {
         auto: false,
         range: [
-          passedData.sensorList[0].minValue,
-          passedData.sensorList[0].maxValue,
+          Math.min(
+            passedData.sensorList[0].minValue,
+            passedData.sensorList[1].minValue
+          ),
+          Math.max(
+            passedData.sensorList[0].maxValue,
+            passedData.sensorList[1].maxValue
+          ),
         ],
       },
     },

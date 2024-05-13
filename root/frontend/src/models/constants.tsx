@@ -475,6 +475,7 @@ const AVAILABLE_COMPONENTS = [
   { ID: 8, componentName: "BETA - Uplot live", w: 5, h: 9 },
   { ID: 9, componentName: "Resistive force", w: 5, h: 6 },
   { ID: 10, componentName: "Average of Data", w: 2, h: 4 },
+  { ID: 11, componentName: "Uplot Live - 2 Series", w: 5, h: 9 },
 ];
 
 export { IDRA_SENSORS };

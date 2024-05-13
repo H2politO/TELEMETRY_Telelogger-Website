@@ -27,6 +27,7 @@ import { ResistiveForce } from "./ResistiveForce";
 import { UplotLive } from "./LiveGraph2/uplot_live";
 import { SensorList } from "./Sidebar/sensorsList";
 import AverageData from "../components/AverageData";
+import { UplotLive2 } from "./LiveGraph2/uplot_live_2";
 
 export enum ComponentType {
   check = 1,
@@ -337,6 +338,15 @@ export const ComponentEncapsulator: React.FC<Props> = ({
               minVal={passedComp.cmpMinRange}
               maxVal={passedComp.cmpMaxRange}
             />
+          </div>
+        )}
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[10].ID && (
+          <div>
+            <UplotLive2
+              passedData={val}
+              parentRef={parentRef}
+              sensorList={passedComp.sensorSelected}
+            ></UplotLive2>
           </div>
         )}
       </div>
