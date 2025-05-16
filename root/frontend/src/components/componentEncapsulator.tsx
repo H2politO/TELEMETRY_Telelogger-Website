@@ -71,8 +71,8 @@ export const ComponentEncapsulator: React.FC<Props> = ({
     new Date().getTime();
   let arrayMessages: number[] = [];
   let client = new Paho.Client(
-    "147.185.221.27",
-    Number(14943),
+    "31.97.32.141",
+    Number(9001),
     "/mqtt",
     topicName
   );
