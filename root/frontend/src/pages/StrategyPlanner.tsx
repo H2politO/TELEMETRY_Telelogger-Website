@@ -94,8 +94,8 @@ export const StrategyPlanner = () => {
   useEffect(() => {
     console.log("Starting root mqtt client...");
     mqttClient = new Paho.Client(
-      "broker.mqttdashboard.com",
-      Number(8000),
+      "31.97.32.141",
+      Number(9001),
       "/mqtt",
       "myClientId" + new Date().getTime()
     );
