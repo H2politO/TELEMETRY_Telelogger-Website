@@ -16,7 +16,7 @@ export const MessageSender= ({locCar}) => {
     }, [])
 
     const _init = () => {
-        const c = new Paho.Client("147.185.221.27", Number(14943), "/mqtt", "myClientId" + new Date().getTime());
+        const c = new Paho.Client("31.97.32.141", Number(9001), "/mqtt", "myClientId" + new Date().getTime());
         c.onConnectionLost = _onConnectionLost;
         c.onMessageArrived = _onMessageArrived;
         c.connect({ onSuccess: onConnect });
