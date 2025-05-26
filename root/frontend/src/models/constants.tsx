@@ -2,56 +2,46 @@ const IDRA_SENSORS = [
   {
     value: {
       ID: "1",
-      topicName: "Idra/Emergency",
-      sensorName: "Emergency",
+      topicName: "Idra/Speed",
+      sensorName: "Vehicle Speed",
       minValue: 0,
-      maxValue: 1,
+      maxValue: 60,
     },
-    label: "Emergency",
+    label: "Vehicle Speed",
   },
   {
     value: {
       ID: "2",
-      topicName: "Idra/Speed",
-      sensorName: "Speed",
+      topicName: "Idra/Temperature",
+      sensorName: "FC Temperature",
       minValue: 0,
-      maxValue: 60,
+      maxValue: 90,
     },
-    label: "Speed",
+    label: "FC Temperature",
   },
   {
     value: {
       ID: "3",
-      topicName: "Idra/Temperature",
-      sensorName: "Temperature",
-      minValue: 0,
-      maxValue: 90,
+      topicName: "Idra/actAuxVolt",
+      sensorName: "Actuation Aux Voltage",
+      minValue: 10,
+      maxValue: 50,
     },
-    label: "Temperature",
+    label: "Actuation Aux Voltage",
   },
   {
     value: {
       ID: "4",
-      topicName: "Idra/FCVoltage",
-      sensorName: "Fuel Cell Voltage",
-      minValue: 10,
+      topicName: "Idra/actInpVolt",
+      sensorName: "Actuation Input Voltage",
+      minValue: 5,
       maxValue: 50,
     },
-    label: "FCVoltage",
+    label: "Actuation Input Voltage",
   },
   {
     value: {
       ID: "5",
-      topicName: "Idra/SCVoltage",
-      sensorName: "Supercap Voltage",
-      minValue: 5,
-      maxValue: 50,
-    },
-    label: "SCVoltage",
-  },
-  {
-    value: {
-      ID: "6",
       topicName: "Idra/Strategy",
       sensorName: "Strategy",
       minValue: 0,
@@ -61,7 +51,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "7",
+      ID: "6",
       topicName: "Idra/MotorOn",
       sensorName: "Motor On",
       minValue: 0,
@@ -71,17 +61,17 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "8",
+      ID: "7",
       topicName: "Idra/ActuationOn",
-      sensorName: "Actuation On",
+      sensorName: "Act On",
       minValue: 0,
       maxValue: 1,
     },
-    label: "ActuationOn",
+    label: "Act On",
   },
   {
     value: {
-      ID: "9",
+      ID: "8",
       topicName: "Idra/Purge",
       sensorName: "Purge On",
       minValue: 0,
@@ -91,7 +81,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "10",
+      ID: "9",
       topicName: "Idra/PowerMode",
       sensorName: "Power Mode On",
       minValue: 0,
@@ -101,7 +91,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "11",
+      ID: "10",
       topicName: "Idra/Short",
       sensorName: "Short On",
       minValue: 0,
@@ -111,7 +101,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "12",
+      ID: "11",
       topicName: "Idra/MotorCurrent",
       sensorName: "Motor Current",
       minValue: 0,
@@ -121,17 +111,17 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "13",
-      topicName: "Idra/Messaging",
-      sensorName: "Messaging client",
+      ID: "12",
+      topicName: "Idra/SetCurrentDcdc",
+      sensorName: "SC Charge Current Setpoint",
       minValue: 1,
       maxValue: 100,
     },
-    label: "Messaging",
+    label: "SC Charge Set",
   },
   {
     value: {
-      ID: "14",
+      ID: "13",
       topicName: "Idra/Position",
       sensorName: "Position",
       minValue: 1,
@@ -141,17 +131,17 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "15",
+      ID: "14",
       topicName: "Idra/BARHeight",
-      sensorName: "Altimetry",
-      minValue: 365,
-      maxValue: 385,
+      sensorName: "Barometric Altitude",
+      minValue: 0,
+      maxValue: 500,
     },
     label: "Altimetry",
   },
   {
     value: {
-      ID: "16",
+      ID: "15",
       topicName: "Idra/GPSSpeed",
       sensorName: "Gps Speed",
       minValue: 0,
@@ -161,18 +151,18 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "17",
+      ID: "16",
       topicName: "Idra/FanDuty",
-      sensorName: "Fan speed",
+      sensorName: "Fan duty",
       minValue: 0,
       maxValue: 100,
     },
-    label: "Fan speed",
+    label: "Fan duty",
   },
   {
     value: {
-      ID: "18",
-      topicName: "Idra/boostVolt",
+      ID: "17",
+      topicName: "Idra/dcdcInVolt",
       sensorName: "DcDc Input voltage",
       minValue: 0,
       maxValue: 50,
@@ -181,8 +171,8 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "19",
-      topicName: "Idra/dcdcScVolt",
+      ID: "18",
+      topicName: "Idra/dcdcOutVolt",
       sensorName: "DcDc Output voltage",
       minValue: 0,
       maxValue: 40,
@@ -191,7 +181,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "20",
+      ID: "19",
       topicName: "Idra/dcdcInCurr",
       sensorName: "DcDc Input current",
       minValue: 0,
@@ -201,7 +191,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "21",
+      ID: "20",
       topicName: "Idra/dcdcOutCurr",
       sensorName: "DcDc Output current",
       minValue: 0,
@@ -211,67 +201,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "22",
-      topicName: "Idra/AccX",
-      sensorName: "X Acceleration",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "X Accelleration",
-  },
-  {
-    value: {
-      ID: "23",
-      topicName: "Idra/AccY",
-      sensorName: "Y Acceleration",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Y Accelleration",
-  },
-  {
-    value: {
-      ID: "24",
-      topicName: "Idra/AccZ",
-      sensorName: "Z Acceleration",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Z Accelleration",
-  },
-  {
-    value: {
-      ID: "25",
-      topicName: "Idra/GyrX",
-      sensorName: "X Gyroscope",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "X Gyroscope",
-  },
-  {
-    value: {
-      ID: "26",
-      topicName: "Idra/GyrY",
-      sensorName: "Y Gyroscope",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Y Gyroscope",
-  },
-  {
-    value: {
-      ID: "27",
-      topicName: "Idra/GyrZ",
-      sensorName: "Z Gyroscope",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Z Gyroscope",
-  },
-  {
-    value: {
-      ID: "28",
+      ID: "21",
       topicName: "Idra/cockTemp",
       sensorName: "Cockpit Temperature",
       minValue: -5,
@@ -281,7 +211,7 @@ const IDRA_SENSORS = [
   },
   {
     value: {
-      ID: "29",
+      ID: "22",
       topicName: "Idra/boardVoltage",
       sensorName: "Telemetry supply voltage",
       minValue: 0,
@@ -289,7 +219,70 @@ const IDRA_SENSORS = [
     },
     label: "Telemetry supply voltage",
   },
+  {
+    value: {
+      ID: "23",
+      topicName: "Idra/id_bldc",
+      sensorName: "Id BLDC",
+      minValue: 0,
+      maxValue: 16,
+    },
+    label: "Id BLDC",
+  },
+  {
+    value: {
+      ID: "24",
+      topicName: "Idra/iq_bldc",
+      sensorName: "Iq BLDC",
+      minValue: 0,
+      maxValue: 16,
+    },
+    label: "Iq BLDC",
+  },
+  {
+    value: {
+      ID: "25",
+      topicName: "Idra/vd_bldc",
+      sensorName: "Vd BLDC",
+      minValue: 0,
+      maxValue: 40,
+    },
+    label: "Vd BLDC",
+  },
+  {
+    value: {
+      ID: "26",
+      topicName: "Idra/vq_bldc",
+      sensorName: "Vq BLDC",
+      minValue: 0,
+      maxValue: 40,
+    },
+    label: "Vq BLDC",
+  },
+  {
+    value: {
+      ID: "27",
+      topicName: "Idra/t_mos_bldc",
+      sensorName: "Mosfet Temperature BLDC",
+      minValue: 0,
+      maxValue: 150,
+    },
+    label: "Mosfet Temperature",
+  },
+  {
+    value: {
+      ID: "28",
+      topicName: "Idra/speedRpm_bldc",
+      sensorName: "Motor RPM BLDC",
+      minValue: 0,
+      maxValue: 4000,
+    },
+    label: "Motor RPM BLDC",
+  },
+  
+
 ];
+
 
 const JUNO_SENSORS = [
   {
@@ -306,25 +299,35 @@ const JUNO_SENSORS = [
     value: {
       ID: "2",
       topicName: "Juno/Speed",
-      sensorName: "Speed",
+      sensorName: "Vehicle Speed",
       minValue: 0,
       maxValue: 60,
     },
-    label: "Speed",
+    label: "Vehicle Speed",
   },
   {
     value: {
       ID: "3",
       topicName: "Juno/EngineCoolantTemperature",
-      sensorName: "Temperature",
+      sensorName: "Engine Coolant Temperature",
       minValue: 0,
-      maxValue: 140,
+      maxValue: 180,
     },
-    label: "Temperature",
+    label: "Engine CoolantTemperature",
   },
   {
     value: {
       ID: "4",
+      topicName: "Juno/EngineAuxiliaryTemperature",
+      sensorName: "Auxiliary Engine Temperature",
+      minValue: 0,
+      maxValue: 180,
+    },
+    label: "Auxiliary Engine Temperature",
+  },
+  {
+    value: {
+      ID: "5",
       topicName: "Juno/RPM",
       sensorName: "RPM",
       minValue: 0,
@@ -334,19 +337,19 @@ const JUNO_SENSORS = [
   },
   {
     value: {
-      ID: "5",
+      ID: "6",
       topicName: "Juno/MotorOn",
-      sensorName: "Motor On",
+      sensorName: "Crank",
       minValue: 0,
       maxValue: 1,
     },
-    label: "MotorOn",
+    label: "Crank",
   },
   {
     value: {
-      ID: "6",
+      ID: "7",
       topicName: "Juno/Messaging",
-      sensorName: "Messaging client",
+      sensorName: "Porco dio cristiano",
       minValue: 1,
       maxValue: 100,
     },
@@ -354,7 +357,7 @@ const JUNO_SENSORS = [
   },
   {
     value: {
-      ID: "7",
+      ID: "8",
       topicName: "Juno/Position",
       sensorName: "Position",
       minValue: 1,
@@ -364,97 +367,37 @@ const JUNO_SENSORS = [
   },
   {
     value: {
-      ID: "8",
+      ID: "9",
       topicName: "Juno/TPS",
-      sensorName: "TPS",
+      sensorName: "Throttle Position",
       minValue: 1,
       maxValue: 100,
     },
-    label: "TPS",
+    label: "Throttle Position",
   },
   {
     value: {
-      ID: "9",
+      ID: "10",
       topicName: "Juno/Lambda",
       sensorName: "Lambda",
-      minValue: 1,
-      maxValue: 100,
+      minValue: 0,
+      maxValue: 10,
     },
     label: "Lambda",
   },
   {
     value: {
-      ID: "10",
+      ID: "11",
       topicName: "Juno/VoltageBattery",
       sensorName: "Vbat",
       minValue: 6,
       maxValue: 15,
     },
-    label: "Voltage battery",
-  },
-  {
-    value: {
-      ID: "11",
-      topicName: "Juno/AccX",
-      sensorName: "X Acceleration",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "X Accelleration",
+    label: "Battery Voltage",
   },
   {
     value: {
       ID: "12",
-      topicName: "Juno/AccY",
-      sensorName: "Y Acceleration",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Y Accelleration",
-  },
-  {
-    value: {
-      ID: "13",
-      topicName: "Juno/AccZ",
-      sensorName: "Z Acceleration",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Z Accelleration",
-  },
-  {
-    value: {
-      ID: "14",
-      topicName: "Juno/GyrX",
-      sensorName: "X Gyroscope",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "X Gyroscope",
-  },
-  {
-    value: {
-      ID: "15",
-      topicName: "Juno/GyrY",
-      sensorName: "Y Gyroscope",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Y Gyroscope",
-  },
-  {
-    value: {
-      ID: "16",
-      topicName: "Juno/GyrZ",
-      sensorName: "Z Gyroscope",
-      minValue: -20,
-      maxValue: 20,
-    },
-    label: "Z Gyroscope",
-  },
-  {
-    value: {
-      ID: "17",
       topicName: "Juno/GPSSpeed",
       sensorName: "GPS Speed",
       minValue: 0,
@@ -464,34 +407,34 @@ const JUNO_SENSORS = [
   },
   {
     value: {
-      ID: "18",
+      ID: "13",
       topicName: "Juno/EngineMap",
       sensorName: "Engine Map / CAL_Select",
       minValue: 0,
       maxValue: 12,
     },
-    label: "CAL_Select",
-  },  
+    label: "CAL Select",
+  },
   {
     value: {
-      ID: "19",
+      ID: "14",
       topicName: "Juno/JM_Amps",
       sensorName: "Joule Meter Current",
       minValue: 0,
       maxValue: 150,
     },
-    label: "JM_Amps",
+    label: "JM Amps",
   },
   {
     value: {
-      ID: "20",
+      ID: "15",
       topicName: "Juno/JM_Volts",
       sensorName: "Joule Meter Voltage",
       minValue: 0,
       maxValue: 20,
     },
-    label: "JM_Volts",
-  },
+    label: "JM Volts",
+  },  
 ];
 
 const AVAILABLE_COMPONENTS = [
