@@ -58,13 +58,8 @@ export const MessageSender= ({locCar}) => {
         
 
         console.log( locCar )
-        if( locCar == "Idra/Messaging"){
-        pahomessage.destinationName = 'H2polito/Idra/Messaging';
         
-       
-        }else if ( locCar == "Juno/Messaging"){
-        pahomessage.destinationName = 'H2polito/Juno/Messaging';
-        }
+        pahomessage.destinationName = 'H2polito/' + locCar;
         
         console.log(pahomessage.destinationName)
         client.send(pahomessage);

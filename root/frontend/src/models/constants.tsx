@@ -117,7 +117,7 @@ const IDRA_SENSORS = [
       minValue: 1,
       maxValue: 100,
     },
-    label: "SC Charge Set",
+    label: "SC Charge Current Set",
   },
   {
     value: {
@@ -279,7 +279,27 @@ const IDRA_SENSORS = [
     },
     label: "Motor RPM BLDC",
   },
-  
+  {
+    value: {
+      ID: "29",
+      topicName: "Idra/SetPowerDcdc",
+      sensorName: "SC Charge Power Setpoint",
+      minValue: 1,
+      maxValue: 100,
+    },
+    label: "SC Charge Power Set",
+  },
+  {
+    value: {
+      ID: "30",
+      topicName: "Idra/dcdcOutPower",
+      sensorName: "Dc-Dc Output Power",
+      minValue: 1,
+      maxValue: 100,
+    },
+    label: "Dc-Dc Output Power",
+  },
+
 
 ];
 
