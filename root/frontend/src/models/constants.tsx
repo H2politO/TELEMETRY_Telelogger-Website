@@ -299,6 +299,16 @@ const IDRA_SENSORS = [
     },
     label: "Dc-Dc Output Power",
   },
+  {
+    value: {
+      ID: "31",
+      topicName: "Idra/dcdcanFDutySend",
+      sensorName: "Dc-Dc Fan Duty Set",
+      minValue: 0,
+      maxValue: 100,
+    },
+    label: "Dc-Dc Fan Duty Set",
+  },
 
 
 ];
@@ -458,17 +468,18 @@ const JUNO_SENSORS = [
 ];
 
 const AVAILABLE_COMPONENTS = [
-  { ID: 1, componentName: "BUGGED - Check Light", w: 3, h: 3 },
   { ID: 2, componentName: "Radial Gauge", w: 3, h: 8 },
-  { ID: 3, componentName: "Linear Gauge", w: 6, h: 6 },
-  { ID: 4, componentName: "Slow Plot", w: 5, h: 9 },
   { ID: 5, componentName: "Circuit map", w: 6, h: 16 },
-  { ID: 6, componentName: "Lap timer", w: 3, h: 12 },
   { ID: 7, componentName: "Message Sender", w: 3, h: 12 },
+  { ID: 4, componentName: "Slow Plot", w: 5, h: 9 },
+  { ID: 1, componentName: "BUGGED - Check Light", w: 3, h: 3 },
   { ID: 8, componentName: "Uplot live - 1 Input", w: 5, h: 9 },
+  { ID: 11, componentName: "Uplot Live - 2 Inputs", w: 5, h: 9 },
   { ID: 9, componentName: "Resistive force", w: 5, h: 6 },
   { ID: 10, componentName: "Average of Data", w: 2, h: 4 },
-  { ID: 11, componentName: "Uplot Live - 2 Inputs", w: 5, h: 9 },
+  { ID: 3, componentName: "Linear Gauge", w: 6, h: 6 },
+  { ID: 6, componentName: "Lap timer", w: 3, h: 12 },
+  { ID: 12, componentName: "Push Button", w: 2, h: 3 },
 ];
 
 export { IDRA_SENSORS };

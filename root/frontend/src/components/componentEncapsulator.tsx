@@ -27,6 +27,7 @@ import { ResistiveForce } from "./ResistiveForce";
 import { UplotLive } from "./LiveGraph2/uplot_live";
 import { SensorList } from "./Sidebar/sensorsList";
 import AverageData from "../components/AverageData";
+import { PushButton}  from "../components/PushButton";
 import { UplotLive2 } from "./LiveGraph2/uplot_live_2";
 
 export enum ComponentType {
@@ -295,7 +296,6 @@ export const ComponentEncapsulator: React.FC<Props> = ({
             />
           </div>
         )}
-
         {/*passedComp.typeComponent == ComponentType.throttlePressure &&
                     <div className="basis-full">
                         {passedComp.cmpMinRange}
@@ -349,6 +349,12 @@ export const ComponentEncapsulator: React.FC<Props> = ({
             ></UplotLive2>
           </div>
         )}
+        {passedComp.typeComponent == AVAILABLE_COMPONENTS[11].ID && (
+          <div className="basis-full">
+            <PushButton locCar={topic} sensName={passedComp.sensorSelected[0].sensorName}/>
+          </div>
+        )}
+
       </div>
     </div>
   );
