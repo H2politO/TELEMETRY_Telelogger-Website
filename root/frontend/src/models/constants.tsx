@@ -480,6 +480,7 @@ const AVAILABLE_COMPONENTS = [
   { ID: 10, componentName: "Average of Data", w: 2, h: 4 },
   { ID: 11, componentName: "Uplot Live - 2 Inputs", w: 5, h: 9 }, 
   { ID: 12, componentName: "Push Button", w: 2, h: 3 },
+  { ID: 13, componentName: "Cellometro", w: 4, h: 4 },
 ];
 
 export { IDRA_SENSORS };
