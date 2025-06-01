@@ -31,7 +31,8 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
   const onLayoutChange = (newLayout) => {
     setLayout(newLayout);
     console.log("new layout");
-    cookie.set("layout", newLayout, { maxAge: 60 * 60 * 24 * 365 });
+    // cookie.set("layout", newLayout, { maxAge: 60 * 60 * 24 * 365 });
+    localStorage.setItem("layout", JSON.stringify(newLayout));
   };
 
   //Function used to delete the passed components
@@ -47,16 +48,18 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
   //Useeffect called only when the page is loaded; if cookies are present load them; if they aren't, don't
   useEffect(() => {
     console.log("Dashboard useEffect called only on load");
-    if (cookie.get("compPage") != undefined) {
-      console.log(cookie.get("layout"));
-      setcompPageList(cookie.get("compPage"));
+    // if (cookie.get("compPage") != undefined) {
+    let savedCompPage = JSON.parse(localStorage.getItem("compPage"));
+    let savedLayout = JSON.parse(localStorage.getItem("layout"));
+    if (savedCompPage != undefined) {
+      setcompPageList(savedCompPage);
     } else {
       console.log("Cookies empty");
     }
 
-    if (cookie.get("layout") != undefined) {
+    if (savedLayout != undefined) {
       console.log("Layout has been loaded");
-      setLayout(cookie.get("layout"));
+      setLayout(savedLayout);
     }
 
     console.log("Starting root mqtt client...");
@@ -77,7 +80,8 @@ export const Dashboard: React.FC<Props> = ({ receivedComponent }) => {
   //Setting cookies every time components finishes the render
   useEffect(() => {
     //Set age of the cookies to 1 year (60 seconds * 60 minutes * 24 hours * 365 days)
-    cookie.set("compPage", components, { maxAge: 60 * 60 * 24 * 365 });
+    // cookie.set("compPage", components, { maxAge: 60 * 60 * 24 * 365 });
+    localStorage.setItem("compPage", JSON.stringify(components));
   }, [components]);
 
   //On each component received from the parent, this effect is called and the components array is updated
