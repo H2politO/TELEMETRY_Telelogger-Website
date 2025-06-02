@@ -309,6 +309,16 @@ const IDRA_SENSORS = [
     },
     label: "Dc-Dc Fan Duty Set",
   },
+  {
+    value: {
+      ID: "32",
+      topicName: "Idra/dcdcAuxCurrent",
+      sensorName: "Dc-Dc Auxiliary Current",
+      minValue: 0,
+      maxValue: 2,
+    },
+    label: "Dc-Dc Auxiliary Current",
+  },
 
 
 ];
