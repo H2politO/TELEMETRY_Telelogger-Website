@@ -15,8 +15,8 @@ const doFileUpload = createRef<HTMLInputElement>();
 let voltData:Float = [];
 let currData:Float = [];
 
-const fcVTopic = "H2politO/Idra/dcdcInVolt";
-const fcITopic = "H2politO/Idra/dcdcInCurr";
+const fcVTopic = "H2polito/Idra/dcdcInVolt";
+const fcITopic = "H2polito/Idra/dcdcInCurr";
 
 function findClosest(arr, target) {
     let res = arr[0];
@@ -42,11 +42,7 @@ export const CellCurve = (passedData) => {
     let testHeight;
     let testWidth;
 
-    let client = new Paho.Client(
-        "31.97.32.141",
-        Number(9001),
-        "/mqtt"
-      );
+    let client;
 
     const colors = [
         "red",
@@ -124,6 +120,12 @@ export const CellCurve = (passedData) => {
 
 //on load of the component
 useEffect(() => {
+    client = new Paho.Client(
+        "31.97.32.141",
+        Number(9001),
+        "/mqtt", 
+        "myClientId" + new Date().getTime()
+      );
     plot.current = new uPlot(opts, [], plot.current);
     client.connect({ onSuccess: onConnect});
    
