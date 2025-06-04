@@ -319,6 +319,16 @@ const IDRA_SENSORS = [
     },
     label: "Dc-Dc Auxiliary Current",
   },
+  {
+    value: {
+      ID: "33",
+      topicName: "Idra/Upload",
+      sensorName: "Upload",
+      minValue: 0,
+      maxValue: 1,
+    },
+    label: "Upload",
+  },
 
 
 ];
@@ -474,6 +484,16 @@ const JUNO_SENSORS = [
       maxValue: 20,
     },
     label: "JM Volts",
+  },
+  {
+    value: {
+      ID: "16",
+      topicName: "Juno/Upload",
+      sensorName: "Upload",
+      minValue: 0,
+      maxValue: 1,
+    },
+    label: "Upload",
   },  
 ];
 
