@@ -53,15 +53,15 @@ export const MessageSender= ({locCar}) => {
 
     const sendData = (msg) => {
 
-        console.log('Sending the following message: ' + msg);
+        // console.log('Sending the following message: ' + msg);
         const pahomessage = new Paho.Message(msg);
         
 
-        console.log( locCar )
+        // console.log( locCar )
         
-        pahomessage.destinationName = 'H2polito/' + locCar;
+        pahomessage.destinationName = 'H2polito/' + locCar + 'Send';
         
-        console.log(pahomessage.destinationName)
+        // console.log(pahomessage.destinationName)
         client.send(pahomessage);
 
     }

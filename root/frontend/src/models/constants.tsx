@@ -112,7 +112,7 @@ const IDRA_SENSORS = [
   {
     value: {
       ID: "12",
-      topicName: "Idra/SetCurrentDcdc",
+      topicName: "Idra/dcdcOutCurrent",
       sensorName: "SC Charge Current Setpoint",
       minValue: 1,
       maxValue: 100,
@@ -152,8 +152,8 @@ const IDRA_SENSORS = [
   {
     value: {
       ID: "16",
-      topicName: "Idra/FanDuty",
-      sensorName: "Fan duty",
+      topicName: "Idra/dcdcanFDuty",
+      sensorName: "dcdc Fan duty",
       minValue: 0,
       maxValue: 100,
     },
@@ -282,7 +282,7 @@ const IDRA_SENSORS = [
   {
     value: {
       ID: "29",
-      topicName: "Idra/SetPowerDcdc",
+      topicName: "Idra/dcdcOutPower",
       sensorName: "SC Charge Power Setpoint",
       minValue: 1,
       maxValue: 100,
@@ -293,31 +293,31 @@ const IDRA_SENSORS = [
     value: {
       ID: "30",
       topicName: "Idra/dcdcOutPower",
-      sensorName: "Dc-Dc Output Power",
+      sensorName: "DcDc Output Power",
       minValue: 1,
       maxValue: 100,
     },
-    label: "Dc-Dc Output Power",
+    label: "DcDc Output Power",
   },
   {
     value: {
       ID: "31",
-      topicName: "Idra/dcdcanFDutySend",
-      sensorName: "Dc-Dc Fan Duty Set",
+      topicName: "Idra/dcdcFDuty",
+      sensorName: "DcDc Fan Duty Set",
       minValue: 0,
       maxValue: 100,
     },
-    label: "Dc-Dc Fan Duty Set",
+    label: "DcDc Fan Duty Set",
   },
   {
     value: {
       ID: "32",
       topicName: "Idra/dcdcAuxCurrent",
-      sensorName: "Dc-Dc Auxiliary Current",
+      sensorName: "DcDc Auxiliary Current",
       minValue: 0,
       maxValue: 2,
     },
-    label: "Dc-Dc Auxiliary Current",
+    label: "DcDc Auxiliary Current",
   },
   {
     value: {
@@ -328,6 +328,16 @@ const IDRA_SENSORS = [
       maxValue: 1,
     },
     label: "Upload",
+  },
+  {
+    value: {
+      ID: "31",
+      topicName: "Idra/Messaging",
+      sensorName: "Message",
+      minValue: 0,
+      maxValue: 100,
+    },
+    label: "Message",
   },
 
 
