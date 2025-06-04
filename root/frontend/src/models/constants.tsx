@@ -109,16 +109,16 @@ const IDRA_SENSORS = [
     },
     label: "MotorCurrent",
   },
-  {
-    value: {
-      ID: "12",
-      topicName: "Idra/dcdcOutCurrent",
-      sensorName: "SC Charge Current Setpoint",
-      minValue: 1,
-      maxValue: 100,
-    },
-    label: "SC Charge Current Set",
-  },
+  // {
+  //   value: {
+  //     ID: "12",
+  //     topicName: "Idra/dcdcOutCurrent",
+  //     sensorName: "SC Charge Current Setpoint",
+  //     minValue: 1,
+  //     maxValue: 100,
+  //   },
+  //   label: "SC Charge Current Set",
+  // },
   {
     value: {
       ID: "13",
@@ -279,16 +279,16 @@ const IDRA_SENSORS = [
     },
     label: "Motor RPM BLDC",
   },
-  {
-    value: {
-      ID: "29",
-      topicName: "Idra/dcdcOutPower",
-      sensorName: "SC Charge Power Setpoint",
-      minValue: 1,
-      maxValue: 100,
-    },
-    label: "SC Charge Power Set",
-  },
+  // {
+  //   value: {
+  //     ID: "29",
+  //     topicName: "Idra/dcdcOutPower",
+  //     sensorName: "SC Charge Power Setpoint",
+  //     minValue: 1,
+  //     maxValue: 100,
+  //   },
+  //   label: "SC Charge Power Set",
+  // },
   {
     value: {
       ID: "30",
@@ -299,16 +299,16 @@ const IDRA_SENSORS = [
     },
     label: "DcDc Output Power",
   },
-  {
-    value: {
-      ID: "31",
-      topicName: "Idra/dcdcFDuty",
-      sensorName: "DcDc Fan Duty Set",
-      minValue: 0,
-      maxValue: 100,
-    },
-    label: "DcDc Fan Duty Set",
-  },
+  // {
+  //   value: {
+  //     ID: "31",
+  //     topicName: "Idra/dcdcFDuty",
+  //     sensorName: "DcDc Fan Duty Set",
+  //     minValue: 0,
+  //     maxValue: 100,
+  //   },
+  //   label: "DcDc Fan Duty Set",
+  // },
   {
     value: {
       ID: "32",
@@ -329,16 +329,16 @@ const IDRA_SENSORS = [
     },
     label: "Upload",
   },
-  {
-    value: {
-      ID: "31",
-      topicName: "Idra/Messaging",
-      sensorName: "Message",
-      minValue: 0,
-      maxValue: 100,
-    },
-    label: "Message",
-  },
+  // {
+  //   value: {
+  //     ID: "31",
+  //     topicName: "Idra/Messaging",
+  //     sensorName: "Message",
+  //     minValue: 0,
+  //     maxValue: 100,
+  //   },
+  //   label: "Message",
+  // },
 
 
 ];
@@ -514,7 +514,7 @@ const AVAILABLE_COMPONENTS = [
   { ID: 4, componentName: "Slow Plot", w: 5, h: 9 },
   { ID: 5, componentName: "Circuit map", w: 6, h: 16 },
   { ID: 6, componentName: "Lap timer", w: 3, h: 12 },
-  { ID: 7, componentName: "Message Sender", w: 3, h: 12 },
+  { ID: 7, componentName: "Parameter Sender", w: 3, h: 12 },
   { ID: 8, componentName: "Uplot live - 1 Input", w: 5, h: 9 },
   { ID: 9, componentName: "Resistive force", w: 5, h: 6 },
   { ID: 10, componentName: "Average of Data", w: 2, h: 4 },
