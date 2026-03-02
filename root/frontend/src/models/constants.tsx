@@ -329,6 +329,16 @@ const IDRA_SENSORS = [
     },
     label: "Upload",
   },
+  {
+    value: {
+      ID: "34",
+      topicName: "Idra/airPressure",
+      sensorName: "Air Pressure",
+      minValue: 0,
+      maxValue: 30,
+    },
+    label: "Air Pressure",
+  },
   // {
   //   value: {
   //     ID: "31",
@@ -339,10 +349,7 @@ const IDRA_SENSORS = [
   //   },
   //   label: "Message",
   // },
-
-
 ];
-
 
 const JUNO_SENSORS = [
   {
@@ -504,7 +511,7 @@ const JUNO_SENSORS = [
       maxValue: 1,
     },
     label: "Upload",
-  },  
+  },
 ];
 
 const AVAILABLE_COMPONENTS = [
@@ -518,7 +525,7 @@ const AVAILABLE_COMPONENTS = [
   { ID: 8, componentName: "Uplot live - 1 Input", w: 5, h: 9 },
   { ID: 9, componentName: "Resistive force", w: 5, h: 6 },
   { ID: 10, componentName: "Average of Data", w: 2, h: 4 },
-  { ID: 11, componentName: "Uplot Live - 2 Inputs", w: 5, h: 9 }, 
+  { ID: 11, componentName: "Uplot Live - 2 Inputs", w: 5, h: 9 },
   { ID: 12, componentName: "Push Button", w: 2, h: 3 },
   { ID: 13, componentName: "Cellometro", w: 4, h: 4 },
 ];
