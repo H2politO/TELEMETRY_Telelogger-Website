@@ -204,7 +204,7 @@ const IDRA_SENSORS = [
       ID: "21",
       topicName: "Idra/cockTemp",
       sensorName: "Cockpit Temperature",
-      minValue: -5,
+      minValue: -10,
       maxValue: 70,
     },
     label: "Cockpit temperature",
